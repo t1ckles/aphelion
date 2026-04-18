@@ -1,7 +1,7 @@
 // ============================================
 //  APHELION — Main Terminal Controller
 //  main.js
-//  Stage 4: Player Identity
+//  Stage 7: Sidebar status panel
 // ============================================
 
 // ── Terminal output ───────────────────────────
@@ -26,10 +26,7 @@ function queue(text, style = '', delay = 38) {
   if (!isPrinting) processQueue();
 }
 
-function queueBlank(delay = 38) {
-  queue('', '', delay);
-}
-
+function queueBlank(delay = 38) { queue('', '', delay); }
 function queueDivider(delay = 38) {
   queue('─'.repeat(58), 'output-dim', delay);
 }
@@ -45,34 +42,104 @@ function processQueue() {
   setTimeout(processQueue, delay);
 }
 
-// ── Input modes ───────────────────────────────
-// The terminal has two modes:
-// 'command' — normal play, routes to handleCommand()
-// 'prompt'  — asking the player a setup question,
-//             routes to a one-shot callback
+// ── Sidebar ───────────────────────────────────
 
-let inputMode     = 'command';
-let inputEnabled  = false;
-let currentInput  = '';
-let promptCallback = null;
+function updateSidebar() {
+  if (typeof playerState === 'undefined' || !playerState) return;
 
-function enableInput(mode = 'command') {
-  inputEnabled = true;
-  inputMode    = mode;
+  // Vessel
+  setText('sb-captain', playerState.captainName || '—');
+  setText('sb-ship',    playerState.shipName    || '—');
+  setText('sb-day',     'Day ' + (playerState.currentDay || 0));
+
+  // Bars
+  const hull = Math.max(0, Math.min(100, playerState.hull || 0));
+  const fuel = Math.max(0, Math.min(100, playerState.fuel || 0));
+  setBar('sb-hull-bar', hull, 100, 10);
+  setBar('sb-fuel-bar', fuel, 100, 10);
+
+  // Cargo
+  setText('sb-credits',  (playerState.credits  || 0) + ' CR');
+  setText('sb-veydrite', (playerState.veydrite || 0) + ' kg');
+
+  // Location
+  if (playerState.location && typeof galaxy !== 'undefined' && galaxy) {
+    const loc     = playerState.location;
+    const q       = galaxy.quadrants[loc.quadrantIndex];
+    const cluster = q && q.clusters.find(c => c.name === loc.clusterName);
+    const sys     = cluster && cluster.systems.find(s => s.name === loc.systemName);
+
+    setText('sb-system',   sys     ? sys.name     : '—');
+    setText('sb-cluster',  cluster ? cluster.name : '—');
+    setText('sb-quadrant', q       ? q.name       : '—');
+    setText('sb-state',    q       ? '[' + q.state + ']' : '—');
+    setText('sb-docked',   playerState.docked
+      ? '⬛ ' + playerState.dockedAt
+      : '');
+  }
+
+  // Contract
+  const active = typeof activeContracts !== 'undefined'
+    ? activeContracts.find(c => !c.completed && !c.failed)
+    : null;
+
+  if (active) {
+    const daysLeft = active.timeLimitDays - (playerState.currentDay - active.issuedDay);
+    const urgent   = daysLeft <= 2 ? ' (!)' : '';
+    setSidebarHtml('sb-contract',
+      '<div class="sidebar-value">' + active.title + '</div>' +
+      '<div class="sidebar-dim">→ ' + active.target + '</div>' +
+      '<div class="' + (daysLeft <= 2 ? 'sidebar-warn' : 'sidebar-dim') + '">' +
+        daysLeft + ' days left' + urgent +
+      '</div>'
+    );
+  } else {
+    setText('sb-contract', 'none active');
+  }
+
+  // Reputation
+  if (typeof reputation !== 'undefined') {
+    const keys    = Object.keys(reputation);
+    if (keys.length === 0) {
+      setText('sb-rep', 'no contacts');
+    } else {
+      let html = '';
+      keys.forEach(key => {
+        const score   = reputation[key];
+        const tier    = repTier(score);
+        const faction = FACTION_REGISTRY[key];
+        if (!faction) return;
+        const scoreStr = (score >= 0 ? '+' : '') + score;
+        const cls = tier === 'HOSTILE' ? 'sidebar-warn'
+                  : tier === 'TRUSTED' ? 'sidebar-value'
+                  : 'sidebar-dim';
+        html += '<div class="sidebar-row">' +
+          '<span class="' + cls + '">' + faction.short + '</span>' +
+          '<span class="' + cls + '">' + tier + '</span>' +
+          '<span class="' + cls + '">' + scoreStr + '</span>' +
+        '</div>';
+      });
+      setSidebarHtml('sb-rep', html);
+    }
+  }
 }
 
-function askPlayer(question, callback) {
-  // Wait for the queue to finish, then ask
-  const waitForQueue = setInterval(() => {
-    if (!isPrinting) {
-      clearInterval(waitForQueue);
-      print('');
-      print(question, 'output-bright');
-      print('');
-      enableInput('prompt');
-      promptCallback = callback;
-    }
-  }, 100);
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+function setSidebarHtml(id, html) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+
+function setBar(id, value, max, width) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const filled = Math.round((value / max) * width);
+  const empty  = width - filled;
+  el.textContent = '█'.repeat(filled) + '░'.repeat(empty) + ' ' + value + '%';
 }
 
 // ── Boot sequence ─────────────────────────────
@@ -97,35 +164,36 @@ function boot() {
     queue('Registration required before galaxy access is granted.', 'output-dim', 100);
     queueBlank(200);
 
-    // Ask for captain name, then ship name, then launch
     askPlayer('  Enter your name, Captain:', (captainName) => {
       playerState.captainName = captainName || 'Unknown';
       print('');
       print('  Registered: ' + playerState.captainName, 'output-dim');
+      updateSidebar();
 
       askPlayer('  Name your vessel:', (shipName) => {
         playerState.shipName = shipName || 'The Unspoken';
         print('');
         print('  Vessel registered: ' + playerState.shipName, 'output-dim');
         print('');
+        updateSidebar();
 
-        // Small dramatic pause then launch
         setTimeout(() => {
           queueDivider(60);
           queue('REGISTRATION COMPLETE — GALAXY ACCESS GRANTED', 'output-label', 80);
           queueDivider(60);
           queueBlank(80);
 
-          // Initialize galaxy
           initCommands(MASTER_SEED);
+          updateSidebar();
+
           const overview = handleCommand('galaxy');
           overview.split('\n').forEach(line => queue(line, '', 12));
 
-          // Enable normal command mode after queue finishes
           const waitForQueue = setInterval(() => {
             if (!isPrinting && printQueue.length === 0) {
               clearInterval(waitForQueue);
               enableInput('command');
+              updateSidebar();
             }
           }, 100);
 
@@ -138,7 +206,28 @@ function boot() {
 
 // ── Input handling ────────────────────────────
 
+let inputMode      = 'command';
+let inputEnabled   = false;
 let currentInputValue = '';
+let promptCallback = null;
+
+function enableInput(mode = 'command') {
+  inputEnabled = true;
+  inputMode    = mode;
+}
+
+function askPlayer(question, callback) {
+  const waitForQueue = setInterval(() => {
+    if (!isPrinting) {
+      clearInterval(waitForQueue);
+      print('');
+      print(question, 'output-bright');
+      print('');
+      enableInput('prompt');
+      promptCallback = callback;
+    }
+  }, 100);
+}
 
 document.addEventListener('keydown', (e) => {
   if (!inputEnabled) return;
@@ -149,21 +238,23 @@ document.addEventListener('keydown', (e) => {
     updateTyped('');
 
     if (inputMode === 'prompt') {
-      // One-shot — disable input, fire callback
-      inputEnabled = false;
-      inputMode    = 'command';
-      const cb     = promptCallback;
+      inputEnabled   = false;
+      inputMode      = 'command';
+      const cb       = promptCallback;
       promptCallback = null;
       if (cb) cb(raw);
 
     } else {
-      // Normal command mode
       if (raw === '') return;
       print('> ' + raw, 'output-cmd');
+
       const response = handleCommand(raw);
       if (response) {
         response.split('\n').forEach(line => print(line));
       }
+
+      updateSidebar();
+
       const output = document.getElementById('output');
       if (output) output.scrollTop = output.scrollHeight;
     }
