@@ -10,17 +10,21 @@
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   background-color: #0a0a0a;
   color: #00ff41;
   font-family: 'Share Tech Mono', 'Courier New', monospace;
   font-size: 15px;
-  height: 100vh;
-  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 40px;
+  animation: flicker 8s infinite;
 }
 
 #terminal {
@@ -28,10 +32,17 @@ body {
   max-width: 860px;
   height: calc(100vh - 80px);
   border: 1px solid #00ff41;
+  border-radius: 8px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 30px rgba(0, 255, 65, 0.08);
+  text-shadow:
+    0 0 4px rgba(0, 255, 65, 0.6),
+    0 0 10px rgba(0, 255, 65, 0.2);
+  transform: perspective(1000px) rotateX(0.5deg);
+  animation: powerOn 1.4s ease-out forwards;
+  overflow: hidden;
 }
 
 #terminal-header {
@@ -39,6 +50,7 @@ body {
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: 4px;
+  flex-shrink: 0;
 }
 
 .title {
@@ -56,12 +68,14 @@ body {
   font-size: 12px;
   color: #006618;
   margin-bottom: 16px;
+  flex-shrink: 0;
 }
 
 #terminal-divider {
   border-top: 1px solid #00ff41;
   margin-bottom: 20px;
   opacity: 0.4;
+  flex-shrink: 0;
 }
 
 #terminal-body {
@@ -69,7 +83,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  overflow: hidden;
 }
 
 #output {
@@ -86,27 +99,17 @@ body {
   margin-bottom: 2px;
 }
 
-.output-dim {
-  color: #006618;
-}
-
-.output-warn {
-  color: #ff6600;
-}
-
-.output-bright {
-  color: #ffffff;
-}
-
-.output-label {
-  color: #00aa2a;
-}
+.output-dim    { color: #006618; }
+.output-warn   { color: #ff6600; }
+.output-bright { color: #ffffff; }
+.output-label  { color: #00aa2a; }
 
 #input-line {
   display: flex;
   align-items: center;
   border-top: 1px solid #006618;
   padding-top: 12px;
+  flex-shrink: 0;
 }
 
 .prompt {
@@ -130,28 +133,14 @@ body {
 }
 
 /* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0a0a0a;
-}
-::-webkit-scrollbar-thumb {
-  background: #006618;
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #006618; }
 
 /* ============================================
-   CRT EFFECT — Scanlines, curvature, flicker
+   CRT EFFECT
    ============================================ */
 
-/* Slight screen curvature on the terminal itself */
-#terminal {
-  border-radius: 8px;
-  transform: perspective(1000px) rotateX(0.5deg);
-}
-
-/* The scanline and flicker overlay — sits on top
-   of everything using a pseudo-element on the body */
 body::after {
   content: '';
   position: fixed;
@@ -161,8 +150,6 @@ body::after {
   height: 100%;
   pointer-events: none;
   z-index: 9999;
-
-  /* Scanlines — repeating horizontal lines */
   background: repeating-linear-gradient(
     to bottom,
     transparent 0px,
@@ -170,9 +157,6 @@ body::after {
     rgba(0, 0, 0, 0.18) 3px,
     rgba(0, 0, 0, 0.18) 4px
   );
-
-  /* Subtle vignette — darker at the edges
-     like an old phosphor display */
   mask-image: radial-gradient(
     ellipse 90% 85% at 50% 50%,
     black 60%,
@@ -180,14 +164,6 @@ body::after {
   );
 }
 
-/* Phosphor glow on the text itself */
-#terminal {
-  text-shadow:
-    0 0 4px rgba(0, 255, 65, 0.6),
-    0 0 10px rgba(0, 255, 65, 0.2);
-}
-
-/* Subtle screen flicker animation */
 @keyframes flicker {
   0%   { opacity: 1;    }
   92%  { opacity: 1;    }
@@ -197,32 +173,10 @@ body::after {
   100% { opacity: 1;    }
 }
 
-body {
-  animation: flicker 8s infinite;
-}
-
-/* CRT power-on effect — the screen "warms up" */
 @keyframes powerOn {
-  0%   { 
-    filter: brightness(0) blur(8px);
-    transform: scaleY(0.02);
-  }
-  15%  { 
-    filter: brightness(2) blur(4px);
-    transform: scaleY(0.08);
-  }
-  30%  { 
-    filter: brightness(1.5) blur(2px);
-    transform: scaleY(1);
-  }
-  60%  { 
-    filter: brightness(1.2) blur(0px);
-  }
-  100% { 
-    filter: brightness(1) blur(0px);
-  }
-}
-
-#terminal {
-  animation: powerOn 1.4s ease-out forwards;
+  0%   { filter: brightness(0) blur(8px);  transform: scaleY(0.02); }
+  15%  { filter: brightness(2) blur(4px);  transform: scaleY(0.08); }
+  30%  { filter: brightness(1.5) blur(2px); transform: scaleY(1);   }
+  60%  { filter: brightness(1.2) blur(0px);                         }
+  100% { filter: brightness(1) blur(0px);                           }
 }
