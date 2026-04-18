@@ -180,7 +180,7 @@ function renderGalaxyOverview(galaxy) {
     lines.push('  [' + (i + 1) + '] ' + q.name.padEnd(20) + ' ' + stateTag + '  ' + controlBar + '  ' + controlPct + '% ctrl');
     lines.push('      ' + q.notableFeature.padEnd(35) + ' ' + totalSys + ' systems');
     lines.push('');
-  });
+  })
   lines.push('  ── COMMANDS ────────────────────────────────────────────────');
   lines.push('');
   lines.push('  scan <1-8>          — survey a quadrant');
