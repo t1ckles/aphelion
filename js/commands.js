@@ -395,6 +395,8 @@ function handleTradeCommand(cmd, args) {
   }
   if (cmd === 'sell') return cmdSell(args);
   if (cmd === 'buy')  return cmdBuy(args);
+  if (cmd === 'status') return cmdStatus();
+
 
   return [
     '  [TRADE] Unknown trade command.',
