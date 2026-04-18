@@ -296,13 +296,14 @@ function cmdStatus() {
   const dockStatus = playerState.docked
     ? 'Docked at ' + playerState.dockedAt
     : 'In space';
+  
 
   return [
     '',
     '  ── SHIP STATUS ───────────────────────────────────────────────',
     '',
-    '  Vessel    : ' + playerState.shipName + '  (' + playerState.ship + ')',
-    '  Status    : ' + dockStatus,
+    '  Pilot     : ' + playerState.captainName,
+    '  Vessel    : ' + playerState.shipName + '  (' + playerState.ship + ')',    '  Status    : ' + dockStatus,
     '  Veydrite  : ' + playerState.veydrite + ' kg',
     '  Scrip     : ' + playerState.credits + ' CR  (unaffiliated)',
     '  Cargo     : ' + (playerState.cargo.length === 0 ? 'empty' : playerState.cargo.join(', ')),
