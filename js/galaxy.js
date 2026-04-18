@@ -141,7 +141,7 @@ function generateQuadrant(rng, name, naming) {
 function generateGalaxy(seed, naming) {
   const rng = new RNG(seed);
   const quadrants = QUADRANT_NAMES.map(name =>
-    generateQuadrant(new RNG(rng.nextInt()), name, naming)
+    generateQuadrant(new RNG(rng.next() * 999999 | 0), name, naming)
   );
   const totalSystems = quadrants.reduce((n, q) =>
     n + q.clusters.reduce((m, c) => m + c.systems.length, 0), 0);
