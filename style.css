@@ -15,19 +15,20 @@ body {
   color: #00ff41;
   font-family: 'Share Tech Mono', 'Courier New', monospace;
   font-size: 15px;
-  height: 100vh; overflow: hidden;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 40px;
 }
 
 #terminal {
   width: 100%;
   max-width: 860px;
+  height: calc(100vh - 80px);
   border: 1px solid #00ff41;
   padding: 24px;
-  height: calc(100vh - 40px);
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 30px rgba(0, 255, 65, 0.08);
