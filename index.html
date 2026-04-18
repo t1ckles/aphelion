@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APHELION — Deep Survey Terminal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="terminal">
+
+    <div id="terminal-header">
+      <span class="title">A P H E L I O N</span>
+      <span class="version">v0.1.0-dev</span>
+    </div>
+
+    <div id="terminal-subheader">
+      Deep Survey Terminal — Veydrite Assayer's Guild Network
+    </div>
+
+    <div id="terminal-divider"></div>
+
+    <div id="terminal-body">
+      <div id="output"></div>
+      <div id="input-line">
+        <span class="prompt">&gt;&nbsp;</span>
+        <span id="typed"></span>
+        <span class="cursor">█</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/rng.js"></script>
+  <script src="js/naming.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>

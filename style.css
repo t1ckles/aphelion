@@ -1,0 +1,223 @@
+/* ============================================
+   APHELION — Terminal Aesthetic
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #00ff41;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  font-size: 15px;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#terminal {
+  width: 100%;
+  max-width: 860px;
+  border: 1px solid #00ff41;
+  padding: 24px;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 30px rgba(0, 255, 65, 0.08);
+}
+
+#terminal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.title {
+  font-size: 22px;
+  letter-spacing: 6px;
+  color: #00ff41;
+}
+
+.version {
+  font-size: 12px;
+  color: #006618;
+}
+
+#terminal-subheader {
+  font-size: 12px;
+  color: #006618;
+  margin-bottom: 16px;
+}
+
+#terminal-divider {
+  border-top: 1px solid #00ff41;
+  margin-bottom: 20px;
+  opacity: 0.4;
+}
+
+#terminal-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#output {
+  flex: 1;
+  white-space: pre-wrap;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.output-line {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.output-dim {
+  color: #006618;
+}
+
+.output-warn {
+  color: #ff6600;
+}
+
+.output-bright {
+  color: #ffffff;
+}
+
+.output-label {
+  color: #00aa2a;
+}
+
+#input-line {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #006618;
+  padding-top: 12px;
+}
+
+.prompt {
+  color: #00ff41;
+  margin-right: 4px;
+}
+
+#typed {
+  color: #00ff41;
+}
+
+.cursor {
+  animation: blink 1s step-end infinite;
+  color: #00ff41;
+  margin-left: 1px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #006618;
+}
+
+/* ============================================
+   CRT EFFECT — Scanlines, curvature, flicker
+   ============================================ */
+
+/* Slight screen curvature on the terminal itself */
+#terminal {
+  border-radius: 8px;
+  transform: perspective(1000px) rotateX(0.5deg);
+}
+
+/* The scanline and flicker overlay — sits on top
+   of everything using a pseudo-element on the body */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+
+  /* Scanlines — repeating horizontal lines */
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 0, 0, 0.18) 3px,
+    rgba(0, 0, 0, 0.18) 4px
+  );
+
+  /* Subtle vignette — darker at the edges
+     like an old phosphor display */
+  mask-image: radial-gradient(
+    ellipse 90% 85% at 50% 50%,
+    black 60%,
+    transparent 100%
+  );
+}
+
+/* Phosphor glow on the text itself */
+#terminal {
+  text-shadow:
+    0 0 4px rgba(0, 255, 65, 0.6),
+    0 0 10px rgba(0, 255, 65, 0.2);
+}
+
+/* Subtle screen flicker animation */
+@keyframes flicker {
+  0%   { opacity: 1;    }
+  92%  { opacity: 1;    }
+  93%  { opacity: 0.94; }
+  94%  { opacity: 1;    }
+  96%  { opacity: 0.97; }
+  100% { opacity: 1;    }
+}
+
+body {
+  animation: flicker 8s infinite;
+}
+
+/* CRT power-on effect — the screen "warms up" */
+@keyframes powerOn {
+  0%   { 
+    filter: brightness(0) blur(8px);
+    transform: scaleY(0.02);
+  }
+  15%  { 
+    filter: brightness(2) blur(4px);
+    transform: scaleY(0.08);
+  }
+  30%  { 
+    filter: brightness(1.5) blur(2px);
+    transform: scaleY(1);
+  }
+  60%  { 
+    filter: brightness(1.2) blur(0px);
+  }
+  100% { 
+    filter: brightness(1) blur(0px);
+  }
+}
+
+#terminal {
+  animation: powerOn 1.4s ease-out forwards;
+}
