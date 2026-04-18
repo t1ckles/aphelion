@@ -164,9 +164,7 @@ function renderGalaxyOverview(galaxy) {
     return char.repeat(Math.round(n)) + empty.repeat(max - Math.round(n));
   };
   lines.push('');
-  lines.push('  ╔══════════════════════════════════════════════════════════╗');
-  lines.push('  ║          DEEP SURVEY — GALAXY MANIFEST v0.2              ║');
-  lines.push('  ╚══════════════════════════════════════════════════════════╝');
+  lines.push('  ── DEEP SURVEY — GALAXY MANIFEST v0.2 ────────────────────');
   lines.push('');
   lines.push('  Seed: ' + galaxy.seed + '  |  Systems: ' + galaxy.meta.totalSystems + '  |  Stations: ' + galaxy.meta.totalStations + '  |  Ruins: ' + galaxy.meta.totalRuins);
   lines.push('');
