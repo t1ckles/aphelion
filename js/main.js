@@ -98,7 +98,7 @@ function boot() {
     queueBlank(200);
 
     // Ask for captain name, then ship name, then launch
-    askPlayer('  Enter your name, pilot:', (captainName) => {
+    askPlayer('  Enter your name, Captain:', (captainName) => {
       playerState.captainName = captainName || 'Unknown';
       print('');
       print('  Registered: ' + playerState.captainName, 'output-dim');
