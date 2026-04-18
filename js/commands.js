@@ -94,6 +94,7 @@ let playerState = {
   dockedAt:     null,
   dockedFactionKey: null,
   inTrade:      false,
+  pendingTx:    null,
 };
 
 // ── Init ──────────────────────────────────────
