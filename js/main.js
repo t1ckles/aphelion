@@ -1,4 +1,3 @@
-import { initCommands, handleCommand } from './commands.js';
 
 // ============================================
 //  APHELION — Main Terminal Controller
