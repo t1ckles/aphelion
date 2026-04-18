@@ -1,6 +1,7 @@
 // ============================================
 //  APHELION — Main Terminal Controller
 //  main.js
+//  Stage 4: Player Identity
 // ============================================
 
 // ── Terminal output ───────────────────────────
@@ -18,7 +19,7 @@ function print(text, style = '') {
 // ── Typewriter engine ─────────────────────────
 
 const printQueue = [];
-let   isPrinting = false;
+let isPrinting = false;
 
 function queue(text, style = '', delay = 38) {
   printQueue.push({ text, style, delay });
@@ -36,13 +37,42 @@ function queueDivider(delay = 38) {
 function processQueue() {
   if (printQueue.length === 0) {
     isPrinting = false;
-    enableInput();
     return;
   }
   isPrinting = true;
   const { text, style, delay } = printQueue.shift();
   print(text, style);
   setTimeout(processQueue, delay);
+}
+
+// ── Input modes ───────────────────────────────
+// The terminal has two modes:
+// 'command' — normal play, routes to handleCommand()
+// 'prompt'  — asking the player a setup question,
+//             routes to a one-shot callback
+
+let inputMode     = 'command';
+let inputEnabled  = false;
+let currentInput  = '';
+let promptCallback = null;
+
+function enableInput(mode = 'command') {
+  inputEnabled = true;
+  inputMode    = mode;
+}
+
+function askPlayer(question, callback) {
+  // Wait for the queue to finish, then ask
+  const waitForQueue = setInterval(() => {
+    if (!isPrinting) {
+      clearInterval(waitForQueue);
+      print('');
+      print(question, 'output-bright');
+      print('');
+      enableInput('prompt');
+      promptCallback = callback;
+    }
+  }, 100);
 }
 
 // ── Boot sequence ─────────────────────────────
@@ -60,54 +90,91 @@ function boot() {
     queue('> Guild network: CONNECTED', 'output-dim', 180);
     queueBlank(120);
     queueDivider(60);
-    queue('GALAXY INITIALIZED — DEEP SURVEY ACTIVE', 'output-label', 80);
+    queue('NEW PILOT REGISTRATION', 'output-label', 80);
     queueDivider(60);
     queueBlank(80);
+    queue('No pilot record found for this terminal.', 'output-dim', 100);
+    queue('Registration required before galaxy access is granted.', 'output-dim', 100);
+    queueBlank(200);
 
-    // Initialize galaxy from master seed
-    initCommands(MASTER_SEED);
-    const overview = handleCommand('galaxy');
-    overview.split('\n').forEach(line => queue(line, '', 12));
+    // Ask for captain name, then ship name, then launch
+    askPlayer('  Enter your name, pilot:', (captainName) => {
+      playerState.captainName = captainName || 'Unknown';
+      print('');
+      print('  Registered: ' + playerState.captainName, 'output-dim');
+
+      askPlayer('  Name your vessel:', (shipName) => {
+        playerState.shipName = shipName || 'The Unspoken';
+        print('');
+        print('  Vessel registered: ' + playerState.shipName, 'output-dim');
+        print('');
+
+        // Small dramatic pause then launch
+        setTimeout(() => {
+          queueDivider(60);
+          queue('REGISTRATION COMPLETE — GALAXY ACCESS GRANTED', 'output-label', 80);
+          queueDivider(60);
+          queueBlank(80);
+
+          // Initialize galaxy
+          initCommands(MASTER_SEED);
+          const overview = handleCommand('galaxy');
+          overview.split('\n').forEach(line => queue(line, '', 12));
+
+          // Enable normal command mode after queue finishes
+          const waitForQueue = setInterval(() => {
+            if (!isPrinting && printQueue.length === 0) {
+              clearInterval(waitForQueue);
+              enableInput('command');
+            }
+          }, 100);
+
+        }, 800);
+      });
+    });
 
   }, 1400);
 }
 
 // ── Input handling ────────────────────────────
 
-let inputEnabled = false;
-let currentInput = '';
-
-function enableInput() {
-  inputEnabled = true;
-}
+let currentInputValue = '';
 
 document.addEventListener('keydown', (e) => {
   if (!inputEnabled) return;
 
   if (e.key === 'Enter') {
-    const raw = currentInput.trim();
-    currentInput = '';
+    const raw = currentInputValue.trim();
+    currentInputValue = '';
     updateTyped('');
 
-    if (raw === '') return;
+    if (inputMode === 'prompt') {
+      // One-shot — disable input, fire callback
+      inputEnabled = false;
+      inputMode    = 'command';
+      const cb     = promptCallback;
+      promptCallback = null;
+      if (cb) cb(raw);
 
-    print('> ' + raw, 'output-cmd');
-
-    const response = handleCommand(raw);
-    if (response) {
-      response.split('\n').forEach(line => print(line));
+    } else {
+      // Normal command mode
+      if (raw === '') return;
+      print('> ' + raw, 'output-cmd');
+      const response = handleCommand(raw);
+      if (response) {
+        response.split('\n').forEach(line => print(line));
+      }
+      const output = document.getElementById('output');
+      if (output) output.scrollTop = output.scrollHeight;
     }
 
-    const output = document.getElementById('output');
-    if (output) output.scrollTop = output.scrollHeight;
-
   } else if (e.key === 'Backspace') {
-    currentInput = currentInput.slice(0, -1);
-    updateTyped(currentInput);
+    currentInputValue = currentInputValue.slice(0, -1);
+    updateTyped(currentInputValue);
 
   } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-    currentInput += e.key;
-    updateTyped(currentInput);
+    currentInputValue += e.key;
+    updateTyped(currentInputValue);
   }
 });
 
