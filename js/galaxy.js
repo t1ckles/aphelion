@@ -194,9 +194,9 @@ function renderQuadrantDetail(galaxy, index) {
   if (!q) return '  [ERROR] Invalid quadrant index.';
   const lines = [];
   lines.push('');
-  lines.push('  ╔══ QUADRANT ' + (index + 1) + ': ' + q.name.toUpperCase() + ' ╗');
-  lines.push('  ║  Status: ' + q.state + '  |  Notable: ' + q.notableFeature);
-  lines.push('  ╚' + '═'.repeat(58) + '╝');
+  lines.push('  ── QUADRANT ' + (index + 1) + ': ' + q.name.toUpperCase() + ' ──────────────────────────────');
+  lines.push('  Status: ' + q.state + '  |  ' + q.notableFeature);
+  lines.push('');
   lines.push('');
   q.clusters.forEach(function(cluster) {
     lines.push('  ▸ ' + cluster.name + '  [' + cluster.systems.length + ' systems]');
