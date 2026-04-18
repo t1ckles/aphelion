@@ -747,3 +747,34 @@ function systemFlavor(sys, state) {
   }
   return 'Nothing unusual on passive scan. The system holds its silence.';
 }
+function executeTrade(tx) {
+  if (tx.type === 'sell' && tx.commodity === 'veydrite') {
+    playerState.veydrite -= tx.amount;
+    playerState.credits  += tx.earned;
+    return [
+      '',
+      '  [SELL] Transaction complete.',
+      '  Sold     : ' + tx.amount + ' kg veydrite',
+      '  Earned   : ' + tx.earned + ' CR',
+      '  Scrip    : ' + playerState.credits + ' CR',
+      '  Veydrite : ' + playerState.veydrite + ' kg remaining',
+      '',
+    ].join('\n');
+  }
+
+  if (tx.type === 'buy' && tx.commodity === 'fuel') {
+    playerState.credits -= tx.cost;
+    playerState.fuel    += tx.amount;
+    return [
+      '',
+      '  [BUY] Fuel transfer complete.',
+      '  Purchased : ' + tx.amount + ' units',
+      '  Cost      : ' + tx.cost + ' CR',
+      '  Scrip     : ' + playerState.credits + ' CR remaining',
+      '  Fuel      : ' + playerState.fuel + ' units',
+      '',
+    ].join('\n');
+  }
+
+  return '  [ERROR] Unknown transaction type.';
+}
