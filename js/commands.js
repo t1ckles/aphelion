@@ -1,7 +1,7 @@
 // ============================================
 //  APHELION — Command Parser
 //  commands.js
-//  Stage 5: Economy wired in
+//  Stage 7: Factions, Reputation, Contracts
 // ============================================
 
 // ── Faction definitions ───────────────────────
@@ -81,20 +81,22 @@ function generateStationName(systemName, factionKey) {
 
 let galaxy = null;
 let playerState = {
-  location:     null,
-  cargo:        [],
-  credits:      200,
-  veydrite:     0,
-  fuel:         60,
-  hull:         80,
-  ship:         'Wayward-class Prospector',
-  shipName:     'The Unspoken',
-  captainName:  'Unknown',
-  docked:       false,
-  dockedAt:     null,
+  location:         null,
+  cargo:            [],
+  credits:          200,
+  veydrite:         0,
+  fuel:             60,
+  hull:             80,
+  ship:             'Wayward-class Prospector',
+  shipName:         'The Unspoken',
+  captainName:      'Unknown',
+  docked:           false,
+  dockedAt:         null,
   dockedFactionKey: null,
-  inTrade:      false,
-  pendingTx:    null,
+  inTrade:          false,
+  pendingTx:        null,
+  currentDay:       0,
+  bulletinContracts: [],
 };
 
 // ── Init ──────────────────────────────────────
@@ -133,27 +135,30 @@ function handleCommand(raw) {
   const input          = raw.trim().toLowerCase();
   const [cmd, ...args] = input.split(/\s+/);
 
-  // Trade mode intercepts commands
-  if (playerState.inTrade) {
-    return handleTradeCommand(cmd, args);
-  }
+  if (playerState.inTrade) return handleTradeCommand(cmd, args);
 
   switch (cmd) {
-    case 'help':    return cmdHelp();
-    case 'galaxy':  return renderGalaxyOverview(galaxy);
-    case 'scan':    return cmdScan(args);
-    case 'nav':     return cmdNav(args);
+    case 'help':     return cmdHelp();
+    case 'galaxy':   return renderGalaxyOverview(galaxy);
+    case 'scan':     return cmdScan(args);
+    case 'nav':      return cmdNav(args);
     case 'where':
-    case 'look':    return cmdWhere();
-    case 'dock':    return cmdDock();
-    case 'undock':  return cmdUndock();
-    case 'trade':   return cmdTrade(args);
-    case 'sell':    return cmdSell(args);
-    case 'buy':     return cmdBuy(args);
-    case 'salvage': return cmdSalvage();
-    case 'status':  return cmdStatus();
-    case '':        return '';
-    default:        return '  [UNKNOWN] "' + cmd + '" is not a recognized command. Type help.';
+    case 'look':     return cmdWhere();
+    case 'dock':     return cmdDock();
+    case 'undock':   return cmdUndock();
+    case 'trade':    return cmdTrade(args);
+    case 'sell':     return cmdSell(args);
+    case 'buy':      return cmdBuy(args);
+    case 'salvage':  return cmdSalvage();
+    case 'rep':      return cmdRep();
+    case 'bulletin': return cmdBulletin();
+    case 'accept':   return cmdAccept(args);
+    case 'contract': return cmdContract();
+    case 'complete': return cmdComplete();
+    case 'abandon':  return cmdAbandon();
+    case 'status':   return cmdStatus();
+    case '':         return '';
+    default:         return '  [UNKNOWN] "' + cmd + '" is not a recognized command. Type help.';
   }
 }
 
@@ -162,19 +167,32 @@ function handleCommand(raw) {
 function cmdHelp() {
   return [
     '',
-    '  ── TERMINAL COMMANDS ─────────────────────────────────────────',
+    '  ── NAVIGATION ────────────────────────────────────────────────',
     '',
     '  galaxy              — full quadrant index',
-    '  scan <1-8>          — survey a quadrant in detail',
+    '  scan <1-8>          — survey a quadrant',
     '  where               — current system survey',
-    '  nav <system name>   — navigate to a named system',
-    '  salvage             — salvage operation in current system',
+    '  nav <system name>   — navigate to a system',
+    '',
+    '  ── STATION ───────────────────────────────────────────────────',
+    '',
     '  dock                — dock at nearest station',
     '  undock              — leave station',
-    '  trade               — open trade terminal (when docked)',
-    '  sell veydrite <n>   — sell veydrite (when docked)',
-    '  buy fuel <n>        — buy fuel units (when docked)',
-    '  status              — ship and cargo readout',
+    '  trade               — open trade terminal',
+    '  bulletin            — view available contracts',
+    '  accept <number>     — accept a contract',
+    '',
+    '  ── FIELD ─────────────────────────────────────────────────────',
+    '',
+    '  salvage             — salvage operation',
+    '  contract            — view active contract',
+    '  complete            — complete active contract',
+    '  abandon             — abandon active contract',
+    '',
+    '  ── GENERAL ───────────────────────────────────────────────────',
+    '',
+    '  rep                 — faction standing',
+    '  status              — ship status',
     '',
   ].join('\n');
 }
@@ -207,7 +225,6 @@ function cmdNav(args) {
       for (const sys of cluster.systems) {
         if (sys.name.toLowerCase().includes(query)) {
 
-          // Fuel cost
           const fuelCost = 8 + Math.floor(Math.random() * 8);
           if (playerState.fuel < fuelCost) {
             return [
@@ -219,18 +236,20 @@ function cmdNav(args) {
             ].join('\n');
           }
 
-          playerState.fuel -= fuelCost;
+          const travelDays = 2 + Math.floor(Math.random() * 6);
+          playerState.fuel       -= fuelCost;
+          playerState.currentDay += travelDays;
+
           playerState.location = {
             quadrantIndex: qi,
             clusterName:   cluster.name,
             systemName:    sys.name,
           };
-          playerState.docked       = false;
-          playerState.dockedAt     = null;
+          playerState.docked           = false;
+          playerState.dockedAt         = null;
           playerState.dockedFactionKey = null;
 
-          const days = 2 + Math.floor(Math.random() * 6);
-          return [
+          const lines = [
             '',
             '  [NAV] Plotting course to ' + sys.name + '...',
             '',
@@ -239,11 +258,35 @@ function cmdNav(args) {
             '  Star     : ' + sys.starClass + '-class',
             '  Hazard   : ' + '▲'.repeat(sys.hazard) + '△'.repeat(5 - sys.hazard),
             '  Fuel used: ' + fuelCost + ' units  |  Remaining: ' + playerState.fuel + ' units',
+            '  Transit  : ' + travelDays + ' standard days',
+            '  Day      : ' + playerState.currentDay,
             '',
-            '  Transit: ' + days + ' standard days. Arrived.',
+            '  Drive nominal. Arrived.',
             '  Type "where" to survey this system.',
             '',
-          ].join('\n');
+          ];
+
+          // Check active contract status after arriving
+          const active = activeContracts.find(c => !c.completed && !c.failed);
+          if (active) {
+            const status = checkContractStatus(active, playerState.currentDay, sys.name);
+            if (status && status.status === 'failed') {
+              const result = failContract(active);
+              lines.push('  [CONTRACT] FAILED — ' + active.title);
+              lines.push('  Time limit exceeded.');
+              if (result.repResult) lines.push(renderRepChange(result.repResult));
+              lines.push('');
+            } else if (status && status.status === 'ready') {
+              lines.push('  [CONTRACT] Target system reached — type "complete" to finish.');
+              lines.push('  Days remaining: ' + status.daysLeft);
+              lines.push('');
+            } else if (status && status.status === 'active') {
+              lines.push('  [CONTRACT] ' + active.title + ' — ' + status.daysLeft + ' days remaining.');
+              lines.push('');
+            }
+          }
+
+          return lines.join('\n');
         }
       }
     }
@@ -254,19 +297,16 @@ function cmdNav(args) {
 // ── Salvage ───────────────────────────────────
 
 function cmdSalvage() {
-  if (playerState.docked) {
-    return '  [SALVAGE] Undock first before beginning salvage operations.';
-  }
+  if (playerState.docked) return '  [SALVAGE] Undock first.';
 
   const loc     = playerState.location;
   const q       = galaxy.quadrants[loc.quadrantIndex];
   const cluster = q.clusters.find(c => c.name === loc.clusterName);
   const sys     = cluster && cluster.systems.find(s => s.name === loc.systemName);
-
   if (!sys) return '  [ERROR] Location data corrupted.';
 
-  const hasRuin  = sys.bodies.some(b => b.hasRuin);
-  const hasVeyd  = sys.bodies.some(b => b.veydrite);
+  const hasRuin   = sys.bodies.some(b => b.hasRuin);
+  const hasVeyd   = sys.bodies.some(b => b.veydrite);
   const hasDebris = ['Debris Field', 'Shattered Planet', 'Dust Belt']
     .some(t => sys.bodies.some(b => b.type === t));
 
@@ -279,22 +319,35 @@ function cmdSalvage() {
     ].join('\n');
   }
 
+  // Salvage takes time
+  const salvageDays = 1 + Math.floor(Math.random() * 2);
+  playerState.currentDay += salvageDays;
+
   const result = rollSalvage(sys, q.state);
-  return renderSalvageResult(result, playerState);
+  const output = renderSalvageResult(result, playerState);
+
+  // Check contract after salvage time passes
+  const active = activeContracts.find(c => !c.completed && !c.failed);
+  if (active) {
+    const status = checkContractStatus(active, playerState.currentDay, sys.name);
+    if (status && status.status === 'failed') {
+      failContract(active);
+      return output + '\n  [CONTRACT] FAILED during salvage — time limit exceeded.\n';
+    }
+  }
+
+  return output + '  Day: ' + playerState.currentDay + '\n';
 }
 
 // ── Dock ──────────────────────────────────────
 
 function cmdDock() {
-  if (playerState.docked) {
-    return '  [DOCK] Already docked at ' + playerState.dockedAt + '.';
-  }
+  if (playerState.docked) return '  [DOCK] Already docked at ' + playerState.dockedAt + '.';
 
   const loc     = playerState.location;
   const q       = galaxy.quadrants[loc.quadrantIndex];
   const cluster = q.clusters.find(c => c.name === loc.clusterName);
   const sys     = cluster && cluster.systems.find(s => s.name === loc.systemName);
-
   if (!sys) return '  [ERROR] Location data corrupted.';
 
   const stationBodies = sys.bodies.filter(b => b.hasStation);
@@ -311,26 +364,53 @@ function cmdDock() {
   const faction = body.faction || FACTIONS.independent;
   const fee     = dockingFee(body.factionKey);
 
+  // Check if hostile
+  const rep = getRep(body.factionKey);
+  if (rep !== null && repTier(rep) === 'HOSTILE') {
+    return [
+      '',
+      '  [DOCK] Docking refused.',
+      '  ' + faction.name + ' has flagged your vessel.',
+      '  Your standing: HOSTILE (' + rep + ')',
+      '  Find another port.',
+      '',
+    ].join('\n');
+  }
+
   if (fee > 0 && playerState.credits < fee) {
     return [
       '',
       '  [DOCK] Docking fee: ' + fee + ' CR.',
-      '  Insufficient scrip. You need ' + fee + ' CR to dock here.',
+      '  Insufficient scrip.',
       '',
     ].join('\n');
   }
 
   if (fee > 0) playerState.credits -= fee;
 
+  // Meet faction and gain small rep for paying
+  meetFaction(body.factionKey);
+  const repResult = adjustRep(body.factionKey, 1, 'Docked and paid fees');
+
   playerState.docked           = true;
   playerState.dockedAt         = body.stationName;
   playerState.dockedFactionKey = body.factionKey;
 
-  const feeNote = fee > 0
-    ? '  Docking fee: ' + fee + ' CR charged.  Remaining scrip: ' + playerState.credits + ' CR.'
-    : '  No docking fee.';
+  // Generate bulletin contracts for this faction
+  const faction_info = FACTION_REGISTRY[body.factionKey];
+  if (faction_info && faction_info.contracts) {
+    playerState.bulletinContracts = generateContracts(
+      body.factionKey, galaxy, playerState.location
+    );
+  } else {
+    playerState.bulletinContracts = [];
+  }
 
-  return [
+  const feeNote = fee > 0
+    ? 'Docking fee: ' + fee + ' CR.  Scrip: ' + playerState.credits + ' CR.'
+    : 'No docking fee.';
+
+  const lines = [
     '',
     '  [DOCK] Docking request acknowledged.',
     '',
@@ -345,10 +425,19 @@ function cmdDock() {
     '',
     '  ' + stationServices(faction.attitude),
     '',
-    '  Type "trade" to open the trade terminal.',
-    '  Type "undock" to return to space.',
-    '',
-  ].join('\n');
+  ];
+
+  if (faction_info && faction_info.contracts) {
+    lines.push('  Contracts available — type "bulletin" to view.');
+  }
+
+  lines.push('  Type "trade" to open the trade terminal.');
+  lines.push('  Type "undock" to return to space.');
+  lines.push('');
+  lines.push(renderRepChange(repResult));
+  lines.push('');
+
+  return lines.join('\n');
 }
 
 // ── Undock ────────────────────────────────────
@@ -360,6 +449,7 @@ function cmdUndock() {
   playerState.dockedAt         = null;
   playerState.dockedFactionKey = null;
   playerState.inTrade          = false;
+  playerState.bulletinContracts = [];
   return [
     '',
     '  [UNDOCK] Departing ' + name + '.',
@@ -371,18 +461,14 @@ function cmdUndock() {
 // ── Trade ─────────────────────────────────────
 
 function cmdTrade(args) {
-  if (!playerState.docked) {
-    return '  [TRADE] You must be docked to access the trade terminal.';
-  }
+  if (!playerState.docked) return '  [TRADE] You must be docked to access the trade terminal.';
   if (args[0] === 'exit') {
     playerState.inTrade = false;
     return '  [TRADE] Terminal closed.';
   }
-
-  const loc     = playerState.location;
-  const q       = galaxy.quadrants[loc.quadrantIndex];
+  const loc = playerState.location;
+  const q   = galaxy.quadrants[loc.quadrantIndex];
   playerState.inTrade = true;
-
   return buildTradeMenu(playerState, playerState.dockedFactionKey, q.state);
 }
 
@@ -398,13 +484,18 @@ function handleTradeCommand(cmd, args) {
     }
   }
 
-  if (cmd === 'exit' || (cmd === 'trade' && args[0] === 'exit')) {
+  if (cmd === 'exit') {
     playerState.inTrade = false;
     return '  [TRADE] Terminal closed.';
   }
   if (cmd === 'sell')   return cmdSell(args);
   if (cmd === 'buy')    return cmdBuy(args);
   if (cmd === 'status') return cmdStatus();
+  if (cmd === 'trade') {
+    const loc = playerState.location;
+    const q   = galaxy.quadrants[loc.quadrantIndex];
+    return buildTradeMenu(playerState, playerState.dockedFactionKey, q.state);
+  }
 
   return [
     '  [TRADE] Unknown command.',
@@ -419,38 +510,47 @@ function cmdSell(args) {
 
   const loc   = playerState.location;
   const q     = galaxy.quadrants[loc.quadrantIndex];
-  const price = veydritePrice(q.state);
+  let price   = veydritePrice(q.state);
+
+  // Guild rep affects price
+  const guildRep = getRep('guild');
+  if (guildRep !== null) {
+    const tier = repTier(guildRep);
+    if (tier === 'TRUSTED') price = Math.round(price * 1.15);
+    if (tier === 'HOSTILE') price = Math.round(price * 0.75);
+  }
 
   if (!args[0] || args[0] !== 'veydrite') {
     return '  [SELL] Usage: sell veydrite <amount> or sell veydrite all';
   }
-
-  if (playerState.veydrite <= 0) {
-    return '  [SELL] No veydrite in hold.';
-  }
+  if (playerState.veydrite <= 0) return '  [SELL] No veydrite in hold.';
 
   let amount;
   if (args[1] === 'all') {
     amount = playerState.veydrite;
   } else {
     amount = parseInt(args[1]);
-    if (isNaN(amount) || amount <= 0) {
-      return '  [SELL] Specify an amount. Example: sell veydrite 10';
-    }
+    if (isNaN(amount) || amount <= 0) return '  [SELL] Specify an amount.';
     if (amount > playerState.veydrite) {
       return '  [SELL] You only have ' + playerState.veydrite + ' kg in hold.';
     }
   }
 
-const earned = amount * price;
+  const earned = amount * price;
   playerState.pendingTx = { type: 'sell', commodity: 'veydrite', amount, earned };
+
+  // Guild rep bump for selling veydrite
+  const repResult = adjustRep('guild', 2, 'Sold veydrite at Guild rate');
 
   return [
     '',
     '  [SELL] Confirm transaction?',
+    '',
     '  Sell     : ' + amount + ' kg veydrite',
-    '  Rate     : ' + price + ' CR/kg',
+    '  Rate     : ' + price + ' CR/kg' + (guildRep !== null && repTier(guildRep) === 'TRUSTED' ? '  (TRUSTED bonus applied)' : ''),
     '  You get  : ' + earned + ' CR',
+    '',
+    renderRepChange(repResult),
     '',
     '  Type "yes" to confirm or anything else to cancel.',
     '',
@@ -466,21 +566,17 @@ function cmdBuy(args) {
   const q     = galaxy.quadrants[loc.quadrantIndex];
   const price = fuelPrice(q.state);
 
-  if (!args[0] || args[0] !== 'fuel') {
-    return '  [BUY] Usage: buy fuel <amount>';
-  }
+  if (!args[0] || args[0] !== 'fuel') return '  [BUY] Usage: buy fuel <amount>';
 
   const amount = parseInt(args[1]);
-  if (isNaN(amount) || amount <= 0) {
-    return '  [BUY] Specify an amount. Example: buy fuel 20';
-  }
+  if (isNaN(amount) || amount <= 0) return '  [BUY] Specify an amount.';
 
   const cost = amount * price;
   if (playerState.credits < cost) {
     return [
       '',
       '  [BUY] Insufficient scrip.',
-      '  Cost     : ' + cost + ' CR  (' + amount + ' units at ' + price + ' CR/unit)',
+      '  Cost     : ' + cost + ' CR',
       '  You have : ' + playerState.credits + ' CR',
       '',
     ].join('\n');
@@ -491,6 +587,7 @@ function cmdBuy(args) {
   return [
     '',
     '  [BUY] Confirm transaction?',
+    '',
     '  Buy      : ' + amount + ' units fuel',
     '  Rate     : ' + price + ' CR/unit',
     '  You pay  : ' + cost + ' CR',
@@ -498,6 +595,170 @@ function cmdBuy(args) {
     '  Type "yes" to confirm or anything else to cancel.',
     '',
   ].join('\n');
+}
+
+// ── Execute Trade ─────────────────────────────
+
+function executeTrade(tx) {
+  if (tx.type === 'sell' && tx.commodity === 'veydrite') {
+    playerState.veydrite -= tx.amount;
+    playerState.credits  += tx.earned;
+    return [
+      '',
+      '  [SELL] Transaction complete.',
+      '  Sold     : ' + tx.amount + ' kg veydrite',
+      '  Earned   : ' + tx.earned + ' CR',
+      '  Scrip    : ' + playerState.credits + ' CR',
+      '  Veydrite : ' + playerState.veydrite + ' kg remaining',
+      '',
+    ].join('\n');
+  }
+  if (tx.type === 'buy' && tx.commodity === 'fuel') {
+    playerState.credits -= tx.cost;
+    playerState.fuel    += tx.amount;
+    return [
+      '',
+      '  [BUY] Fuel transfer complete.',
+      '  Purchased : ' + tx.amount + ' units',
+      '  Cost      : ' + tx.cost + ' CR',
+      '  Scrip     : ' + playerState.credits + ' CR remaining',
+      '  Fuel      : ' + playerState.fuel + ' units',
+      '',
+    ].join('\n');
+  }
+  return '  [ERROR] Unknown transaction type.';
+}
+
+// ── Bulletin ──────────────────────────────────
+
+function cmdBulletin() {
+  if (!playerState.docked) {
+    return '  [BULLETIN] You must be docked to access the contract board.';
+  }
+
+  const faction_info = FACTION_REGISTRY[playerState.dockedFactionKey];
+  if (!faction_info || !faction_info.contracts) {
+    return '  [BULLETIN] No contract board at this station.';
+  }
+
+  const rep = getRep(playerState.dockedFactionKey);
+  if (rep !== null && repTier(rep) === 'WATCHED') {
+    return [
+      '',
+      '  [BULLETIN] Access restricted.',
+      '  Your standing with ' + faction_info.name + ' is too low.',
+      '  Improve your reputation before contracts become available.',
+      '',
+    ].join('\n');
+  }
+
+  if (playerState.bulletinContracts.length === 0) {
+    return '  [BULLETIN] No contracts available at this station.';
+  }
+
+  return renderBulletin(playerState.dockedFactionKey, playerState.bulletinContracts);
+}
+
+// ── Accept ────────────────────────────────────
+
+function cmdAccept(args) {
+  if (!playerState.docked) return '  [ACCEPT] You must be docked to accept contracts.';
+
+  const index = parseInt(args[0]) - 1;
+  if (isNaN(index)) return '  [ACCEPT] Usage: accept <number>';
+
+  const result = acceptContract(index, playerState.bulletinContracts, playerState.currentDay);
+  if (result.error) return '  [ACCEPT] ' + result.error;
+
+  const c = result.contract;
+  return [
+    '',
+    '  [ACCEPT] Contract accepted.',
+    '',
+    '  ' + c.title,
+    '  ' + c.description,
+    '',
+    '  Payment    : ' + c.payment + ' CR',
+    '  Rep reward : +' + c.repReward,
+    '  Time limit : ' + c.timeLimitDays + ' days',
+    '  Deadline   : Day ' + (playerState.currentDay + c.timeLimitDays),
+    '',
+    '  Good luck.',
+    '',
+  ].join('\n');
+}
+
+// ── Contract status ───────────────────────────
+
+function cmdContract() {
+  const active = activeContracts.find(c => !c.completed && !c.failed);
+  if (!active) return '  [CONTRACT] No active contract.';
+  return renderActiveContract(active, playerState.currentDay);
+}
+
+// ── Complete ──────────────────────────────────
+
+function cmdComplete() {
+  const active = activeContracts.find(c => !c.completed && !c.failed);
+  if (!active) return '  [COMPLETE] No active contract to complete.';
+
+  const sys = getCurrentSystem();
+  if (!sys) return '  [ERROR] Location data corrupted.';
+
+  if (sys.name !== active.target) {
+    return [
+      '',
+      '  [COMPLETE] You are not at the target system.',
+      '  Required: ' + active.target,
+      '  Current : ' + sys.name,
+      '',
+    ].join('\n');
+  }
+
+  const daysElapsed = playerState.currentDay - active.issuedDay;
+  const result      = completeContract(active, daysElapsed, playerState);
+
+  const lines = [
+    '',
+    '  [COMPLETE] Contract fulfilled.',
+    '',
+    '  ' + active.title,
+    '  Payment  : ' + result.total + ' CR' + (result.bonus > 0 ? '  (speed bonus: +' + result.bonus + ' CR)' : ''),
+    '  Rep      : +' + result.repEarned + (result.fast ? '  (ahead of schedule)' : ''),
+    '  Scrip    : ' + playerState.credits + ' CR',
+    '',
+  ];
+
+  if (result.repResult) lines.push(renderRepChange(result.repResult));
+  lines.push('');
+
+  return lines.join('\n');
+}
+
+// ── Abandon ───────────────────────────────────
+
+function cmdAbandon() {
+  const active = activeContracts.find(c => !c.completed && !c.failed);
+  if (!active) return '  [ABANDON] No active contract.';
+
+  const result = failContract(active);
+  const lines  = [
+    '',
+    '  [ABANDON] Contract abandoned.',
+    '  ' + active.title,
+    '  Reputation penalty applied.',
+    '',
+  ];
+  if (result.repResult) lines.push(renderRepChange(result.repResult));
+  lines.push('');
+  return lines.join('\n');
+}
+
+// ── Rep ───────────────────────────────────────
+
+function cmdRep() {
+  const sys = getCurrentSystem();
+  return renderRep(sys);
 }
 
 // ── Status ────────────────────────────────────
@@ -512,6 +773,8 @@ function cmdStatus() {
   const fuelBar = '█'.repeat(Math.round(playerState.fuel / 10)) +
                   '░'.repeat(10 - Math.round(playerState.fuel / 10));
 
+  const active = activeContracts.find(c => !c.completed && !c.failed);
+
   return [
     '',
     '  ── SHIP STATUS ───────────────────────────────────────────────',
@@ -519,6 +782,7 @@ function cmdStatus() {
     '  Captain   : ' + playerState.captainName,
     '  Vessel    : ' + playerState.shipName + '  (' + playerState.ship + ')',
     '  Status    : ' + dockStatus,
+    '  Day       : ' + playerState.currentDay,
     '',
     '  Scrip     : ' + playerState.credits + ' CR',
     '  Veydrite  : ' + playerState.veydrite + ' kg',
@@ -526,6 +790,10 @@ function cmdStatus() {
     '',
     '  Hull      : ' + hullBar + '  ' + playerState.hull + '%',
     '  Jump drive: NOMINAL',
+    '',
+    active
+      ? '  CONTRACT  : ' + active.title + '  [Day ' + (active.issuedDay + active.timeLimitDays) + ' deadline]'
+      : '  CONTRACT  : none active',
     '',
   ].join('\n');
 }
@@ -539,7 +807,6 @@ function cmdWhere() {
   const q       = galaxy.quadrants[loc.quadrantIndex];
   const cluster = q.clusters.find(c => c.name === loc.clusterName);
   const sys     = cluster && cluster.systems.find(s => s.name === loc.systemName);
-
   if (!sys) return '  [ERROR] Location data corrupted.';
 
   const stations = sys.bodies.filter(b => b.hasStation);
@@ -555,6 +822,7 @@ function cmdWhere() {
     '  Cluster  : ' + cluster.name,
     '  Quadrant : ' + q.name + '  [' + q.state + ']',
     '  Star     : ' + sys.starClass + '-class  |  Bodies: ' + sys.bodies.length,
+    '  Day      : ' + playerState.currentDay,
     '',
     '  ── LOCAL SURVEY ──────────────────────────────────────────────',
     '',
@@ -563,8 +831,10 @@ function cmdWhere() {
   if (stations.length > 0) {
     lines.push('  Stations : ' + stations.length + ' detected');
     stations.forEach(b => {
-      const f = b.faction || FACTIONS.independent;
-      lines.push('    — ' + b.stationName + '  [' + f.short + ']');
+      const f   = b.faction || FACTIONS.independent;
+      const rep = getRep(b.factionKey);
+      const tier = rep !== null ? '  [' + repTier(rep) + ']' : '';
+      lines.push('    — ' + b.stationName + '  [' + f.short + ']' + tier);
     });
     lines.push('  ' + stationDescription(q.state));
   } else {
@@ -600,14 +870,22 @@ function cmdWhere() {
   lines.push('');
 
   if (playerState.docked) {
-    lines.push('  Currently docked at: ' + playerState.dockedAt);
+    lines.push('  Docked at: ' + playerState.dockedAt);
     lines.push('');
   }
 
   return lines.join('\n');
 }
 
-// ── Flavor text ───────────────────────────────
+// ── Helpers ───────────────────────────────────
+
+function getCurrentSystem() {
+  if (!playerState.location) return null;
+  const loc     = playerState.location;
+  const q       = galaxy.quadrants[loc.quadrantIndex];
+  const cluster = q.clusters.find(c => c.name === loc.clusterName);
+  return cluster && cluster.systems.find(s => s.name === loc.systemName);
+}
 
 function stationServices(attitude) {
   const services = {
@@ -687,35 +965,4 @@ function systemFlavor(sys, state) {
     return 'The infrastructure is tired. Everything here is running on borrowed time.';
   }
   return 'Nothing unusual on passive scan. The system holds its silence.';
-}
-function executeTrade(tx) {
-  if (tx.type === 'sell' && tx.commodity === 'veydrite') {
-    playerState.veydrite -= tx.amount;
-    playerState.credits  += tx.earned;
-    return [
-      '',
-      '  [SELL] Transaction complete.',
-      '  Sold     : ' + tx.amount + ' kg veydrite',
-      '  Earned   : ' + tx.earned + ' CR',
-      '  Scrip    : ' + playerState.credits + ' CR',
-      '  Veydrite : ' + tx.amount + ' kg sold',
-      '',
-    ].join('\n');
-  }
-
-  if (tx.type === 'buy' && tx.commodity === 'fuel') {
-    playerState.credits -= tx.cost;
-    playerState.fuel    += tx.amount;
-    return [
-      '',
-      '  [BUY] Fuel transfer complete.',
-      '  Purchased : ' + tx.amount + ' units',
-      '  Cost      : ' + tx.cost + ' CR',
-      '  Scrip     : ' + playerState.credits + ' CR remaining',
-      '  Fuel      : ' + playerState.fuel + ' units',
-      '',
-    ].join('\n');
-  }
-
-  return '  [ERROR] Unknown transaction type.';
 }
