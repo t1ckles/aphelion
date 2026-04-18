@@ -165,7 +165,7 @@ function computeControlScore(clusters) {
 
 // ─── Galaxy Generator ─────────────────────────────────────────────────────────
 
-export function generateGalaxy(seed, naming) {
+function generateGalaxy(seed, naming) {
   const rng = new RNG(seed);
 
   const quadrants = QUADRANT_NAMES.map(name =>
@@ -195,7 +195,7 @@ export function generateGalaxy(seed, naming) {
 
 // ─── Terminal Rendering ───────────────────────────────────────────────────────
 
-export function renderGalaxyOverview(galaxy) {
+function renderGalaxyOverview(galaxy) {
   const lines = [];
   const bar = (n, max, char = '█', empty = '░') =>
     char.repeat(Math.round(n)) + empty.repeat(max - Math.round(n));
