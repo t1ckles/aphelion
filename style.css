@@ -30,7 +30,7 @@ body {
 #terminal {
   width: 100%;
   max-width: 860px;
-  height: calc(100vh - 80px);
+  height: calc(100vh - 160px);
   border: 1px solid #00ff41;
   border-radius: 8px;
   padding: 24px;
