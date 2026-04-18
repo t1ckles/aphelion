@@ -28,7 +28,6 @@ body {
   border: 1px solid #00ff41;
   padding: 24px;
   height: calc(100vh - 40px);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 30px rgba(0, 255, 65, 0.08);
@@ -76,6 +75,7 @@ body {
   line-height: 1.7;
   margin-bottom: 16px;
   overflow-y: auto;
+  min-height: 0;
 }
 
 .output-line {
