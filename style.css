@@ -27,10 +27,23 @@ body {
   animation: flicker 8s infinite;
 }
 
-#terminal {
+/* ── Layout ──────────────────────────────────── */
+
+#layout {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
   width: 100%;
-  max-width: 860px;
-  height: calc(100vh - 320px);
+  max-width: 1100px;
+  height: calc(100vh - 80px);
+}
+
+/* ── Main Terminal ───────────────────────────── */
+
+#terminal {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
   border: 1px solid #00ff41;
   border-radius: 8px;
   padding: 24px;
@@ -40,9 +53,8 @@ body {
   text-shadow:
     0 0 4px rgba(0, 255, 65, 0.6),
     0 0 10px rgba(0, 255, 65, 0.2);
-  transform: perspective(1000px) rotateX(0.5deg);
-  animation: powerOn 1.4s ease-out forwards;
   overflow: hidden;
+  animation: powerOn 1.4s ease-out forwards;
 }
 
 #terminal-header {
@@ -94,11 +106,7 @@ body {
   min-height: 0;
 }
 
-.output-line {
-  display: block;
-  margin-bottom: 2px;
-}
-
+.output-line   { display: block; margin-bottom: 2px; }
 .output-dim    { color: #006618; }
 .output-warn   { color: #ff6600; }
 .output-bright { color: #ffffff; }
@@ -113,14 +121,8 @@ body {
   flex-shrink: 0;
 }
 
-.prompt {
-  color: #00e5ff;
-  margin-right: 4px;
-}
-
-#typed {
-  color: #00e5ff;
-}
+.prompt  { color: #00e5ff; margin-right: 4px; }
+#typed   { color: #00e5ff; }
 
 .cursor {
   animation: blink 1s step-end infinite;
@@ -134,34 +136,96 @@ body {
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar       { width: 4px; }
 ::-webkit-scrollbar-track { background: #0a0a0a; }
 ::-webkit-scrollbar-thumb { background: #006618; }
 
-/* ============================================
-   CRT EFFECT
-   ============================================ */
+/* ── Sidebar ─────────────────────────────────── */
+
+#sidebar {
+  width: 200px;
+  flex-shrink: 0;
+  height: 100%;
+  border: 1px solid #006618;
+  border-radius: 8px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.sidebar-section {
+  padding: 10px 0;
+}
+
+.sidebar-divider {
+  border-top: 1px solid #003310;
+  flex-shrink: 0;
+}
+
+.sidebar-label {
+  font-size: 10px;
+  color: #006618;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.sidebar-value {
+  color: #00ff41;
+  margin-bottom: 2px;
+  word-break: break-word;
+}
+
+.sidebar-dim {
+  color: #006618;
+  margin-bottom: 2px;
+  word-break: break-word;
+}
+
+.sidebar-status {
+  color: #00aa2a;
+  margin-bottom: 2px;
+  font-size: 11px;
+}
+
+.sidebar-warn {
+  color: #ff6600;
+  margin-bottom: 2px;
+}
+
+.sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.sidebar-bar {
+  color: #00ff41;
+  font-size: 10px;
+  letter-spacing: -1px;
+}
+
+/* ── CRT Effect ──────────────────────────────── */
 
 body::after {
   content: '';
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   pointer-events: none;
   z-index: 9999;
   background: repeating-linear-gradient(
     to bottom,
-    transparent 0px,
-    transparent 3px,
-    rgba(0, 0, 0, 0.18) 3px,
-    rgba(0, 0, 0, 0.18) 4px
+    transparent 0px, transparent 3px,
+    rgba(0, 0, 0, 0.18) 3px, rgba(0, 0, 0, 0.18) 4px
   );
   mask-image: radial-gradient(
     ellipse 90% 85% at 50% 50%,
-    black 60%,
-    transparent 100%
+    black 60%, transparent 100%
   );
 }
 
@@ -175,9 +239,9 @@ body::after {
 }
 
 @keyframes powerOn {
-  0%   { filter: brightness(0) blur(8px);  transform: scaleY(0.02); }
-  15%  { filter: brightness(2) blur(4px);  transform: scaleY(0.08); }
-  30%  { filter: brightness(1.5) blur(2px); transform: scaleY(1);   }
-  60%  { filter: brightness(1.2) blur(0px);                         }
-  100% { filter: brightness(1) blur(0px);                           }
+  0%   { filter: brightness(0) blur(8px);   transform: scaleY(0.02); }
+  15%  { filter: brightness(2) blur(4px);   transform: scaleY(0.08); }
+  30%  { filter: brightness(1.5) blur(2px); transform: scaleY(1);    }
+  60%  { filter: brightness(1.2) blur(0px);                          }
+  100% { filter: brightness(1) blur(0px);                            }
 }
