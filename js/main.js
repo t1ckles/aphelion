@@ -463,6 +463,7 @@ function dismissMenu() {
     menuDismissed = true;
   }, 700);
 }
+
 // ── Continue Game ─────────────────────────────
 
 function startContinue(save) {
@@ -496,12 +497,33 @@ function startContinue(save) {
           queue('Day ' + playerState.currentDay + ' — ' + playerState.location.systemName, 'output-dim', 80);
           queueBlank(80);
           queueDivider(60);
+          queueBlank(60);
+          queue('  ── SUGGESTED ACTIONS ────────────────────────────────────────', 'output-dim', 60);
+          queueBlank(40);
+          queue('  where          — survey your current system', 'output-dim', 40);
+          queue('  ping           — sweep for local contacts', 'output-dim', 40);
+          queue('  galaxy         — view the full quadrant map', 'output-dim', 40);
+
+          // Show docked hints if applicable
+          if (playerState.docked) {
+            queue('  trade          — open trade terminal', 'output-dim', 40);
+            queue('  armory         — browse weapons and ammo', 'output-dim', 40);
+            queue('  bulletin       — check available contracts', 'output-dim', 40);
+          } else {
+            queue('  nav <system>   — plot a course', 'output-dim', 40);
+            queue('  salvage        — begin salvage operation', 'output-dim', 40);
+            queue('  scan log       — search ruins for data', 'output-dim', 40);
+          }
+
+          queueBlank(80);
+          queueDivider(60);
           queueBlank(80);
 
           const waitForQueue = setInterval(() => {
             if (!isPrinting && printQueue.length === 0) {
               clearInterval(waitForQueue);
               enableInput('command');
+              bootAuspex(() => { updateAuspex(); });
               updateSidebar();
               bootAuspex(() => {});            }
           }, 100);
