@@ -117,6 +117,8 @@ const SAVE_DEFAULTS = {
   economy: {
     credits:  200,
     veydrite: 0,
+    foldCells:       3,
+    reserveVeydrite: 0,
     cargo:    [],
   },
 
@@ -203,9 +205,13 @@ function saveGame(playerState, reputationData, contractData) {
       logs:  playerState.logs  || [],
       flags: playerState.flags || {},
       salvagedSystems: playerState.salvagedSystems || [],
-      astrographics:   playerState.astrographics   || [],
-      scannedSystems:  playerState.scannedSystems  || {},
-      achievements:    playerState.achievements    || [],
+      astrographics:    playerState.astrographics   || [],
+      scannedSystems:   playerState.scannedSystems  || {},
+      achievements:     playerState.achievements    || [],
+      foldCells:        playerState.foldCells       ?? 3,
+      reserveVeydrite:  playerState.reserveVeydrite ?? 0,
+      galaxyConnections:   (typeof galaxy !== 'undefined' && galaxy) ? galaxy.connections    : [],
+      galaxyKnownCorridors:(typeof galaxy !== 'undefined' && galaxy) ? galaxy.knownCorridors : [],
 
 
       stats: {
@@ -306,6 +312,12 @@ function applySave(save, playerState, reputationObj, activeContractsArr) {
   playerState.astrographics   = save.astrographics   || [];
   playerState.scannedSystems  = save.scannedSystems  || {};
   playerState.achievements    = save.achievements    || [];
+  playerState.foldCells       = save.foldCells       ?? 3;
+  playerState.reserveVeydrite = save.reserveVeydrite ?? 0;
+  if (save.galaxyConnections && save.galaxyConnections.length > 0 && typeof galaxy !== 'undefined' && galaxy) {
+    galaxy.connections    = save.galaxyConnections;
+    galaxy.knownCorridors = save.galaxyKnownCorridors || [];
+  }
   playerState.stats = save.stats || {};
 
   // Reputation
