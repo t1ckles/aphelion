@@ -306,3 +306,64 @@ function rollRuinLog(sys) {
   }
   return RUIN_LOGS[Math.floor(Math.random() * RUIN_LOGS.length)];
 }
+
+// ── Astrographic Pricing ──────────────────────
+
+const ASTRO_BASE_RATE = {
+  Established: 6,
+  Contested:   9,
+  Declining:   12,
+  Collapsed:   18,
+  Isolated:    14,
+  Forbidden:   24,
+};
+
+const ASTRO_QUALITY_MOD = {
+  basic: 0.3,
+  deep:  1.0,
+};
+
+function astrographicValue(entry, currentDay, repScore) {
+  const base    = ASTRO_BASE_RATE[entry.data.state] || 8;
+  const quality = ASTRO_QUALITY_MOD[entry.quality]  || 0.3;
+
+  // Decay — 1% per 10 days, floored at 50%
+  const age      = Math.max(0, currentDay - entry.scannedDay);
+  const decay    = Math.max(0.5, 1 - (age / 1000));
+
+  // Rep modifier
+  let repMod = 1.0;
+  if (repScore !== null) {
+    if (repScore > 60)  repMod = 1.15;
+    if (repScore < -60) repMod = 0.75;
+  }
+
+  const unitValue = Math.round(base * quality * decay * repMod);
+  const total     = unitValue * entry.units;
+  const aging     = decay < 0.85;
+
+  return { unitValue, total, aging, decay };
+}
+
+function astrographicYield(sys, quality, quadrantState) {
+  // Base units by quality
+  const base = quality === 'deep'
+    ? { Established: 8, Contested: 11, Declining: 14, Collapsed: 20, Isolated: 16, Forbidden: 26 }[quadrantState] || 10
+    : Math.floor(Math.random() * 3) + 1;  // basic: 1-3 units
+
+  if (quality === 'basic') return base;
+
+  // Deep scan bonuses
+  const hasRuin    = sys.bodies.some(b => b.hasRuin);
+  const hasStation = sys.bodies.some(b => b.hasStation);
+  const hasVeyd    = sys.bodies.some(b => b.veydrite);
+
+  const ruinBonus    = hasRuin    ? Math.floor(Math.random() * 6) + 5  : 0;
+  const stationBonus = hasStation ? Math.floor(Math.random() * 3) + 3  : 0;
+  const veydBonus    = hasVeyd    ? Math.floor(Math.random() * 3) + 2  : 0;
+
+  // Variance ±20%
+  const variance = Math.round(base * (0.8 + Math.random() * 0.4));
+
+  return variance + ruinBonus + stationBonus + veydBonus;
+}
