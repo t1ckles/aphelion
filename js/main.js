@@ -1,8 +1,10 @@
 // ============================================
 //  APHELION — Main Terminal Controller
 //  main.js
-//  Stage 7: Sidebar status panel
+//  Stage 10: Save/Load + Main Menu
 // ============================================
+
+const MASTER_SEED = '4471-KETH-NULL';
 
 // ── Terminal output ───────────────────────────
 
@@ -47,22 +49,18 @@ function processQueue() {
 function updateSidebar() {
   if (typeof playerState === 'undefined' || !playerState) return;
 
-  // Vessel
   setText('sb-captain', playerState.captainName || '—');
   setText('sb-ship',    playerState.shipName    || '—');
   setText('sb-day',     'Day ' + (playerState.currentDay || 0));
 
-  // Bars
   const hull = Math.max(0, Math.min(100, playerState.hull || 0));
   const fuel = Math.max(0, Math.min(100, playerState.fuel || 0));
   setBar('sb-hull-bar', hull, 100, 10);
   setBar('sb-fuel-bar', fuel, 100, 10);
 
-  // Cargo
   setText('sb-credits',  (playerState.credits  || 0) + ' CR');
   setText('sb-veydrite', (playerState.veydrite || 0) + ' kg');
 
-  // Location
   if (playerState.location && typeof galaxy !== 'undefined' && galaxy) {
     const loc     = playerState.location;
     const q       = galaxy.quadrants[loc.quadrantIndex];
@@ -78,28 +76,25 @@ function updateSidebar() {
       : '');
   }
 
-  // Contract
   const active = typeof activeContracts !== 'undefined'
     ? activeContracts.find(c => !c.completed && !c.failed)
     : null;
 
   if (active) {
     const daysLeft = active.timeLimitDays - (playerState.currentDay - active.issuedDay);
-    const urgent   = daysLeft <= 2 ? ' (!)' : '';
     setSidebarHtml('sb-contract',
       '<div class="sidebar-value">' + active.title + '</div>' +
       '<div class="sidebar-dim">→ ' + active.target + '</div>' +
       '<div class="' + (daysLeft <= 2 ? 'sidebar-warn' : 'sidebar-dim') + '">' +
-        daysLeft + ' days left' + urgent +
+        daysLeft + ' days left' + (daysLeft <= 2 ? ' (!)' : '') +
       '</div>'
     );
   } else {
     setText('sb-contract', 'none active');
   }
 
-  // Reputation
   if (typeof reputation !== 'undefined') {
-    const keys    = Object.keys(reputation);
+    const keys = Object.keys(reputation);
     if (keys.length === 0) {
       setText('sb-rep', 'no contacts');
     } else {
@@ -142,66 +137,127 @@ function setBar(id, value, max, width) {
   el.textContent = '█'.repeat(filled) + '░'.repeat(empty) + ' ' + value + '%';
 }
 
-// ── Sidebar boot sequence ─────────────────────
+// ── Autosave ──────────────────────────────────
 
-function bootSidebar(captainName, shipName, onComplete) {
-  const sidebar = document.getElementById('sidebar');
-  if (!sidebar) { onComplete(); return; }
-
-  // Clear everything first
-  setText('sb-captain', '');
-  setText('sb-ship', '');
-  setText('sb-day', '');
-  setText('sb-system', '');
-  setText('sb-cluster', '');
-  setText('sb-quadrant', '');
-  setText('sb-state', '');
-  setText('sb-docked', '');
-  setText('sb-credits', '');
-  setText('sb-veydrite', '');
-  setText('sb-contract', '');
-  setText('sb-rep', '');
-  setText('sb-hull-bar', '');
-  setText('sb-fuel-bar', '');
-
-  const steps = [
-    () => {
-      sidebar.classList.add('sidebar-visible');
-      setSidebarHtml('sb-captain', '<span style="color:#ffffff">INITIALIZING...</span>');
-    },
-    () => { setText('sb-captain', '> PILOT RECORD'); },
-    () => { setText('sb-captain', '> VERIFYING...'); },
-    () => { setText('sb-captain', captainName); },
-    () => { setText('sb-ship', '> VESSEL ID...'); },
-    () => { setText('sb-ship', shipName); setText('sb-day', 'Day 0'); },
-    () => { setSidebarHtml('sb-hull-bar', '<span style="color:#ffffff">CHECKING SYS...</span>'); },
-    () => { setBar('sb-hull-bar', 80, 100, 10); },
-    () => { setBar('sb-fuel-bar', 60, 100, 10); },
-    () => { setText('sb-credits', '200 CR'); setText('sb-veydrite', '0 kg'); },
-    () => { setText('sb-system', '> LOCATING...'); },
-    () => { setText('sb-contract', 'none active'); setText('sb-rep', 'no contacts'); },
-    () => { updateSidebar(); },
-    () => { onComplete(); },
-  ];
-
-  let i = 0;
-  const interval = setInterval(() => {
-    if (i >= steps.length) {
-      clearInterval(interval);
-      return;
-    }
-    steps[i]();
-    i++;
-  }, 200);
+function autosave() {
+  if (typeof playerState === 'undefined' || !playerState.captainName || playerState.captainName === 'Unknown') return;
+  saveGame(playerState, reputation, {
+    active:  activeContracts ? activeContracts.find(c => !c.completed && !c.failed) || null : null,
+    history: activeContracts ? activeContracts.filter(c => c.completed || c.failed) : [],
+  });
 }
 
-// ── Boot sequence ─────────────────────────────
+// ── Main Menu ─────────────────────────────────
 
-function boot() {
-  const MASTER_SEED = '4471-KETH-NULL';
+function showMainMenu() {
+  const menu    = document.getElementById('main-menu');
+  const contBtn = document.getElementById('menu-continue');
+  const saveInfo = document.getElementById('menu-save-info');
+
+  const save = loadGame();
+
+  if (save) {
+    contBtn.style.display = 'block';
+    saveInfo.innerHTML =
+      save.captain.name + ' · ' + save.ship.name + '<br>' +
+      'Day ' + (save.currentDay || 0) + ' · ' + save.economy.credits + ' CR<br>' +
+      save.location.systemName;
+  }
+
+  // Keyboard handler
+  document.addEventListener('keydown', menuKeyHandler);
+
+  // Click handlers
+  contBtn.addEventListener('click', () => {
+    if (save) startContinue(save);
+  });
+  document.getElementById('menu-new').addEventListener('click', () => {
+    dismissMenu();
+    startNewGame();
+  });
+}
+
+function menuKeyHandler(e) {
+  const save = loadGame();
+  if (e.key === 'c' || e.key === 'C') {
+    if (save) {
+      document.removeEventListener('keydown', menuKeyHandler);
+      startContinue(save);
+    }
+  } else if (e.key === 'n' || e.key === 'N') {
+    document.removeEventListener('keydown', menuKeyHandler);
+    dismissMenu();
+    startNewGame();
+  }
+}
+
+function dismissMenu() {
+  const menu = document.getElementById('main-menu');
+  menu.classList.add('hidden');
+  setTimeout(() => { menu.style.display = 'none'; }, 700);
+}
+
+// ── Continue Game ─────────────────────────────
+
+function startContinue(save) {
+  dismissMenu();
 
   setTimeout(() => {
+    queue('INITIALIZING — APHELION DEEP SURVEY TERMINAL', 'output-bright', 80);
+    queue('MASTER SEED: ' + MASTER_SEED, 'output-dim', 120);
+    queueBlank(80);
+    queue('> Loading galaxy data...', 'output-dim', 200);
+    queue('> Restoring pilot record...', 'output-dim', 280);
+    queue('> Guild network: CONNECTED', 'output-dim', 180);
+    queueBlank(120);
+    queueDivider(60);
+    queue('SAVE FILE LOADED', 'output-label', 80);
+    queueDivider(60);
+    queueBlank(80);
 
+    // Initialize galaxy
+    initCommands(MASTER_SEED);
+
+    // Apply save data
+    applySave(save, playerState, reputation, activeContracts);
+
+    // Boot sidebar
+    const waitForPrint = setInterval(() => {
+      if (!isPrinting && printQueue.length === 0) {
+        clearInterval(waitForPrint);
+
+        bootSidebar(playerState.captainName, playerState.shipName, () => {
+          updateSidebar();
+
+          queue('', '', 80);
+          queue('Welcome back, ' + playerState.captainName + '.', 'output-bright', 80);
+          queue('Vessel: ' + playerState.shipName, 'output-dim', 80);
+          queue('Day ' + playerState.currentDay + ' — ' + playerState.location.systemName, 'output-dim', 80);
+          queueBlank(80);
+
+          const overview = handleCommand('where');
+          overview.split('\n').forEach(line => queue(line, '', 18));
+
+          const waitForQueue = setInterval(() => {
+            if (!isPrinting && printQueue.length === 0) {
+              clearInterval(waitForQueue);
+              enableInput('command');
+              updateSidebar();
+            }
+          }, 100);
+        });
+      }
+    }, 100);
+
+  }, 400);
+}
+
+// ── New Game ──────────────────────────────────
+
+function startNewGame() {
+  deleteSave();
+
+  setTimeout(() => {
     queue('INITIALIZING — APHELION DEEP SURVEY TERMINAL', 'output-bright', 80);
     queue('MASTER SEED: ' + MASTER_SEED, 'output-dim', 120);
     queueBlank(80);
@@ -238,35 +294,83 @@ function boot() {
 
           initCommands(MASTER_SEED);
 
-// Force a delay then boot sidebar regardless of queue state
-          
           setTimeout(() => {
             bootSidebar(playerState.captainName, playerState.shipName, () => {
-                updateSidebar();
-                const overview = handleCommand('galaxy');
-                overview.split('\n').forEach(line => queue(line, '', 12));
+              updateSidebar();
+              const overview = handleCommand('galaxy');
+              overview.split('\n').forEach(line => queue(line, '', 12));
 
-                const waitForQueue = setInterval(() => {
-                  if (!isPrinting && printQueue.length === 0) {
-                    clearInterval(waitForQueue);
-                    enableInput('command');
-                    updateSidebar();
-                  }
-                }, 100);
+              const waitForQueue = setInterval(() => {
+                if (!isPrinting && printQueue.length === 0) {
+                  clearInterval(waitForQueue);
+                  enableInput('command');
+                  updateSidebar();
+                  autosave();
+                }
+              }, 100);
             });
           }, 600);
+
         }, 800);
       });
     });
-  }, 1400);
+
+  }, 400);
+}
+
+// ── Sidebar boot sequence ─────────────────────
+
+function bootSidebar(captainName, shipName, onComplete) {
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar) { onComplete(); return; }
+
+  setText('sb-captain', '');
+  setText('sb-ship', '');
+  setText('sb-day', '');
+  setText('sb-system', '');
+  setText('sb-cluster', '');
+  setText('sb-quadrant', '');
+  setText('sb-state', '');
+  setText('sb-docked', '');
+  setText('sb-credits', '');
+  setText('sb-veydrite', '');
+  setText('sb-contract', '');
+  setText('sb-rep', '');
+  setText('sb-hull-bar', '');
+  setText('sb-fuel-bar', '');
+
+  const steps = [
+    () => { sidebar.classList.add('sidebar-visible'); setSidebarHtml('sb-captain', '<span style="color:#ffffff">INITIALIZING...</span>'); },
+    () => { setText('sb-captain', '> PILOT RECORD'); },
+    () => { setText('sb-captain', '> VERIFYING...'); },
+    () => { setText('sb-captain', captainName); },
+    () => { setText('sb-ship', '> VESSEL ID...'); },
+    () => { setText('sb-ship', shipName); setText('sb-day', 'Day 0'); },
+    () => { setSidebarHtml('sb-hull-bar', '<span style="color:#ffffff">CHECKING SYS...</span>'); },
+    () => { setBar('sb-hull-bar', 80, 100, 10); },
+    () => { setBar('sb-fuel-bar', 60, 100, 10); },
+    () => { setText('sb-credits', '200 CR'); setText('sb-veydrite', '0 kg'); },
+    () => { setText('sb-system', '> LOCATING...'); },
+    () => { setText('sb-contract', 'none active'); setText('sb-rep', 'no contacts'); },
+    () => { updateSidebar(); },
+    () => { onComplete(); },
+  ];
+
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i >= steps.length) { clearInterval(interval); return; }
+    steps[i]();
+    i++;
+  }, 200);
 }
 
 // ── Input handling ────────────────────────────
 
-let inputMode      = 'command';
-let inputEnabled   = false;
+let inputMode         = 'command';
+let inputEnabled      = false;
 let currentInputValue = '';
-let promptCallback = null;
+let promptCallback    = null;
+let pendingNewSave    = false;
 
 function enableInput(mode = 'command') {
   inputEnabled = true;
@@ -305,6 +409,27 @@ document.addEventListener('keydown', (e) => {
       if (raw === '') return;
       print('> ' + raw, 'output-cmd');
 
+      // Handle newsave confirmation
+      if (pendingNewSave) {
+        pendingNewSave = false;
+        if (raw.toLowerCase() === 'yes' || raw.toLowerCase() === 'y') {
+          print('  [NEWSAVE] Erasing save data...', 'output-dim');
+          setTimeout(() => {
+            deleteSave();
+            location.reload();
+          }, 800);
+          return;
+        } else {
+          print('  [NEWSAVE] Cancelled.', 'output-dim');
+          return;
+        }
+      }
+
+      // Check if this is a newsave command
+      if (raw.toLowerCase() === 'newsave') {
+        pendingNewSave = true;
+      }
+
       const thinkTime = 200 + Math.floor(Math.random() * 600);
       setTimeout(() => {
         const response = handleCommand(raw);
@@ -316,6 +441,7 @@ document.addEventListener('keydown', (e) => {
           if (!isPrinting && printQueue.length === 0) {
             clearInterval(waitForResponse);
             updateSidebar();
+            autosave();
             const output = document.getElementById('output');
             if (output) output.scrollTop = output.scrollHeight;
           }
@@ -340,4 +466,6 @@ function updateTyped(text) {
 }
 
 // ── Run on page load ──────────────────────────
-window.addEventListener('load', boot);
+window.addEventListener('load', () => {
+  showMainMenu();
+});
