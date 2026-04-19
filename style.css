@@ -337,3 +337,12 @@ body::after {
   color: #003310;
   letter-spacing: 2px;
 }
+
+/* ── Sidebar color system ────────────────────── */
+
+.sb-white   { color: #ffffff; }
+.sb-cyan    { color: #00e5ff; }
+.sb-orange  { color: #ff8800; }
+.sb-dim     { color: #006618; }
+.sb-green   { color: #00ff41; }
+
