@@ -100,13 +100,19 @@ function updateSidebar() {
   setBar('sb-fuel-bar',  fuel,  ship ? ship.fuelMax          : 100, 10, fuelPct  < 20 ? 'sb-orange' : 'sb-green');
   setBar('sb-power-bar', power, ship ? ship.powerCore.max    : 500, 10, powerPct < 15 ? 'sb-orange' : 'sb-cyan');
 
-// Cargo
+  // Cargo
   setStyledText('sb-credits',  (playerState.credits  || 0) + ' CR', 'sb-cyan');
   setStyledText('sb-veydrite', (playerState.veydrite || 0) + ' kg',
     playerState.veydrite > 0 ? 'sb-cyan' : 'sb-dim');
   const astroCount = playerState.astrographics ? playerState.astrographics.length : 0;
   setStyledText('sb-astro', astroCount > 0 ? astroCount + ' systems' : '—',
     astroCount > 0 ? 'sb-cyan' : 'sb-dim');
+
+  const cellsEl = document.getElementById('sb-cells');
+  if (cellsEl) cellsEl.textContent = (playerState.foldCells ?? 3) + ' / 20';
+
+  const reserveEl = document.getElementById('sb-reserve');
+  if (reserveEl) reserveEl.textContent = (playerState.reserveVeydrite ?? 0).toFixed(1) + ' kg';
 
   // Contract
   const active = typeof activeContracts !== 'undefined'
