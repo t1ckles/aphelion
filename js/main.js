@@ -1066,6 +1066,9 @@ document.addEventListener('keydown', (e) => {
               updateSidebar();
             }, cumulativeDelay + sysDelay);
 
+            cumulativeDelay += sysDelay + 600;
+          });
+
           // Final summary
           setTimeout(() => {
             const ship = typeof getShip === 'function' ? getShip() : null;
