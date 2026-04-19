@@ -940,6 +940,11 @@ function systemFlavor(sys, state) {
   const hasRuin    = sys.bodies.some(b => b.hasRuin);
   const hasVeyd    = sys.bodies.some(b => b.veydrite);
 
+  // Xeno-tainted systems get different notes
+  if (sys.xenoTainted) {
+    return xenoFlavor(sys, state);
+  }
+
   if (state === 'Collapsed' && !hasStation) {
     return 'Nothing answers on any frequency. The bodies drift without comment.';
   }
@@ -965,4 +970,35 @@ function systemFlavor(sys, state) {
     return 'The infrastructure is tired. Everything here is running on borrowed time.';
   }
   return 'Nothing unusual on passive scan. The system holds its silence.';
+}
+
+function xenoFlavor(sys, state) {
+  const hasRuin    = sys.bodies.some(b => b.hasRuin);
+  const hasStation = sys.bodies.some(b => b.hasStation);
+
+  // Pool of xeno-adjacent field notes
+  // Rules: never name what it is. Never confirm anything.
+  // Suggest through absence, wrongness, silence.
+  const notes = [
+    'Passive scan returns clean. The bodies are where they should be. Traffic log shows one entry, no exit.',
+    'The ruins here are older than the colony records. The colony records do not mention this.',
+    'Veydrite readings are normal. The shadow on the deep scan is not veydrite.',
+    'No station. No beacon. The navigation computer logged a course correction it did not initiate.',
+    'Survey team filed a report seventeen years ago. The report is eight words long. The eighth word is not a word.',
+    'Something in the debris field is the wrong temperature. It has been the wrong temperature for a long time.',
+    'The system is quiet. The system has always been quiet. The silence here has a shape.',
+    'Guild records show a survey attempt in 2271. The surveyor\'s vessel returned. The surveyor did not.',
+    'Three of the bodies show impact scarring consistent with kinetic strike. There is no record of conflict in this system.',
+    'Ruin site is flagged as pre-collapse architecture. The materials are not pre-collapse materials.',
+    'Long-range scan shows eleven bodies. Close approach shows ten. The count does not change.',
+    'Traffic is listed as zero. Something moved on the thermal array. It moved in a straight line.',
+    'The station here closed in 2289. The lights are still on.',
+    'No life signs. The atmospheric readings on the third body include a compound with no industrial source.',
+    'This system was declared empty in the Guild survey of 2301. The survey vessel\'s final log entry reads: it is not empty.',
+  ];
+
+  // Pick deterministically based on system name length + hazard
+  // so the same system always gets the same note
+  const index = (sys.name.length + sys.hazard * 3 + (hasRuin ? 7 : 0)) % notes.length;
+  return notes[index];
 }
