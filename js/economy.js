@@ -1,15 +1,13 @@
 // ============================================
 //  APHELION — Economy Engine
 //  economy.js
-//  Stage 5: Veydrite, Trade, Salvage, Fuel
+//  Stage 5 + System B: Veydrite, Trade,
+//  Salvage, Fuel, Ship-aware damage
 // ============================================
 
 // ── Base Veydrite Rates ───────────────────────
-// Guild posts a base rate. Quadrant state
-// modifies it. Established = low (oversupply).
-// Collapsed = high (scarcity premium).
 
-const VEYDRITE_BASE_RATE = 120; // CR per kg
+const VEYDRITE_BASE_RATE = 120;
 
 const STATE_PRICE_MODIFIER = {
   Established: 0.7,
@@ -27,7 +25,7 @@ function veydritePrice(quadrantState) {
 
 // ── Fuel Pricing ──────────────────────────────
 
-const FUEL_BASE_RATE = 40; // CR per unit
+const FUEL_BASE_RATE = 40;
 
 const FUEL_PRICE_MODIFIER = {
   Established: 0.8,
@@ -49,9 +47,9 @@ const DOCK_FEE = {
   guild:       50,
   pelk:        35,
   colonial:    20,
-  feral:        0,  // negotiated in person
+  feral:        0,
   independent: 25,
-  forbidden:    0,  // no formal authority
+  forbidden:    0,
 };
 
 function dockingFee(factionKey) {
@@ -59,52 +57,46 @@ function dockingFee(factionKey) {
 }
 
 // ── Salvage Engine ────────────────────────────
-// Roll salvage results based on system properties.
-// Returns an object describing what was found.
 
 function rollSalvage(sys, quadrantState) {
   const hasRuin  = sys.bodies.some(b => b.hasRuin);
   const hasVeyd  = sys.bodies.some(b => b.veydrite);
   const hazard   = sys.hazard || 1;
 
-  // Base veydrite yield
-  const baseYield = hasVeyd ? 15 : 3;
-  const stateBonus = { Collapsed: 2.0, Declining: 1.5, Contested: 1.2,
-                        Established: 0.8, Isolated: 1.3, Forbidden: 1.6 };
+  const baseYield  = hasVeyd ? 15 : 3;
+  const stateBonus = {
+    Collapsed:   2.0, Declining: 1.5, Contested: 1.2,
+    Established: 0.8, Isolated:  1.3, Forbidden: 1.6,
+  };
   const bonus = stateBonus[quadrantState] || 1.0;
 
-  // Randomize yield — hazard adds variance
-  const variance  = hazard * 4;
+  const variance      = hazard * 4;
   const veydriteFound = Math.max(0, Math.round(
     (baseYield * bonus) + (Math.random() * variance) - (variance / 2)
   ));
 
-  // Scrip from scrap metal, salvaged parts
   const scrapValue = hasRuin
     ? Math.round(20 + Math.random() * 80)
-    : Math.round(5 + Math.random() * 20);
+    : Math.round(5  + Math.random() * 20);
 
-  // Hazard roll — chance of something going wrong
-  const hazardRoll = Math.random();
-  const hazardThreshold = hazard * 0.08; // hazard 5 = 40% chance of incident
-
-  // Rare find roll
-  const rareFindRoll   = Math.random();
-  const rareFindChance = hasRuin ? 0.12 : 0.04;
+  const hazardRoll      = Math.random();
+  const hazardThreshold = hazard * 0.08;
+  const rareFindRoll    = Math.random();
+  const rareFindChance  = hasRuin ? 0.12 : 0.04;
 
   return {
     veydriteFound,
     scrapValue,
-    incident:     hazardRoll < hazardThreshold,
+    incident:        hazardRoll < hazardThreshold,
     rareFindRoll,
     rareFindChance,
     hasRuin,
     hasVeyd,
-    xenoTainted:  sys.xenoTainted || false,
+    xenoTainted:     sys.xenoTainted || false,
   };
 }
 
-// ── Rare Find Table ───────────────────────────
+// ── Rare Finds ────────────────────────────────
 
 const RARE_FINDS = [
   'A sealed data core. Guild pays well for these.',
@@ -136,58 +128,25 @@ function rareFind(xenoTainted) {
 // ── Incident Table ────────────────────────────
 
 const INCIDENTS = [
-  { description: 'Hull scrape on debris. Minor damage.', hullDamage: 5 },
-  { description: 'Radiation spike. Brief exposure.', hullDamage: 0 },
-  { description: 'Salvage arm malfunction. Lost some time.', hullDamage: 0 },
-  { description: 'Something moved in the ruin. You left quickly.', hullDamage: 0 },
-  { description: 'Fuel cell punctured by microdebris.', hullDamage: 0, fuelLoss: 5 },
-  { description: 'Structural collapse in the salvage zone. Close call.', hullDamage: 10 },
+  { description: 'Hull scrape on debris. Minor damage.',         hullDamage: 5,  fuelLoss: 0  },
+  { description: 'Radiation spike. Brief exposure.',             hullDamage: 0,  fuelLoss: 0  },
+  { description: 'Salvage arm malfunction. Lost some time.',     hullDamage: 0,  fuelLoss: 0  },
+  { description: 'Something moved in the ruin. You left quickly.', hullDamage: 0, fuelLoss: 0 },
+  { description: 'Fuel cell punctured by microdebris.',          hullDamage: 0,  fuelLoss: 5  },
+  { description: 'Structural collapse in the salvage zone.',     hullDamage: 10, fuelLoss: 0  },
 ];
 
 function rollIncident() {
   return INCIDENTS[Math.floor(Math.random() * INCIDENTS.length)];
 }
 
-// ── Trade Menu Builder ────────────────────────
-
-function buildTradeMenu(playerState, factionKey, quadrantState) {
-  const vPrice = veydritePrice(quadrantState);
-  const fPrice = fuelPrice(quadrantState);
-  const lines  = [];
-
-  lines.push('');
-  lines.push('  ── TRADE TERMINAL ────────────────────────────────────────────');
-  lines.push('');
-  lines.push('  Your scrip    : ' + playerState.credits + ' CR');
-  lines.push('  Your veydrite : ' + playerState.veydrite + ' kg');
-  lines.push('  Fuel reserve  : ' + playerState.fuel + ' units');
-  lines.push('');
-  lines.push('  ── MARKET RATES ──────────────────────────────────────────────');
-  lines.push('');
-  lines.push('  Veydrite      : ' + vPrice + ' CR/kg  (Guild posted rate)');
-  lines.push('  Fuel          : ' + fPrice + ' CR/unit');
-  lines.push('');
-  lines.push('  ── COMMANDS ──────────────────────────────────────────────────');
-  lines.push('');
-
-  if (playerState.veydrite > 0) {
-    lines.push('  sell veydrite <amount>   — sell veydrite at posted rate');
-    lines.push('  sell veydrite all        — sell entire hold');
-  } else {
-    lines.push('  sell veydrite            — nothing to sell');
-  }
-
-  lines.push('  buy fuel <amount>        — purchase fuel units');
-  lines.push('  trade exit               — close trade terminal');
-  lines.push('');
-
-  return lines.join('\n');
-}
-
 // ── Salvage Result Renderer ───────────────────
+// Now ship-aware — applies damage to ship object
 
 function renderSalvageResult(result, playerState) {
   const lines = [];
+  const ship  = playerState.ship;
+
   lines.push('');
   lines.push('  ── SALVAGE OPERATION ─────────────────────────────────────────');
   lines.push('');
@@ -195,14 +154,24 @@ function renderSalvageResult(result, playerState) {
   if (result.incident) {
     const inc = rollIncident();
     lines.push('  [!] INCIDENT: ' + inc.description);
-    if (inc.hullDamage > 0) {
-      playerState.hull = Math.max(0, playerState.hull - inc.hullDamage);
-      lines.push('  Hull integrity reduced by ' + inc.hullDamage + '%. Now at ' + playerState.hull + '%.');
+
+    if (inc.hullDamage > 0 && ship) {
+      ship.hull = Math.max(0, ship.hull - inc.hullDamage);
+      lines.push('  Hull damage: -' + inc.hullDamage + '  Hull: ' + ship.hull + '/' + ship.hullMax);
+
+      // Check subsystem cascade
+      const hullSub = ship.subsystems && ship.subsystems.hull_core;
+      if (hullSub) {
+        hullSub.hp  = Math.max(0, hullSub.hp  - inc.hullDamage);
+        hullSub.sta = Math.max(0, hullSub.sta - inc.hullDamage);
+      }
     }
-    if (inc.fuelLoss > 0) {
-      playerState.fuel = Math.max(0, playerState.fuel - inc.fuelLoss);
-      lines.push('  Fuel reserve reduced by ' + inc.fuelLoss + ' units.');
+
+    if (inc.fuelLoss > 0 && ship) {
+      ship.fuel = Math.max(0, ship.fuel - inc.fuelLoss);
+      lines.push('  Fuel loss: -' + inc.fuelLoss + ' units.  Fuel: ' + ship.fuel + '/' + ship.fuelMax);
     }
+
     lines.push('');
   }
 
@@ -227,11 +196,58 @@ function renderSalvageResult(result, playerState) {
 
   lines.push('');
   lines.push('  Operation complete. Running total:');
-  lines.push('  Scrip: ' + playerState.credits + ' CR  |  Veydrite: ' + playerState.veydrite + ' kg  |  Fuel: ' + playerState.fuel + ' units');
+
+  if (ship) {
+    lines.push('  Scrip: ' + playerState.credits + ' CR  |  Veydrite: ' + playerState.veydrite + ' kg  |  Fuel: ' + ship.fuel + '/' + ship.fuelMax + '  |  Hull: ' + ship.hull + '/' + ship.hullMax);
+  } else {
+    lines.push('  Scrip: ' + playerState.credits + ' CR  |  Veydrite: ' + playerState.veydrite + ' kg');
+  }
+
+  lines.push('');
+  return lines.join('\n');
+}
+
+// ── Trade Menu Builder ────────────────────────
+
+function buildTradeMenu(playerState, factionKey, quadrantState) {
+  const ship   = playerState.ship;
+  const vPrice = veydritePrice(quadrantState);
+  const fPrice = fuelPrice(quadrantState);
+  const lines  = [];
+
+  lines.push('');
+  lines.push('  ── TRADE TERMINAL ────────────────────────────────────────────');
+  lines.push('');
+  lines.push('  Your scrip    : ' + playerState.credits + ' CR');
+  lines.push('  Your veydrite : ' + playerState.veydrite + ' kg');
+  lines.push('  Fuel reserve  : ' + (ship ? ship.fuel + '/' + ship.fuelMax : '—') + ' units');
+  lines.push('  Hull          : ' + (ship ? ship.hull + '/' + ship.hullMax : '—'));
+  lines.push('  Power Core    : ' + (ship ? ship.powerCore.current + '/' + ship.powerCore.max : '—') + '  [shore power — fully charged]');
+  lines.push('');
+  lines.push('  ── MARKET RATES ──────────────────────────────────────────────');
+  lines.push('');
+  lines.push('  Veydrite      : ' + vPrice + ' CR/kg  (Guild posted rate)');
+  lines.push('  Fuel          : ' + fPrice + ' CR/unit');
+  lines.push('');
+  lines.push('  ── COMMANDS ──────────────────────────────────────────────────');
+  lines.push('');
+
+  if (playerState.veydrite > 0) {
+    lines.push('  sell veydrite <amount>   — sell veydrite at posted rate');
+    lines.push('  sell veydrite all        — sell entire hold');
+  } else {
+    lines.push('  sell veydrite            — nothing to sell');
+  }
+
+  lines.push('  buy fuel <amount>        — purchase fuel units');
+  lines.push('  repair hull full         — full hull repair');
+  lines.push('  repair hull <amount>     — partial hull repair');
+  lines.push('  trade exit               — close trade terminal');
   lines.push('');
 
   return lines.join('\n');
 }
+
 // ── Distress Beacons ──────────────────────────
 
 const BEACON_NORMAL = [
