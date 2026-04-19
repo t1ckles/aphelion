@@ -49,82 +49,32 @@ function processQueue() {
 function updateSidebar() {
   if (typeof playerState === 'undefined' || !playerState) return;
 
-  // Captain and ship — always white
-  setStyledText('sb-captain', playerState.captainName || '—', 'sb-white');
-  setStyledText('sb-ship',    playerState.shipName    || '—', 'sb-dim');
-  setText('sb-day', 'Day ' + (playerState.currentDay || 0));
+  setText('sb-captain', playerState.captainName || '—');
+  setText('sb-ship',    playerState.shipName    || '—');
+  setText('sb-day',     'Day ' + (playerState.currentDay || 0));
 
-  // Hull bar — white healthy, orange when low
   const hull = Math.max(0, Math.min(100, playerState.hull || 0));
   const fuel = Math.max(0, Math.min(100, playerState.fuel || 0));
-  setBar('sb-hull-bar', hull, 100, 10, hull < 30 ? 'sb-orange' : 'sb-white');
-  setBar('sb-fuel-bar', fuel, 100, 10, fuel < 20 ? 'sb-orange' : 'sb-green');
+  setBar('sb-hull-bar', hull, 100, 10);
+  setBar('sb-fuel-bar', fuel, 100, 10);
 
-  // Scrip — cyan
-  setStyledText('sb-credits',  (playerState.credits  || 0) + ' CR', 'sb-cyan');
-  setStyledText('sb-veydrite', (playerState.veydrite || 0) + ' kg',
-    playerState.veydrite > 0 ? 'sb-cyan' : 'sb-dim');
+  setText('sb-credits',  (playerState.credits  || 0) + ' CR');
+  setText('sb-veydrite', (playerState.veydrite || 0) + ' kg');
 
-  // Location
   if (playerState.location && typeof galaxy !== 'undefined' && galaxy) {
     const loc     = playerState.location;
     const q       = galaxy.quadrants[loc.quadrantIndex];
     const cluster = q && q.clusters.find(c => c.name === loc.clusterName);
     const sys     = cluster && cluster.systems.find(s => s.name === loc.systemName);
 
-    setStyledText('sb-system',   sys     ? sys.name     : '—', 'sb-white');
-    setStyledText('sb-cluster',  cluster ? cluster.name : '—', 'sb-dim');
-    setStyledText('sb-quadrant', q       ? q.name       : '—', 'sb-dim');
-    setStyledText('sb-state',    q       ? '[' + q.state + ']' : '—', 'sb-dim');
-    setText('sb-docked', playerState.docked ? '⬛ ' + playerState.dockedAt : '');
+    setText('sb-system',   sys     ? sys.name     : '—');
+    setText('sb-cluster',  cluster ? cluster.name : '—');
+    setText('sb-quadrant', q       ? q.name       : '—');
+    setText('sb-state',    q       ? '[' + q.state + ']' : '—');
+    setText('sb-docked',   playerState.docked
+      ? '⬛ ' + playerState.dockedAt
+      : '');
   }
-
-  // Contract — orange if urgent, white if active, dim if none
-  const active = typeof activeContracts !== 'undefined'
-    ? activeContracts.find(c => !c.completed && !c.failed)
-    : null;
-
-  if (active) {
-    const daysLeft = active.timeLimitDays - (playerState.currentDay - active.issuedDay);
-    const urgent   = daysLeft <= 2;
-    setSidebarHtml('sb-contract',
-      '<div class="' + (urgent ? 'sb-orange' : 'sb-white') + '">' + active.title + '</div>' +
-      '<div class="sb-dim">→ ' + active.target + '</div>' +
-      '<div class="' + (urgent ? 'sb-orange' : 'sb-dim') + '">' +
-        daysLeft + ' days left' + (urgent ? ' (!)' : '') +
-      '</div>'
-    );
-  } else {
-    setStyledText('sb-contract', 'none active', 'sb-dim');
-  }
-
-  // Reputation — white trusted, orange watched/hostile, dim known
-  if (typeof reputation !== 'undefined') {
-    const keys = Object.keys(reputation);
-    if (keys.length === 0) {
-      setStyledText('sb-rep', 'no contacts', 'sb-dim');
-    } else {
-      let html = '';
-      keys.forEach(key => {
-        const score   = reputation[key];
-        const tier    = repTier(score);
-        const faction = FACTION_REGISTRY[key];
-        if (!faction) return;
-        const scoreStr = (score >= 0 ? '+' : '') + score;
-        const cls = tier === 'HOSTILE'  ? 'sb-orange'
-                  : tier === 'WATCHED'  ? 'sb-orange'
-                  : tier === 'TRUSTED'  ? 'sb-white'
-                  : 'sb-dim';
-        html += '<div class="sidebar-row">' +
-          '<span class="' + cls + '">' + faction.short + '</span>' +
-          '<span class="' + cls + '">' + tier + '</span>' +
-          '<span class="' + cls + '">' + scoreStr + '</span>' +
-        '</div>';
-      });
-      setSidebarHtml('sb-rep', html);
-    }
-  }
-}
 
   const active = typeof activeContracts !== 'undefined'
     ? activeContracts.find(c => !c.completed && !c.failed)
@@ -179,20 +129,12 @@ function setSidebarHtml(id, html) {
   if (el) el.innerHTML = html;
 }
 
-function setBar(id, value, max, width, cssClass) {
+function setBar(id, value, max, width) {
   const el = document.getElementById(id);
   if (!el) return;
   const filled = Math.round((value / max) * width);
   const empty  = width - filled;
-  el.className = 'sidebar-bar ' + (cssClass || 'sb-green');
   el.textContent = '█'.repeat(filled) + '░'.repeat(empty) + ' ' + value + '%';
-}
-
-function setStyledText(id, text, cssClass) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.className = cssClass || '';
-  el.textContent = text;
 }
 
 // ── Autosave ──────────────────────────────────
@@ -236,27 +178,16 @@ function showMainMenu() {
 }
 
 function menuKeyHandler(e) {
-  // Ignore modifier keys
-  if (e.ctrlKey || e.metaKey || e.altKey) return;
-
   const save = loadGame();
   if (e.key === 'c' || e.key === 'C') {
     if (save) {
       document.removeEventListener('keydown', menuKeyHandler);
-      e.preventDefault();
-      e.stopPropagation();
       startContinue(save);
     }
   } else if (e.key === 'n' || e.key === 'N') {
     document.removeEventListener('keydown', menuKeyHandler);
-    e.preventDefault();
-    e.stopPropagation();
     dismissMenu();
     startNewGame();
-  } else {
-    // Block all other keys while menu is active
-    e.preventDefault();
-    e.stopPropagation();
   }
 }
 
