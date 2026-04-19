@@ -97,6 +97,7 @@ let playerState = {
   pendingTx:        null,
   currentDay:       0,
   bulletinContracts: [],
+  logs:              [],
 };
 
 // ── Init ──────────────────────────────────────
@@ -157,6 +158,7 @@ function handleCommand(raw) {
     case 'complete': return cmdComplete();
     case 'abandon':  return cmdAbandon();
     case 'status':   return cmdStatus();
+    case 'logs':     return cmdLogs();
     case '':         return '';
     default:         return '  [UNKNOWN] "' + cmd + '" is not a recognized command. Type help.';
   }
@@ -193,6 +195,8 @@ function cmdHelp() {
     '',
     '  rep                 — faction standing',
     '  status              — ship status',
+    '  logs                — recovered logs and beacons',
+    '  scan log            — scan ruin sites for data fragments',
     '',
   ].join('\n');
 }
@@ -202,11 +206,45 @@ function cmdHelp() {
 function cmdScan(args) {
   if (!galaxy) return '  [ERROR] Galaxy not initialized.';
   if (args.length === 0) return renderGalaxyOverview(galaxy);
+
+  // scan log — read ruin logs in current system
+  if (args[0] === 'log') {
+    return cmdScanLog();
+  }
+
   const index = parseInt(args[0]) - 1;
   if (isNaN(index) || index < 0 || index >= galaxy.quadrants.length) {
     return '  [ERROR] Invalid quadrant. Use scan <1-8>.';
   }
   return renderQuadrantDetail(galaxy, index);
+}
+
+function cmdScanLog() {
+  const sys = getCurrentSystem();
+  if (!sys) return '  [ERROR] Location data corrupted.';
+
+  const hasRuin = sys.bodies.some(b => b.hasRuin);
+  if (!hasRuin) {
+    return [
+      '',
+      '  [SCAN] No ruin sites in this system.',
+      '  Nothing to read.',
+      '',
+    ].join('\n');
+  }
+
+  const log = rollRuinLog(sys);
+  playerState.logs.push({ type: 'log', system: sys.name, text: log });
+
+  return [
+    '',
+    '  ── RUIN LOG FRAGMENT ─────────────────────────────────────────',
+    '',
+    '  [RECOVERED FROM: ' + sys.name + ']',
+    '',
+    '  ' + log,
+    '',
+  ].join('\n');
 }
 
 // ── Nav ───────────────────────────────────────
@@ -248,6 +286,20 @@ function cmdNav(args) {
           playerState.docked           = false;
           playerState.dockedAt         = null;
           playerState.dockedFactionKey = null;
+          
+          // Beacon check on arrival
+          const beacon = rollBeacon(sys);
+          if (beacon) {
+            const ageTag = beacon.age === 'recent'  ? '[RECENT]'
+                         : beacon.age === 'old'     ? '[ARCHIVED]'
+                         : '[UNKNOWN AGE]';
+            lines.push('  ── DISTRESS BEACON DETECTED ' + '─'.repeat(29));
+            lines.push('');
+            lines.push('  ' + ageTag + ' ' + beacon.text);
+            lines.push('');
+            // Log it
+            playerState.logs.push({ type: 'beacon', system: sys.name, age: beacon.age, text: beacon.text });
+          }
 
           const lines = [
             '',
@@ -1001,4 +1053,32 @@ function xenoFlavor(sys, state) {
   // so the same system always gets the same note
   const index = (sys.name.length + sys.hazard * 3 + (hasRuin ? 7 : 0)) % notes.length;
   return notes[index];
+}
+function cmdLogs() {
+  if (playerState.logs.length === 0) {
+    return [
+      '',
+      '  [LOGS] No records recovered yet.',
+      '  Scan ruin sites with "scan log".',
+      '  Beacons are logged automatically on arrival.',
+      '',
+    ].join('\n');
+  }
+
+  const lines = [
+    '',
+    '  ── RECOVERED RECORDS ─────────────────────────────────────────',
+    '',
+    '  ' + playerState.logs.length + ' record(s) on file.',
+    '',
+  ];
+
+  playerState.logs.forEach((entry, i) => {
+    const typeTag = entry.type === 'beacon' ? 'BEACON' : 'LOG FRAGMENT';
+    lines.push('  [' + (i + 1) + '] ' + typeTag + ' — ' + entry.system);
+    lines.push('  ' + entry.text);
+    lines.push('');
+  });
+
+  return lines.join('\n');
 }
