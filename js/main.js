@@ -1187,7 +1187,156 @@ if (response && response.trim().startsWith('__CLUSTERDEEPSCAN__')) {
             updateSidebar();
             autosave();
           }, cumulativeDelay + 200);
+          return;
+        }
 
+        function applyDriveWear(ship, level) {
+          if (!ship || !ship.systems) return;
+          const drive = ship.systems.find(s => s.name === 'Drive');
+          if (!drive) return;
+          const hpMap = { WORN: 65, DEGRADED: 35, CRITICAL: 15, DESTROYED: 0 };
+          if (hpMap[level] !== undefined) {
+            drive.hp  = Math.min(drive.hp, hpMap[level]);
+            drive.sta = Math.min(drive.sta || 100, hpMap[level]);
+          }
+        }
+
+        function updateAuspex() {
+          if (typeof bootAuspex === 'function') bootAuspex(() => {});
+        }
+
+        if (response && response.trim().startsWith('__FOLD__')) {
+          const fold    = JSON.parse(response.trim().slice(8));
+          const isBlind = fold.type === 'blindfold';
+          const duration = isBlind ? 18 : 12;
+
+          // Deduct cells immediately
+          playerState.foldCells -= fold.cellCost;
+          updateSidebar();
+
+          // Glitch controller
+          const glitch = startFoldGlitch();
+
+          // Build flavor sequence
+          const flavorPool = NAMES.fold_sequence;
+          const usedFlavor = [];
+          function nextFlavor() {
+            const remaining = flavorPool.filter(f => !usedFlavor.includes(f));
+            const pick = remaining[Math.floor(Math.random() * remaining.length)];
+            usedFlavor.push(pick);
+            return pick;
+          }
+
+          // Print initial lines
+          queue('', '', 40);
+          if (isBlind) {
+            queue('  [BLINDFOLD] Overdrive sequence initiated. Drive housing sealed.', 'output-warn', 60);
+          } else {
+            queue('  [FOLD] Committing ' + fold.cellCost + ' Veydric Fold Cell' + (fold.cellCost > 1 ? 's' : '') + '...', 'output-dim', 60);
+            queue('  [FOLD] Drive housing sealed. Resonance building.', 'output-dim', 60);
+          }
+          queue('  [FOLD] Calculating fold geometry...', 'output-dim', 60);
+          queue('', '', 40);
+
+          // Countdown with flavor text
+          let cumulativeDelay = 800;
+          for (let i = duration; i >= 1; i--) {
+            const flavor = nextFlavor();
+            const t = i;
+            setTimeout(() => {
+              queue('  > ' + flavor.padEnd(44) + t, 'output-dim', 0);
+              // Escalate glitch at halfway
+              if (t === Math.floor(duration / 2) && glitch) glitch.escalate();
+            }, cumulativeDelay);
+            cumulativeDelay += 600;
+          }
+
+          // The fold moment
+          setTimeout(() => {
+            queue('', '', 0);
+            queue('  *                                                        *', 'output-bright', 0);
+            queue('', '', 0);
+            if (glitch) glitch.peak();
+          }, cumulativeDelay);
+          cumulativeDelay += 500;
+
+          // Arrival
+          setTimeout(() => {
+            // Blind fold risk roll
+            if (isBlind) {
+              const roll = Math.random();
+              let outcome;
+              if (roll < 0.70) {
+                outcome = 'clean';
+              } else if (roll < 0.85) {
+                outcome = 'rough';
+              } else if (roll < 0.95) {
+                outcome = 'bad';
+              } else {
+                outcome = 'catastrophic';
+              }
+
+              // Apply blind fold outcomes
+              const ship = getShip();
+              if (outcome === 'rough' && ship) {
+                ship.hull = Math.max(1, ship.hull - 10);
+                applyDriveWear(ship, 'DEGRADED');
+              } else if (outcome === 'bad' && ship) {
+                ship.hull = Math.max(1, ship.hull - 25);
+                applyDriveWear(ship, 'CRITICAL');
+                // Wrong system — pick random adjacent instead
+                const adjacent = getConnectedQuadrants(galaxy, fold.destIdx);
+                if (adjacent.length > 0) {
+                  fold.destIdx = adjacent[Math.floor(Math.random() * adjacent.length)].index;
+                }
+              } else if (outcome === 'catastrophic' && ship) {
+                ship.hull = Math.max(1, ship.hull - 50);
+                applyDriveWear(ship, 'DESTROYED');
+              } else if (outcome === 'clean' && ship) {
+                applyDriveWear(ship, 'WORN');
+              }
+
+              const outcomeLines = {
+                clean:        '  [BLINDFOLD] Fold complete. Drive at WORN. Geometry held.',
+                rough:        '  [BLINDFOLD] Rough fold. Hull stress -10. Drive DEGRADED.',
+                bad:          '  [BLINDFOLD] Bad fold. Hull stress -25. Drive CRITICAL. Arrival offset.',
+                catastrophic: '  [BLINDFOLD] Catastrophic fold failure. Hull -50. Drive DESTROYED.',
+              };
+              queue(outcomeLines[outcome], outcome === 'clean' ? 'output-dim' : 'output-warn', 0);
+            }
+
+            // Move player to destination quadrant
+            const destQ    = galaxy.quadrants[fold.destIdx];
+            const firstSys = destQ.clusters[0].systems[0];
+
+            playerState.location = {
+              quadrantIndex: fold.destIdx,
+              clusterIndex:  0,
+              systemName:    firstSys.name,
+            };
+
+            // Reveal all corridors from new quadrant
+            revealAllCorridorsFrom(galaxy, fold.destIdx);
+
+            // Advance day counter
+            const daysElapsed = isBlind ? 6 + Math.floor(Math.random() * 4) : 3 + Math.floor(Math.random() * 3);
+            playerState.currentDay += daysElapsed;
+
+            queue('', '', 0);
+            queue('  [FOLD] Fold complete.', 'output-dim', 0);
+            queue('  [FOLD] ' + destQ.name + '.  Day ' + playerState.currentDay + '.', 'output-dim', 0);
+            queue('  [FOLD] Cells: ' + playerState.foldCells + ' / 20.', 'output-dim', 0);
+            queue('', '', 0);
+
+            updateSidebar();
+            updateAuspex();
+            autosave();
+            checkAchievements(playerState, { type: 'fold' });
+
+            enableInput('command');
+          }, cumulativeDelay + 600);
+
+          disableInput();
           return;
         }
         
