@@ -274,7 +274,8 @@ let playerState = {
   bulletinContracts: [],
   logs:             [],
   flags:            {},
-  stats:            { jumps: 0, salvages: 0, daysSurvived: 0, creditsEarned: 0 },
+  stats:            { jumps: 0, salvages: 0, daysSurvived: 0, creditsEarned: 0, contractsCompleted: 0, veydriteSold: 0 },
+  achievements:     [],
   inEncounter:      false,
   encounter:        null,
   isDead:           false,
@@ -397,6 +398,7 @@ function handleCommand(raw) {
     case 'deepscan':       return cmdDeepscan(args);
     case 'clusterdeepscan': return cmdClusterDeepscan(args);
     case 'charts':         return cmdCharts(args);
+    case 'record':         return cmdRecord();
     case 'status':    return cmdStatus();
     case 'weapons':   return cmdWeapons();
     case 'systems':   return cmdSystems();
@@ -802,8 +804,10 @@ function cmdSalvage() {
     playerState.salvagedSystems = playerState.salvagedSystems.slice(-50);
   }
 
-  const result = rollSalvage(sys, q.state);
-  return renderSalvageResult(result, playerState) + '  Day: ' + playerState.currentDay + '\n';
+  const result     = rollSalvage(sys, q.state);
+  const salvageOut = renderSalvageResult(result, playerState) + '  Day: ' + playerState.currentDay + '\n';
+  const salvageAch = triggerAchievements({ type: 'salvage' });
+  return salvageOut + (salvageAch ? salvageAch + '\n' : '');
 }
 
 // ── Dock ──────────────────────────────────────
@@ -891,7 +895,15 @@ lines.push('  Type "trade" to open the trade terminal.');
   lines.push('');
   lines.push(renderRepChange(repResult));
   lines.push('');
-  if (typeof updateAuspex === 'function') updateAuspex();
+if (typeof updateAuspex === 'function') updateAuspex();
+
+  // Xeno achievement
+  const sys2 = cluster && cluster.systems.find(s => s.name === loc.systemName);
+  if (sys2 && sys2.xenoTainted) triggerAchievements({ type: 'xeno_system' });
+
+  const dockAch = triggerAchievements({ type: 'dock' });
+  if (dockAch) lines.push(dockAch);
+
   return lines.join('\n');
 }
 
@@ -1034,7 +1046,9 @@ function executeTrade(tx) {
   if (tx.type === 'sell' && tx.commodity === 'veydrite') {
     playerState.veydrite -= tx.amount;
     playerState.credits  += tx.earned;
-    return ['', '  [SELL] Transaction complete.', '  Sold: ' + tx.amount + ' kg  |  Earned: ' + tx.earned + ' CR', '  Scrip: ' + playerState.credits + ' CR', ''].join('\n');
+    playerState.stats.veydriteSold = (playerState.stats.veydriteSold || 0) + tx.amount;
+    const veyAch = triggerAchievements({ type: 'veydrite_sale' });
+    return ['', '  [SELL] Transaction complete.', '  Sold: ' + tx.amount + ' kg  |  Earned: ' + tx.earned + ' CR', '  Scrip: ' + playerState.credits + ' CR', veyAch, ''].join('\n');
   }
   if (tx.type === 'buy' && tx.commodity === 'fuel') {
     playerState.credits -= tx.cost;
@@ -2040,6 +2054,8 @@ function cmdFire(args) {
           clearCombatState();
           lines.push('  Enemy vessel destroyed.');
           lines.push('  Salvage may be available. Type "salvage".');
+          const killAch1 = triggerAchievements({ type: 'kill', enemyClass: enemy.name, attackerKey: enc.attackerKey });
+          if (killAch1) lines.push(killAch1);
           lines.push('');
           return lines.join('\n');
         }
@@ -2063,12 +2079,14 @@ function cmdFire(args) {
     lines.push('');
 
     // Enemy destroyed?
-    if (enemy.hull <= 0) {
+      if (enemy.hull <= 0) {
       playerState.inEncounter = false;
       playerState.encounter   = null;
       clearCombatState();
       lines.push('  Enemy vessel destroyed.');
       lines.push('  Salvage may be available. Type "salvage".');
+      const killAch2 = triggerAchievements({ type: 'kill', enemyClass: enemy.name, attackerKey: enc.attackerKey });
+      if (killAch2) lines.push(killAch2);
       lines.push('');
       return lines.join('\n');
     }
@@ -2081,6 +2099,8 @@ function cmdFire(args) {
       lines.push('  Enemy hit your hull.  Damage: -' + counterResult.damage + '  Hull: ' + ship.hull + '/' + ship.hullMax);
       lines.push('');
       if (ship.hull <= 0) return handleDeath('destroyed in combat with ' + enc.attacker.name);
+      const surviveAch = triggerAchievements({ type: 'survived_combat', hullPct: Math.round((ship.hull / ship.hullMax) * 100), attackerKey: enc.attackerKey });
+      if (surviveAch) lines.push(surviveAch);
     } else if (counterResult && counterResult.missed) {
       lines.push('  Enemy fires — missed.');
       lines.push('');
@@ -2555,9 +2575,26 @@ function cmdClusterDeepscan(args) {
   };
 
 // Data and power are applied per-system during display in main.js
+  triggerAchievements({ type: 'cluster_sweep', clusterName: targetCluster.name });
   return '__CLUSTERDEEPSCAN__' + JSON.stringify(payload);
 }
-  
+
+// ── Achievement helper ────────────────────────
+
+function triggerAchievements(context) {
+  const awarded = checkAchievements(playerState, context);
+  if (!awarded || awarded.length === 0) return '';
+  return awarded.map(a =>
+    '\n  [RECORD] Guild Archive updated — ' + a.title
+  ).join('');
+}
+
+// ── Record command ────────────────────────────
+
+function cmdRecord() {
+  return renderAchievements(playerState);
+}
+
 // ── Deepscan ──────────────────────────────────
 
 function cmdDeepscan(args) {
@@ -2676,6 +2713,7 @@ function cmdDeepscan(args) {
   ].join('\n');
 
   // Cosmetic delay — print init lines then resolve
+  triggerAchievements({ type: 'deepscan', systemName: targetName });
   return '__DEEPSCAN__' + JSON.stringify({ targetName, result });
 }
 
@@ -2706,11 +2744,13 @@ function cmdSellAstrographics(args) {
     });
     playerState.astrographics = [];
     playerState.credits += total;
+    const astroAchAll = triggerAchievements({ type: 'astro_sale' });
     return [
       '',
       '  [SELL] All astrographic records transferred to Guild archive.',
       '  Charts cleared from memory matrix.',
       '  Earned: ' + total + ' CR  |  Scrip: ' + playerState.credits + ' CR',
+      astroAchAll,
       '',
     ].join('\n');
   }
@@ -2788,7 +2828,8 @@ function cmdAccept(args) {
   const result = acceptContract(index, playerState.bulletinContracts, playerState.currentDay);
   if (result.error) return '  [ACCEPT] ' + result.error;
   const c = result.contract;
-  return ['', '  [ACCEPT] Contract accepted.', '', '  ' + c.title, '  ' + c.description, '', '  Payment    : ' + c.payment + ' CR', '  Rep reward : +' + c.repReward, '  Time limit : ' + c.timeLimitDays + ' days', '  Deadline   : Day ' + (playerState.currentDay + c.timeLimitDays), '', '  Good luck.', ''].join('\n');
+  const acceptAch = triggerAchievements({ type: 'contract_accepted' });
+  return ['', '  [ACCEPT] Contract accepted.', '', '  ' + c.title, '  ' + c.description, '', '  Payment    : ' + c.payment + ' CR', '  Rep reward : +' + c.repReward, '  Time limit : ' + c.timeLimitDays + ' days', '  Deadline   : Day ' + (playerState.currentDay + c.timeLimitDays), '', '  Good luck.', acceptAch, ''].join('\n');
 }
 
 // ── Contract ──────────────────────────────────
@@ -2811,8 +2852,11 @@ function cmdComplete() {
   }
   const daysElapsed = playerState.currentDay - active.issuedDay;
   const result      = completeContract(active, daysElapsed, playerState);
+  playerState.stats.contractsCompleted = (playerState.stats.contractsCompleted || 0) + 1;
+  const completeAch = triggerAchievements({ type: 'contract_complete', fast: result.fast });
   const lines = ['', '  [COMPLETE] Contract fulfilled.', '', '  ' + active.title, '  Payment  : ' + result.total + ' CR' + (result.bonus > 0 ? '  (speed bonus: +' + result.bonus + ' CR)' : ''), '  Rep      : +' + result.repEarned + (result.fast ? '  (ahead of schedule)' : ''), '  Scrip    : ' + playerState.credits + ' CR', ''];
   if (result.repResult) lines.push(renderRepChange(result.repResult));
+  if (completeAch) lines.push(completeAch);
   lines.push('');
   return lines.join('\n');
 }
@@ -2822,9 +2866,11 @@ function cmdComplete() {
 function cmdAbandon() {
   const active = activeContracts.find(c => !c.completed && !c.failed);
   if (!active) return '  [ABANDON] No active contract.';
-  const result = failContract(active);
-  const lines  = ['', '  [ABANDON] Contract abandoned.', '  ' + active.title, '  Reputation penalty applied.', ''];
+  const result     = failContract(active);
+  const abandonAch = triggerAchievements({ type: 'contract_abandoned' });
+  const lines      = ['', '  [ABANDON] Contract abandoned.', '  ' + active.title, '  Reputation penalty applied.', ''];
   if (result.repResult) lines.push(renderRepChange(result.repResult));
+  if (abandonAch) lines.push(abandonAch);
   lines.push('');
   return lines.join('\n');
 }
