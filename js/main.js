@@ -246,6 +246,7 @@ function updateAuspex() {
   } else {
     body.innerHTML = html;
   }
+}
 
 function updateCombatAlert() {
   const terminal = document.getElementById('terminal');
