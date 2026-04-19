@@ -5,7 +5,8 @@
 // ============================================
 
 const MASTER_SEED = '4471-KETH-NULL';
-let menuDismissed = false;
+let menuDismissed   = false;
+let activeSlot      = null;
 
 // ── Terminal output ───────────────────────────
 
@@ -403,25 +404,59 @@ function autosave() {
 // ── Main Menu ─────────────────────────────────
 
 function showMainMenu() {
-  const contBtn  = document.getElementById('menu-continue');
-  const saveInfo = document.getElementById('menu-save-info');
-  const save     = loadGame();
+  const slots = getAllSlots();
+
+  slots.forEach(({ slot, save }) => {
+    const el       = document.getElementById('menu-slot-' + slot);
+    const infoSpan = el.querySelector('.slot-info');
+    if (save) {
+      const shipName = save.ship ? save.ship.name : 'Unknown vessel';
+      infoSpan.textContent =
+        save.captain.name + '  ·  ' + shipName +
+        '  ·  Day ' + (save.currentDay || 0) +
+        '  ·  ' + (save.location.systemName || 'unknown');
+      el.classList.add('slot-occupied');
+    } else {
+      infoSpan.textContent = '— EMPTY —';
+      el.classList.remove('slot-occupied');
+    }
+    el.addEventListener('click', () => selectSlot(slot));
+  });
+
+  document.addEventListener('keydown', menuKeyHandler);
+}
+
+function selectSlot(slot) {
+  activeSlot = slot;
+
+  // Highlight selected slot
+  [1, 2, 3].forEach(s => {
+    document.getElementById('menu-slot-' + s).classList.toggle('slot-selected', s === slot);
+  });
+
+  const save    = loadGameFromSlot(slot);
+  const contBtn = document.getElementById('menu-continue');
+  const newBtn  = document.getElementById('menu-new');
+  const info    = document.getElementById('menu-save-info');
 
   if (save) {
     contBtn.style.display = 'block';
-    saveInfo.innerHTML =
-      save.captain.name + ' · ' + save.ship.name + '<br>' +
-      'Day ' + (save.currentDay || 0) + ' · ' + save.economy.credits + ' CR<br>' +
-      save.location.systemName;
+    newBtn.style.display  = 'block';
+    newBtn.querySelector('.menu-key').textContent  = '[N]';
+    newBtn.querySelector(':not(.menu-key)') && (newBtn.textContent = '');
+    newBtn.innerHTML = '<span class="menu-key">[N]</span> New Game (overwrite slot ' + slot + ')';
+    info.textContent =
+      save.captain.name + '  ·  ' + (save.ship ? save.ship.name : '') +
+      '  ·  Day ' + (save.currentDay || 0) + '  ·  ' + save.economy.credits + ' CR';
+  } else {
+    contBtn.style.display = 'none';
+    newBtn.style.display  = 'block';
+    newBtn.innerHTML = '<span class="menu-key">[N]</span> New Game in slot ' + slot;
+    info.textContent = 'Slot ' + slot + ' — no pilot record.';
   }
 
-  document.addEventListener('keydown', menuKeyHandler);
-
-  contBtn.addEventListener('click', () => { if (save) startContinue(save); });
-  document.getElementById('menu-new').addEventListener('click', () => {
-    dismissMenu();
-    startNewGame();
-  });
+  contBtn.onclick = () => { if (save) startContinue(save); };
+  newBtn.onclick  = () => { dismissMenu(); startNewGame(slot); };
 }
 
 function menuKeyHandler(e) {
@@ -429,32 +464,32 @@ function menuKeyHandler(e) {
     document.removeEventListener('keydown', menuKeyHandler);
     return;
   }
-
   if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-  if (e.key !== 'c' && e.key !== 'C' && e.key !== 'n' && e.key !== 'N') {
+  if (e.key === '1' || e.key === '2' || e.key === '3') {
     e.preventDefault();
-    e.stopPropagation();
+    selectSlot(parseInt(e.key));
     return;
   }
 
-  const save = loadGame();
+  if (!activeSlot) return;
+
+  const save = loadGameFromSlot(activeSlot);
 
   if (e.key === 'c' || e.key === 'C') {
     if (save) {
       document.removeEventListener('keydown', menuKeyHandler);
       e.preventDefault();
-      e.stopPropagation();
       startContinue(save);
     }
   } else if (e.key === 'n' || e.key === 'N') {
     document.removeEventListener('keydown', menuKeyHandler);
     e.preventDefault();
-    e.stopPropagation();
     dismissMenu();
-    setTimeout(() => { startNewGame(); }, 750);
+    setTimeout(() => { startNewGame(activeSlot); }, 750);
   }
 }
+
 function dismissMenu() {
   const menu = document.getElementById('main-menu');
   menu.classList.add('hidden');
@@ -462,6 +497,188 @@ function dismissMenu() {
     menu.style.display = 'none';
     menuDismissed = true;
   }, 700);
+}
+
+// ── Continue Game ─────────────────────────────
+
+function startContinue(save) {
+  dismissMenu();
+
+  setTimeout(() => {
+    queue('INITIALIZING — APHELION DEEP SURVEY TERMINAL', 'output-bright', 80);
+    queue('INITIALIZING GALAXY ENGINE...', 'output-dim', 120);
+    queueBlank(80);
+    queue('> Loading galaxy data...', 'output-dim', 200);
+    queue('> Restoring pilot record...', 'output-dim', 280);
+    queue('> Guild network: CONNECTED', 'output-dim', 180);
+    queueBlank(120);
+    queueDivider(60);
+    queue('SAVE FILE LOADED', 'output-label', 80);
+    queueDivider(60);
+    queueBlank(80);
+
+    initCommands(save.galaxySeed || MASTER_SEED);
+    applySave(save, playerState, reputation, activeContracts);
+
+    const waitForPrint = setInterval(() => {
+      if (!isPrinting && printQueue.length === 0) {
+        clearInterval(waitForPrint);
+
+        bootSidebar(playerState.captainName, playerState.shipName, () => {
+          updateSidebar();
+          queue('', '', 80);
+          queue('Welcome back, ' + playerState.captainName + '.', 'output-bright', 80);
+          queue('Vessel: ' + (playerState.ship ? playerState.ship.name : playerState.shipName || 'Unknown'), 'output-dim', 80);
+          queue('Day ' + playerState.currentDay + ' — ' + playerState.location.systemName, 'output-dim', 80);
+          queueBlank(80);
+          queueDivider(60);
+          queueBlank(60);
+          queue('  ── SUGGESTED ACTIONS ────────────────────────────────────────', 'output-dim', 60);
+          queueBlank(40);
+          queue('  where          — survey your current system', 'output-dim', 40);
+          queue('  ping           — sweep for local contacts', 'output-dim', 40);
+          queue('  galaxy         — view the full quadrant map', 'output-dim', 40);
+
+          if (playerState.docked) {
+            queue('  trade          — open trade terminal', 'output-dim', 40);
+            queue('  armory         — browse weapons and ammo', 'output-dim', 40);
+            queue('  bulletin       — check available contracts', 'output-dim', 40);
+          } else {
+            queue('  nav <s>        — plot a course', 'output-dim', 40);
+            queue('  salvage        — begin salvage operation', 'output-dim', 40);
+            queue('  scan log       — search ruins for data', 'output-dim', 40);
+          }
+
+          queueBlank(80);
+          queueDivider(60);
+          queueBlank(80);
+
+          const waitForQueue = setInterval(() => {
+            if (!isPrinting && printQueue.length === 0) {
+              clearInterval(waitForQueue);
+              enableInput('command');
+              bootAuspex(() => { updateAuspex(); });
+              updateSidebar();
+            }
+          }, 100);
+        });
+      }
+    }, 100);
+
+  }, 400);
+}
+
+// ── New Game ──────────────────────────────────
+
+function generateRandomSeed() {
+  const words = [
+  'KETH','VAEL','NULL','DROSS','OSSIAN',
+  'THAL','GYRE','VEXIS','NARR','CAERN',
+  'ULVAR','SHETH','AETHON','SOLUS','EREBUS',
+  'VEYDRIS','KORRATH','HIIGARA','ITHEN','SOVAK',
+  'VANDRIS','RAVETH','MORVAK','ORVETH','ZETHIS',
+  'PELION','ARDIS','BRENNA','CALYX','DAVAN',
+  'ELVAR','GRETH','HAVAN','IRETH','JORVAK',
+  'VAEDRIS','KETHIS','VAELON','NARROK','DROTH',
+  'OSSIK','THALEN','GYRIS','VEXAR','NARITH',
+  'CAERON','ULVETH','SHALEN','AETHIS','SOLEN',
+  'ERETH','KELVAK','MELVAK','NETHIS','ORVAK',
+  'VAETH','KELN','XAELN','YOVAK','ZELVAK',
+  'AKSETH','BALETH','CRESITH','TELVAK','URVAK',
+  'QUETH','RELVAK','SELVAK','WELVAK','XETHIS',
+  'YELVAK','KORVETH','BELVAK','DELVAK','FORVAK'
+  ];
+  
+  const numbers = Math.floor(Math.random() * 9000) + 1000;
+  const word    = words[Math.floor(Math.random() * words.length)];
+  const suffix  = Math.floor(Math.random() * 900) + 100;
+  return numbers + '-' + word + '-' + suffix;
+}
+
+function startNewGame(slot) {
+  deleteSlotSave(slot);
+
+  setTimeout(() => {
+    queue('APHELION — NEW PILOT REGISTRATION', 'output-bright', 80);
+    queue('SLOT ' + slot, 'output-dim', 80);
+    queueDivider(60);
+    queueBlank(80);
+    queue('No pilot record found for this terminal.', 'output-dim', 100);
+    queue('Registration required before galaxy access is granted.', 'output-dim', 100);
+    queueBlank(200);
+
+    askPlayer('  Enter your name, Captain:', (captainName) => {
+      playerState.captainName = captainName || 'Unknown';
+      print('');
+      print('  Registered: ' + playerState.captainName, 'output-dim');
+      updateSidebar();
+
+      askPlayer('  Name your vessel:', (shipName) => {
+        playerState.shipName = shipName || 'The Unspoken';
+        print('');
+        print('  Vessel registered: ' + playerState.shipName, 'output-dim');
+        print('');
+        updateSidebar();
+
+        const autoSeed = generateRandomSeed();
+
+        askPlayer('  Galaxy seed: ' + autoSeed + '  — press Enter to accept or type your own:', (seedInput) => {
+          const chosenSeed = seedInput.trim() || autoSeed;
+
+          print('');
+          print('  Seed confirmed: ' + chosenSeed, 'output-dim');
+          print('');
+
+          queue('INITIALIZING — APHELION DEEP SURVEY TERMINAL', 'output-bright', 80);
+          queue('UNIVERSE SEED: ' + chosenSeed, 'output-dim', 120);
+          queueBlank(80);
+          queue('> Loading naming systems...', 'output-dim', 200);
+          queue('> History engine standing by...', 'output-dim', 280);
+          queue('> Guild network: CONNECTED', 'output-dim', 180);
+          queueBlank(120);
+          queueDivider(60);
+          queue('REGISTRATION COMPLETE — GALAXY ACCESS GRANTED', 'output-label', 80);
+          queueDivider(60);
+          queueBlank(80);
+
+          initCommands(chosenSeed);
+
+          const waitForBoot = setInterval(() => {
+            if (!isPrinting && printQueue.length === 0) {
+              clearInterval(waitForBoot);
+              bootSidebar(playerState.captainName, playerState.shipName, () => {
+                updateSidebar();
+                const overview = handleCommand('galaxy');
+                overview.split('\n').forEach(line => queue(line, '', 12));
+
+                const waitForQueue = setInterval(() => {
+                  if (!isPrinting && printQueue.length === 0) {
+                    clearInterval(waitForQueue);
+                    enableInput('command');
+                    updateSidebar();
+                    autosave(slot);
+                    bootAuspex(() => {});
+                  }
+                }, 100);
+              });
+            }
+          }, 100);
+        }, 600);
+      });
+    });
+  }, 400);
+}
+
+// ── Autosave ──────────────────────────────────
+
+function autosave(slot) {
+  if (typeof playerState === 'undefined' || !playerState.captainName ||
+      playerState.captainName === 'Unknown') return;
+  const s = slot || activeSlot || 1;
+  saveGameToSlot(s, playerState, reputation, {
+    active:  activeContracts ? activeContracts.find(c => !c.completed && !c.failed) || null : null,
+    history: activeContracts ? activeContracts.filter(c => c.completed || c.failed) : [],
+  });
 }
 
 // ── Continue Game ─────────────────────────────
