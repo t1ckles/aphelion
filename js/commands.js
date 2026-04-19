@@ -286,10 +286,6 @@ function cmdNav(args) {
           playerState.docked           = false;
           playerState.dockedAt         = null;
           playerState.dockedFactionKey = null;
-          
-          const lines = [
-            '',
-            '  [NAV] Plotting course to ' + sys.name + '...',
 
           const lines = [
             '',
