@@ -178,16 +178,27 @@ function showMainMenu() {
 }
 
 function menuKeyHandler(e) {
+  // Ignore modifier keys
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
   const save = loadGame();
   if (e.key === 'c' || e.key === 'C') {
     if (save) {
       document.removeEventListener('keydown', menuKeyHandler);
+      e.preventDefault();
+      e.stopPropagation();
       startContinue(save);
     }
   } else if (e.key === 'n' || e.key === 'N') {
     document.removeEventListener('keydown', menuKeyHandler);
+    e.preventDefault();
+    e.stopPropagation();
     dismissMenu();
     startNewGame();
+  } else {
+    // Block all other keys while menu is active
+    e.preventDefault();
+    e.stopPropagation();
   }
 }
 
