@@ -28,16 +28,34 @@
       <div id="menu-save-info" class="menu-save-info"></div>
 
       <!-- Slot modal -->
-      <div id="slot-modal" style="display:none">
+    <div id="slot-modal" style="display:none">
         <div id="slot-modal-inner">
-        <div class="slot-modal-title">SELECT PILOT RECORD</div>
-        <div id="slot-list">
-          <div class="menu-slot" id="menu-slot-1"><span class="menu-key">[1]</span> <span class="slot-info">— EMPTY —</span></div>
-          <div class="menu-slot" id="menu-slot-2"><span class="menu-key">[2]</span> <span class="slot-info">— EMPTY —</span></div>
-          <div class="menu-slot" id="menu-slot-3"><span class="menu-key">[3]</span> <span class="slot-info">— EMPTY —</span></div>
-        </div>
-        <div class="slot-modal-hint" id="slot-modal-hint"></div>
-        <div class="menu-option slot-cancel" id="slot-cancel"><span class="menu-key">[ESC]</span> Cancel</div>
+          <div class="slot-modal-title">SELECT PILOT RECORD</div>
+          <div id="slot-list">
+            <div class="menu-slot" id="menu-slot-1">
+              <div class="slot-summary">
+                <span class="slot-key">[1]</span>
+                <span class="slot-info">— EMPTY —</span>
+              </div>
+              <div class="slot-detail" id="slot-detail-1"></div>
+            </div>
+            <div class="menu-slot" id="menu-slot-2">
+              <div class="slot-summary">
+                <span class="slot-key">[2]</span>
+                <span class="slot-info">— EMPTY —</span>
+              </div>
+              <div class="slot-detail" id="slot-detail-2"></div>
+            </div>
+            <div class="menu-slot" id="menu-slot-3">
+              <div class="slot-summary">
+                <span class="slot-key">[3]</span>
+                <span class="slot-info">— EMPTY —</span>
+              </div>
+              <div class="slot-detail" id="slot-detail-3"></div>
+            </div>
+          </div>
+          <div class="slot-modal-hint" id="slot-modal-hint"></div>
+          <div class="slot-cancel" id="slot-cancel"><span class="menu-key">[ESC]</span> Cancel</div>
         </div>
       </div>
       <div class="menu-divider"></div>
