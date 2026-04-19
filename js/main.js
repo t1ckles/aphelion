@@ -79,16 +79,25 @@ function setBar(id, value, max, width, cssClass) {
 function updateSidebar() {
   if (typeof playerState === 'undefined' || !playerState) return;
 
+  const ship = playerState.ship;
+
   // Captain and ship
   setStyledText('sb-captain', playerState.captainName || '—', 'sb-white');
-  setStyledText('sb-ship',    playerState.shipName    || '—', 'sb-dim');
+  setStyledText('sb-ship',    ship ? ship.name : '—', 'sb-dim');
   setText('sb-day', 'Day ' + (playerState.currentDay || 0));
 
-  // Bars
-  const hull = Math.max(0, Math.min(100, playerState.hull || 0));
-  const fuel = Math.max(0, Math.min(100, playerState.fuel || 0));
-  setBar('sb-hull-bar', hull, 100, 10, hull < 30 ? 'sb-orange' : 'sb-white');
-  setBar('sb-fuel-bar', fuel, 100, 10, fuel < 20 ? 'sb-orange' : 'sb-green');
+  // Bars — read from ship object
+  const hull  = ship ? Math.max(0, Math.min(ship.hullMax,  ship.hull))  : 0;
+  const fuel  = ship ? Math.max(0, Math.min(ship.fuelMax,  ship.fuel))  : 0;
+  const power = ship ? Math.max(0, Math.min(ship.powerCore.max, ship.powerCore.current)) : 0;
+
+  const hullPct  = ship ? Math.round((hull  / ship.hullMax)          * 100) : 0;
+  const fuelPct  = ship ? Math.round((fuel  / ship.fuelMax)          * 100) : 0;
+  const powerPct = ship ? Math.round((power / ship.powerCore.max)    * 100) : 0;
+
+  setBar('sb-hull-bar',  hull,  ship ? ship.hullMax          : 100, 10, hullPct  < 30 ? 'sb-orange' : 'sb-white');
+  setBar('sb-fuel-bar',  fuel,  ship ? ship.fuelMax          : 100, 10, fuelPct  < 20 ? 'sb-orange' : 'sb-green');
+  setBar('sb-power-bar', power, ship ? ship.powerCore.max    : 500, 10, powerPct < 15 ? 'sb-orange' : 'sb-cyan');
 
   // Cargo
   setStyledText('sb-credits',  (playerState.credits  || 0) + ' CR', 'sb-cyan');
@@ -105,6 +114,7 @@ function updateSidebar() {
     setStyledText('sb-system',   sys     ? sys.name     : '—', 'sb-white');
     setStyledText('sb-cluster',  cluster ? cluster.name : '—', 'sb-dim');
     setStyledText('sb-quadrant', q       ? q.name       : '—', 'sb-dim');
+
     const stateClass = {
       Established: 'sb-green',
       Contested:   'sb-orange',
@@ -112,7 +122,7 @@ function updateSidebar() {
       Collapsed:   'sb-orange',
       Isolated:    'sb-cyan',
       Forbidden:   'sb-white',
-    }[q.state] || 'sb-dim';
+    }[q ? q.state : ''] || 'sb-dim';
     setStyledText('sb-state', q ? '[' + q.state + ']' : '—', stateClass);
     setText('sb-docked', playerState.docked ? '⬛ ' + playerState.dockedAt : '');
   }
