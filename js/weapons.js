@@ -298,6 +298,7 @@ function resolveShot(ship, slotId, targetSubsystem, targetArmor) {
     conditionAfter:  slot.condition,
     conditionRating: conditionRating(slot.condition),
   };
+}
 
 // ── Subsystem Damage ──────────────────────────
 
