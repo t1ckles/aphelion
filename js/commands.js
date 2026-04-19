@@ -371,7 +371,7 @@ function handleCommand(raw) {
 
   switch (cmd) {
     case 'help':      return cmdHelp();
-    case 'galaxy':    return renderGalaxyOverview(galaxy);
+    case 'galaxy':    return renderGalaxyOverview(galaxy, playerState.location ? playerState.location.quadrantIndex : 0);
     case 'map':       return renderFoldMap(galaxy, playerState.location.quadrantIndex);
     case 'scan':      return cmdScan(args);
     case 'nav':       return cmdNav(args);
