@@ -101,6 +101,11 @@ function adjustRep(factionKey, delta, reason) {
     ? '  [REP] Standing with ' + FACTION_REGISTRY[factionKey].short + ' changed: ' + tierBefore + ' → ' + tierAfter
     : null;
 
+// Fire achievement check for tier changes
+  if (tierBefore !== tierAfter && typeof checkAchievements === 'function' && typeof playerState !== 'undefined') {
+    checkAchievements(playerState, { type: 'rep_change', factionKey, tier: tierAfter });
+  }
+
   return {
     factionKey,
     change,
