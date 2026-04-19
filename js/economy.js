@@ -95,11 +95,12 @@ function rollSalvage(sys, quadrantState) {
   return {
     veydriteFound,
     scrapValue,
-    incident:  hazardRoll < hazardThreshold,
+    incident:     hazardRoll < hazardThreshold,
     rareFindRoll,
     rareFindChance,
     hasRuin,
     hasVeyd,
+    xenoTainted:  sys.xenoTainted || false,
   };
 }
 
@@ -111,12 +112,24 @@ const RARE_FINDS = [
   'A personal log. The last entry is unfinished.',
   'Emergency rations, still sealed. Sell or keep.',
   'A ship registry plate from a vessel not on record.',
-  'Xeno-adjacent material. No classification exists.',
   'A cargo manifest with a destination that no longer exists.',
-  'Something that should not be here. You log it and move on.',
 ];
 
-function rareFind() {
+const XENO_RARE_FINDS = [
+  'A sealed container. No markings. No seam. No obvious way to open it. It is lighter than it should be.',
+  'Hull plating from an unknown vessel class. The alloy composition does not match any registered manufacturer.',
+  'A navigation crystal, intact. When powered, it displays coordinates. The coordinates are inside this planet.',
+  'A personal recorder. The audio is intact. The language is not on record. It sounds almost familiar.',
+  'Something that was a tool. The grip is wrong for a human hand. Not wrong enough to be comforting.',
+  'A data core. Encrypted. The encryption standard does not exist in Guild records. It is not old.',
+  'A fragment of hull plating with writing on the interior. The writing is in Standard. It says: do not look for us.',
+  'Biological material, preserved. It is close to human. It is not human.',
+];
+
+function rareFind(xenoTainted) {
+  if (xenoTainted && Math.random() < 0.6) {
+    return XENO_RARE_FINDS[Math.floor(Math.random() * XENO_RARE_FINDS.length)];
+  }
   return RARE_FINDS[Math.floor(Math.random() * RARE_FINDS.length)];
 }
 
@@ -207,7 +220,7 @@ function renderSalvageResult(result, playerState) {
   }
 
   if (result.rareFindRoll < result.rareFindChance) {
-    const find = rareFind();
+    const find = rareFind(result.xenoTainted);
     lines.push('');
     lines.push('  [RARE FIND] ' + find);
   }
