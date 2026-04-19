@@ -1807,8 +1807,8 @@ function cmdResolve(args) {
 
   lines.push('');
 
-  // Update auspex
-  updateAuspexTraffic(currentContacts, true);
+  // Update auspex — pass contacts as-is, render per individual resolved state
+  updateAuspexTraffic(currentContacts, 'mixed');
 
   return lines.join('\n');
 }
