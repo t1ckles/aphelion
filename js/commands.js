@@ -160,7 +160,7 @@ function assignFaction(state) {
 
 // ── Station name generator ────────────────────
 
-function generateStationName(systemName, factionKey) {
+function generateStationName(systemName, factionKey, index) {
   const prefixes = {
     guild:       ['Assay Point', 'Survey Station', 'Guild Relay', 'Assessment Post'],
     pelk:        ['Pelk Depot', 'Transit Hub', 'Pelk Waystation', 'Logistics Post'],
@@ -169,10 +169,16 @@ function generateStationName(systemName, factionKey) {
     independent: ['Free Berth', 'Open Dock', 'The Anchorage', 'Waypoint'],
     forbidden:   ['Installation', 'Unknown Station', 'Sealed Platform'],
   };
+
+  const suffixes = ['Alpha', 'Beta', 'Prime', 'Secondary', 'Auxiliary',
+                    'I', 'II', 'III', 'IV', 'V'];
+
   const pool   = prefixes[factionKey] || prefixes.independent;
   const prefix = pool[Math.floor(Math.random() * pool.length)];
   const tag    = systemName.split(' ')[0];
-  return prefix + ' ' + tag;
+  const suffix = index > 0 ? ' ' + suffixes[Math.min(index, suffixes.length - 1)] : '';
+
+  return prefix + ' ' + tag + suffix;
 }
 
 // ── Ship initialization ───────────────────────
@@ -286,11 +292,12 @@ function initCommands(seed) {
   galaxy.quadrants.forEach(q => {
     q.clusters.forEach(cluster => {
       cluster.systems.forEach(sys => {
+        let stationIndex = 0;
         sys.bodies.forEach(body => {
           if (body.hasStation) {
             body.factionKey  = assignFaction(q.state);
             body.faction     = FACTIONS[body.factionKey] || FACTIONS.independent;
-            body.stationName = generateStationName(sys.name, body.factionKey);
+            body.stationName = generateStationName(sys.name, body.factionKey, stationIndex++);
           }
         });
       });
