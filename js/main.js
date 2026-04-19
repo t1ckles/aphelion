@@ -1015,8 +1015,39 @@ document.addEventListener('keydown', (e) => {
               }, cumulativeDelay + msgDelay);
             }
 
-            // Print result after delay
+// Print result after delay — drain power and record data here
             setTimeout(() => {
+              // Drain power for this system
+              drainPower(getShip(), sys.costPerSys);
+
+              // Record astrographic data
+              const ship    = getShip();
+              const entry   = {
+                systemName:    sys.name,
+                quadrantIndex: payload.quadrantIndex,
+                quality:       'deep',
+                scannedDay:    playerState.currentDay,
+                units:         sys.units,
+                data: {
+                  state:       sys.state,
+                  starClass:   sys.starClass,
+                  hazard:      sys.hazard,
+                  traffic:     sys.traffic,
+                  jumpPoints:  sys.jumpPoints,
+                  bodyCount:   sys.bodyCount,
+                  hasStation:  sys.hasStation,
+                  hasRuin:     sys.hasRuin,
+                  hasVeydrite: sys.hasVeyd,
+                },
+              };
+              const existing = playerState.astrographics.findIndex(a => a.systemName === sys.name);
+              if (existing >= 0) {
+                playerState.astrographics[existing] = entry;
+              } else {
+                playerState.astrographics.push(entry);
+              }
+              playerState.scannedSystems[sys.name] = true;
+
               queue('', '', 40);
               queue('  ── ' + sys.name.toUpperCase() + ' ─────────────────────────────────────', '', 40);
               queue('  Star class  : ' + sys.starClass + '-type', '', 40);
@@ -1030,11 +1061,10 @@ document.addEventListener('keydown', (e) => {
               queue('  Ruins       : ' + (sys.hasRuin ? 'structural signatures  [RUN]' : 'none detected'), '', 40);
               queue('  Beacon      : ' + (sys.hasBeacon ? 'active  [BCN]' : 'none'), '', 40);
               queue('  Data recorded.  +' + sys.units + ' units', 'output-dim', 40);
+              queue('  Power core: ' + ship.powerCore.current + '/' + ship.powerCore.max + '  [' + powerStatus(ship) + ']', 'output-dim', 40);
               queue('', '', 40);
+              updateSidebar();
             }, cumulativeDelay + sysDelay);
-
-            cumulativeDelay += sysDelay + 600;
-          });
 
           // Final summary
           setTimeout(() => {
