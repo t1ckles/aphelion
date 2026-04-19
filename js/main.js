@@ -1208,7 +1208,10 @@ if (response && response.trim().startsWith('__CLUSTERDEEPSCAN__')) {
         if (response && response.trim().startsWith('__FOLD__')) {
           const fold    = JSON.parse(response.trim().slice(8));
           const isBlind = fold.type === 'blindfold';
-          const duration = isBlind ? 18 : 12;
+          const duration = isBlind ? 16 + Math.floor(Math.random() * 7) :
+                           fold.corrType === 'highway'   ?  8 + Math.floor(Math.random() * 3) :
+                           fold.corrType === 'secondary' ? 13 + Math.floor(Math.random() * 5) :
+                                                           10 + Math.floor(Math.random() * 5);
 
           // Deduct cells immediately
           playerState.foldCells -= fold.cellCost;
