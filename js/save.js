@@ -131,6 +131,8 @@ const SAVE_DEFAULTS = {
   logs:  [],
   flags: {},
   salvagedSystems: [],
+  astrographics:   [],
+  scannedSystems:  {},
 
   stats: {
     jumps:         0,
