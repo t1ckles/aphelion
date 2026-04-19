@@ -1452,51 +1452,26 @@ function generateContacts(sys, quadrantState) {
 }
 
 function generateContactName() {
-  const prefixes = [
-    'Iron','Silent','Pale','Last','Bitter',
-    'Dark','Long','Cold','Hard','Lost',
-    'Hollow','Slow','Far','Dead','Heavy',
-    'Low','Distant','Outer','Final','First',
-    'Deep','Grey','Black','Faded','Spent',
-    'Lean','Bare','Worn','Dust','Salt',
-    'Dry','Raw','Rough','True','Old',
-    'Late','Early','Edge','Rim','Core',
-    'Central','Broken','Fixed','Still','Quiet',
-    'Soft','Narrow','Wide','Short','Blind',
-    'Red','Blue','Dull','Stark','Mean',
-    'Harsh','Tired','Empty','Lowline','Highline',
-    'Midnight','Grave','Hinter','Border','Frontier',
-    'Rust','Slag','Ash','Void','Null',
-    'Greyline','Hardline','Longline','Coldline','Darkline',
-    'Stone','Dusty','Farside','Nearside','Backside',
-    'Starboard','Portside','Windward','Leeward','Upbound',
-    'Downbound','Inbound','Outbound','Head','Tail',
-    'Side','Cross','Line','Fixed','Steady'
-  ];
-  const suffixes = [
-    'Run','Watch','Passage','Haul','Burn',
-    'Mile','Shift','Road','Crossing','End',
-    'Trade','March','Pull','Grind','Leg',
-    'Lane','Line','Route','Track','Trail',
-    'Way','Roadstead','Circuit','Loop','Stretch',
-    'Span','Transit','Carry','Lift','Drag',
-    'Tow','Train','Chain','Queue','Cycle',
-    'Rotation','Stint','Tour','Duty','Posting',
-    'Legwatch','Shiftwatch','Dogwatch','Midwatch','Stand',
-    'Hold','Station','Slot','Window','Lane‑Slot',
-    'Vector','Arc','Reach','Course','Drift',
-    'Flow','Stream','Current','Trackline','Wayline',
-    'Ridge','Edge','Rim','Border','Front',
-    'Stage','Step','Phase','Segment','Section',
-    'Tier','Band','Ring','Loopline','Spanline',
-    'Jump','Hop','Step‑Run','Spur','Branch',
-    'Feeder','Trunk','Spine','Chainline','Bridge',
-    'Crosscut','Cut','Break','Fallback','Advance',
-    'Push','Draw','Carryline','Transitline','Overrun'
-  ];
-  const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-  const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
-  return prefix + ' ' + suffix;
+  const roll = Math.random();
+
+  if (roll < 0.3 && NAMES.ship_virtue) {
+    // Single virtue name — "Resolute", "Vigilant"
+    return NAMES.ship_virtue[Math.floor(Math.random() * NAMES.ship_virtue.length)];
+
+  } else if (roll < 0.6 && NAMES.ship_endurance && NAMES.ship_endurance_noun) {
+    // Endurance compound — "Iron Run", "Cold Watch"
+    const prefix = NAMES.ship_endurance[Math.floor(Math.random() * NAMES.ship_endurance.length)];
+    const suffix = NAMES.ship_endurance_noun[Math.floor(Math.random() * NAMES.ship_endurance_noun.length)];
+    return prefix + ' ' + suffix;
+
+  } else if (NAMES.ship_aspiration) {
+    // Aspiration name — "Far Horizon", "Last Claim"
+    const prefix = NAMES.ship_endurance[Math.floor(Math.random() * NAMES.ship_endurance.length)];
+    const suffix = NAMES.ship_aspiration[Math.floor(Math.random() * NAMES.ship_aspiration.length)];
+    return prefix + ' ' + suffix;
+  }
+
+  return 'unnamed';
 }
 
 // Store contacts for current system
