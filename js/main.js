@@ -219,21 +219,24 @@ function boot() {
 
           initCommands(MASTER_SEED);
 
-          // Boot the sidebar with a dramatic sequence
-          bootSidebar(playerState.captainName, playerState.shipName, () => {
-            updateSidebar();
-            const overview = handleCommand('galaxy');
-            overview.split('\n').forEach(line => queue(line, '', 12));
-
-            const waitForQueue = setInterval(() => {
-              if (!isPrinting && printQueue.length === 0) {
-                clearInterval(waitForQueue);
-                enableInput('command');
+          const waitForPrint = setInterval(() => {
+            if (!isPrinting && printQueue.length === 0) {
+              clearInterval(waitForPrint);
+              bootSidebar(playerState.captainName, playerState.shipName, () => {
                 updateSidebar();
-              }
-            }, 100);
-          });
+                const overview = handleCommand('galaxy');
+                overview.split('\n').forEach(line => queue(line, '', 12));
 
+                const waitForQueue = setInterval(() => {
+                  if (!isPrinting && printQueue.length === 0) {
+                    clearInterval(waitForQueue);
+                    enableInput('command');
+                    updateSidebar();
+                  }
+                }, 100);
+              });
+            }
+          }, 100);
         }, 800);
       });
     });
