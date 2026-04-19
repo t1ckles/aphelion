@@ -217,7 +217,7 @@ function renderQuadrantDetail(galaxy, index) {
       const ruin    = sys.bodies.some(function(b) { return b.hasRuin; })    ? ' [RUN]' : '';
       const veyd    = sys.bodies.some(function(b) { return b.veydrite; })   ? ' [VYD]' : '';
       const beacon  = sys.hasBeacon ? ' [BCN]' : '';
-      const xeno    = sys.xenoTainted ? ' [???]' : '';
+      const xeno    = '';
       const hazard  = '▲'.repeat(sys.hazard) + '△'.repeat(5 - sys.hazard);
       lines.push('    ' + sys.name.padEnd(22) + ' ' + sys.starClass + '-class  HAZ:' + hazard + anchor + station + ruin + veyd + beacon + xeno);
     });
