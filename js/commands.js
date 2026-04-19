@@ -2555,6 +2555,8 @@ function cmdClusterDeepscan(args) {
   };
 
 // Data and power are applied per-system during display in main.js
+  return '__CLUSTERDEEPSCAN__' + JSON.stringify(payload);
+}
   
 // ── Deepscan ──────────────────────────────────
 
