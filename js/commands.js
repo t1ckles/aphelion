@@ -1614,7 +1614,9 @@ function getArmoryContext() {
   if (!playerState.docked) return null;
   const loc   = playerState.location;
   const q     = galaxy.quadrants[loc.quadrantIndex];
-  const cluster = q.clusters.find(c => c.name === loc.clusterName);
+  const cluster = loc.clusterName
+    ? q.clusters.find(c => c.name === loc.clusterName)
+    : q.clusters[loc.clusterIndex || 0];
   const sys   = cluster && cluster.systems.find(s => s.name === loc.systemName);
   if (!sys) return null;
   const body  = sys.bodies.find(b => b.hasStation);
@@ -2612,7 +2614,9 @@ function cmdPing() {
 
   const loc     = playerState.location;
   const q       = galaxy.quadrants[loc.quadrantIndex];
-  const cluster = q && q.clusters.find(c => c.name === loc.clusterName);
+  const cluster = loc.clusterName
+    ? q && q.clusters.find(c => c.name === loc.clusterName)
+    : q && q.clusters[loc.clusterIndex || 0];
   const sys     = cluster && cluster.systems.find(s => s.name === loc.systemName);
   if (!sys) return '  [ERROR] Location data corrupted.';
 
