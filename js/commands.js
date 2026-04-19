@@ -143,6 +143,8 @@ function handleCommand(raw) {
   const [cmd, ...args] = input.split(/\s+/);
 
   if (playerState.inTrade) return handleTradeCommand(cmd, args);
+  if (playerState.inEncounter) return handleEncounterCommand(cmd);
+
 
   switch (cmd) {
     case 'help':     return cmdHelp();
@@ -1141,6 +1143,22 @@ function rollEncounter(sys, q, playerState, blindJump) {
 }
 
 // ── Encounter commands ────────────────────────
+
+function handleEncounterCommand(cmd) {
+  if (cmd === 'evade')     return cmdEvade();
+  if (cmd === 'negotiate') return cmdNegotiate();
+  if (cmd === 'fight')     return cmdFight();
+  if (cmd === 'yield')     return cmdYield();
+  if (cmd === 'status')    return cmdStatus();
+
+  return [
+    '',
+    '  [ENCOUNTER] You are under threat. Resolve this first.',
+    '',
+    '  evade  |  negotiate  |  fight  |  yield',
+    '',
+  ].join('\n');
+}
 
 function cmdEvade() {
   if (!playerState.inEncounter) return '  [EVADE] No active encounter.';
