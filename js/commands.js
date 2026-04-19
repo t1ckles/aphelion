@@ -395,6 +395,7 @@ function handleCommand(raw) {
     case 'ping':      return cmdPing();
     case 'resolve':   return cmdResolve(args);
     case 'deepscan':  return cmdDeepscan(args);
+    case 'charts':    return cmdCharts(args);
     case 'status':    return cmdStatus();
     case 'weapons':   return cmdWeapons();
     case 'systems':   return cmdSystems();
@@ -429,6 +430,8 @@ function cmdHelp() {
     '  ping                — gravimetric sweep',
     '  resolve <number>    — resolve a specific contact',
     '  resolve all         — resolve all contacts',
+    '  deepscan <system>   — full astrographic survey',
+    '  charts              — view astrographic records',
     '',
     '  ── STATION ───────────────────────────────────────────────────',
     '',
@@ -2385,6 +2388,97 @@ function cmdResolve(args) {
 function cmdRep() {
   const sys = getCurrentSystem();
   return renderRep(sys);
+}
+
+// ── Charts ────────────────────────────────────
+
+function cmdCharts(args) {
+  const records = playerState.astrographics;
+  if (!records || records.length === 0) {
+    return [
+      '',
+      '  [CHARTS] No astrographic data on record.',
+      '  Run deepscan on systems to generate chart data.',
+      '',
+    ].join('\n');
+  }
+
+  // charts <system name> — show detail for a specific record
+  if (args.length > 0) {
+    const query  = args.join(' ').toLowerCase();
+    const entry  = records.find(r => r.systemName.toLowerCase().includes(query));
+    if (!entry) {
+      return [
+        '',
+        '  [CHARTS] No record matching "' + args.join(' ') + '".',
+        '  Type "charts" to list all records.',
+        '',
+      ].join('\n');
+    }
+
+    const d       = entry.data;
+    const age     = playerState.currentDay - entry.scannedDay;
+    const quality = entry.quality === 'deep' ? 'Deep scan' : 'Basic scan';
+
+    const lines = [
+      '',
+      '  ── CHART RECORD: ' + entry.systemName.toUpperCase() + ' ──────────────────────────',
+      '',
+      '  Quality     : ' + quality + '  (' + entry.units + ' units)',
+      '  Recorded    : Day ' + entry.scannedDay + '  (' + age + ' days ago)',
+      '',
+    ];
+
+    if (entry.quality === 'deep' && d) {
+      const hazardBar  = d.hazard  !== undefined ? '▲'.repeat(d.hazard)  + '△'.repeat(5 - d.hazard)  : '—';
+      const trafficBar = d.traffic !== undefined ? '◉'.repeat(d.traffic) + '○'.repeat(5 - d.traffic) : '—';
+      lines.push('  Star class  : ' + (d.starClass || '—') + '-type');
+      lines.push('  Bodies      : ' + (d.bodyCount  || '—'));
+      lines.push('  State       : ' + (d.state       || '—'));
+      lines.push('  Hazard      : ' + hazardBar);
+      lines.push('  Traffic     : ' + trafficBar);
+      lines.push('  Jump points : ' + (d.jumpPoints  || '—') + ' outbound');
+      lines.push('  Station     : ' + (d.hasStation  ? 'present' : 'none detected'));
+      lines.push('  Veydrite    : ' + (d.hasVeydrite ? 'trace deposits  [VYD]' : 'none detected'));
+      lines.push('  Ruins       : ' + (d.hasRuin     ? 'structural signatures  [RUN]' : 'none detected'));
+    } else {
+      lines.push('  Detail      : basic record only — deepscan for full data');
+    }
+
+    lines.push('');
+    lines.push('  Type "sell astrographics" to sell this record at a Guild station.');
+    lines.push('');
+    return lines.join('\n');
+  }
+
+  // charts — list all records
+  const repScore = getRep('guild');
+  const lines    = [
+    '',
+    '  ── ASTROGRAPHIC RECORDS ──────────────────────────────────────',
+    '',
+    '  ' + records.length + ' system(s) on record.',
+    '',
+  ];
+
+  records.forEach((entry, i) => {
+    const val     = astrographicValue(entry, playerState.currentDay, repScore);
+    const aging   = val.aging ? ' [aging]' : '';
+    const quality = entry.quality === 'deep' ? 'deep' : 'basic';
+    const age     = playerState.currentDay - entry.scannedDay;
+    lines.push(
+      '  [' + (i + 1) + '] ' + entry.systemName.padEnd(26) +
+      quality.padEnd(8) +
+      ('Day ' + entry.scannedDay).padEnd(10) +
+      entry.units + ' units' + aging
+    );
+  });
+
+  lines.push('');
+  lines.push('  charts <system name>   — view full record');
+  lines.push('  sell astrographics     — sell records at a Guild station');
+  lines.push('');
+  return lines.join('\n');
 }
 
 // ── Deepscan ──────────────────────────────────
