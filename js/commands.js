@@ -145,7 +145,7 @@ function rollEncounter(sys, q, playerState, blindJump) {
 
 // ── Faction assignment ────────────────────────
 
-function assignFaction(state) {
+function assignFaction(state, rng) {
   const pools = {
     Established: ['guild', 'pelk', 'colonial', 'pelk', 'guild'],
     Contested:   ['pelk', 'colonial', 'independent', 'feral', 'pelk'],
@@ -155,7 +155,7 @@ function assignFaction(state) {
     Forbidden:   ['forbidden', 'forbidden', 'forbidden'],
   };
   const pool = pools[state] || ['independent'];
-  return pool[Math.floor(Math.random() * pool.length)];
+  return pool[Math.floor(rng.next() * pool.length)];
 }
 
 // ── Station name generator ────────────────────
@@ -174,7 +174,7 @@ function generateStationName(systemName, factionKey, index) {
                     'I', 'II', 'III', 'IV', 'V'];
 
   const pool   = prefixes[factionKey] || prefixes.independent;
-  const prefix = pool[Math.floor(Math.random() * pool.length)];
+  const prefix = pool[Math.floor(rng.next() * pool.length)];
   const tag    = systemName.split(' ')[0];
   const suffix = index > 0 ? ' ' + suffixes[Math.min(index, suffixes.length - 1)] : '';
 
@@ -289,15 +289,18 @@ function initCommands(seed) {
     playerState.ship = createStartingShip(playerState.shipName || 'The Unspoken');
   }
 
+// Use seeded RNG for station generation so stations are always the same
+  const stationRng = new RNG(RNG.hashSeed(seed + '-stations'));
+
   galaxy.quadrants.forEach(q => {
     q.clusters.forEach(cluster => {
       cluster.systems.forEach(sys => {
         let stationIndex = 0;
         sys.bodies.forEach(body => {
           if (body.hasStation) {
-            body.factionKey  = assignFaction(q.state);
+            body.factionKey  = assignFaction(q.state, stationRng);
             body.faction     = FACTIONS[body.factionKey] || FACTIONS.independent;
-            body.stationName = generateStationName(sys.name, body.factionKey, stationIndex++);
+            body.stationName = generateStationName(sys.name, body.factionKey, stationIndex++, stationRng);
           }
         });
       });
