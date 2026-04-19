@@ -165,7 +165,7 @@ function bootSidebar(captainName, shipName, onComplete) {
   setText('sb-fuel-bar', '');
 
   const steps = [
-    () => { sidebar.style.opacity = '1'; setSidebarHtml('sb-captain', '<span style="color:#ffffff">INITIALIZING...</span>'); },
+    () => { sidebar.style.visibility = 'visible'; sidebar.style.opacity = '1'; setSidebarHtml('sb-captain', '<span style="color:#ffffff">INITIALIZING...</span>'); },
     () => { setText('sb-captain', '> PILOT RECORD'); },
     () => { setText('sb-captain', '> VERIFYING...'); },
     () => { setText('sb-captain', captainName); },
