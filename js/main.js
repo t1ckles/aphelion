@@ -496,6 +496,7 @@ const contBtn  = document.getElementById('menu-continue');
     }
   });
 
+  document.getElementById('menu-archive').addEventListener('click', openAchievementsModal);
   document.addEventListener('keydown', menuKeyHandler);
 }
 
@@ -507,6 +508,13 @@ function menuKeyHandler(e) {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
 
   const modalOpen = document.getElementById('slot-modal').style.display !== 'none';
+
+  const achModalOpen = document.getElementById('achievements-modal').style.display !== 'none';
+  if (e.key === 'Escape' && achModalOpen) {
+    e.preventDefault();
+    closeAchievementsModal();
+    return;
+  }
 
   if (e.key === 'Escape' && modalOpen) {
     e.preventDefault();
@@ -649,6 +657,86 @@ function menuKeyHandler(e) {
       openSlotModal('new');
     }
   }
+}
+
+// ── Achievements modal ────────────────────────
+
+function openAchievementsModal() {
+  const modal = document.getElementById('achievements-modal');
+  const list  = document.getElementById('achievements-list');
+
+  // Load from all slots and merge into a hall of records
+  const slots       = getAllSlots();
+  const allRecords  = [];
+
+  slots.forEach(({ slot, save }) => {
+    if (!save || !save.achievements || save.achievements.length === 0) return;
+    save.achievements.forEach(a => {
+      allRecords.push({
+        ...a,
+        pilotName: save.captain.name,
+        slotLabel: 'Slot ' + slot,
+      });
+    });
+  });
+
+  // Also include current session if in-game
+  if (typeof playerState !== 'undefined' && playerState.achievements && playerState.achievements.length > 0) {
+    playerState.achievements.forEach(a => {
+      if (!allRecords.some(r => r.id === a.id && r.pilotName === playerState.captainName)) {
+        allRecords.push({
+          ...a,
+          pilotName: playerState.captainName,
+          slotLabel: 'Active',
+        });
+      }
+    });
+  }
+
+  list.innerHTML = '';
+
+  if (allRecords.length === 0) {
+    list.innerHTML = '<div style="color:#006618;font-size:12px;padding:8px 0;">No entries on record. The archive updates as operations are conducted.</div>';
+  } else {
+    // Group by category
+    const grouped = {};
+    allRecords.forEach(a => {
+      if (!grouped[a.category]) grouped[a.category] = [];
+      grouped[a.category].push(a);
+    });
+
+    Object.keys(grouped).sort().forEach(cat => {
+      const catEl = document.createElement('div');
+      catEl.className = 'ach-category';
+      catEl.textContent = cat.toUpperCase();
+      list.appendChild(catEl);
+
+      grouped[cat].forEach(a => {
+        const entry = document.createElement('div');
+        entry.className = 'ach-entry';
+        entry.innerHTML =
+          '<div class="ach-summary">' +
+            '<span class="ach-day">Day ' + a.day + '</span>' +
+            '<span class="ach-title">' + a.title + '</span>' +
+          '</div>' +
+          '<div class="ach-detail">' +
+            a.detail + '<br><br>' +
+            '<span style="color:#004410;">Pilot: ' + a.pilotName + '  ·  ' + a.slotLabel + '</span>' +
+          '</div>';
+        entry.addEventListener('click', () => {
+          entry.classList.toggle('ach-expanded');
+        });
+        list.appendChild(entry);
+      });
+    });
+  }
+
+  modal.style.display = 'flex';
+  document.getElementById('achievements-cancel').addEventListener('click', closeAchievementsModal);
+}
+
+function closeAchievementsModal() {
+  document.getElementById('achievements-modal').style.display = 'none';
 }
 
 function dismissMenu() {
