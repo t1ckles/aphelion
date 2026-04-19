@@ -348,9 +348,10 @@ function startNewGame() {
             queueBlank(80);
 
             initCommands(chosenSeed);
-
-          setTimeout(() => {
-            bootSidebar(playerState.captainName, playerState.shipName, () => {
+              const waitForBoot = setInterval(() => {
+            if (!isPrinting && printQueue.length === 0) {
+              clearInterval(waitForBoot);
+              bootSidebar(playerState.captainName, playerState.shipName, () => {
               updateSidebar();
               const overview = handleCommand('galaxy');
               overview.split('\n').forEach(line => queue(line, '', 12));
@@ -363,9 +364,9 @@ function startNewGame() {
                   autosave();
                 }
               }, 100);
-            });
-          }, 600);
-
+              });
+            }
+          }, 100);
           }, 800);
         });
       });
