@@ -1457,7 +1457,7 @@ function cmdPing() {
   if (!playerState.location) return '  [PING] No location fix.';
 
   const ship = getShip();
-  const powerCost = 15;
+  const powerCost = 5;
   if (ship.powerCore.current < powerCost) {
     return ['', '  [PING] Insufficient power for gravimetric sweep.', '  Core: ' + ship.powerCore.current + '/' + ship.powerCore.max, ''].join('\n');
   }
@@ -1553,7 +1553,7 @@ function cmdResolve(args) {
   }
 
   const ship = getShip();
-  const powerCost = 10;
+  const powerCost = Math.max(3, Math.round(currentContacts.length * 1.5));
   if (ship.powerCore.current < powerCost) {
     return ['', '  [RESOLVE] Insufficient power.  Core: ' + ship.powerCore.current + '/' + ship.powerCore.max, ''].join('\n');
   }
