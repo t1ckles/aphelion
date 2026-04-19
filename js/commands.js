@@ -1368,7 +1368,6 @@ function cmdBuyAmmo(args) {
 function cmdSellWeapon(args) {
   if (!playerState.docked) return '  [SELL] Must be docked.';
   if (args[0] === 'weapon' || args[0] === 'cargo') return cmdSellWeapon(args);
-I don't und
   
   const ctx  = getArmoryContext();
   const ship = getShip();
