@@ -77,6 +77,11 @@ function generateSystem(rng, quadrantState) {
                        Contested: 0.05, Established: 0.02 }[quadrantState] ?? 0.06;
   const xenoTainted = rng.next() < xenoChance;
 
+// Distress beacons — more common in declining/collapsed space
+  const beaconChance = { Established: 0.04, Contested: 0.10, Declining: 0.18,
+                          Collapsed: 0.25, Isolated: 0.15, Forbidden: 0.08 }[quadrantState] ?? 0.08;
+  const hasBeacon = rng.next() < beaconChance;
+
   return {
     starClass,
     bodies,
@@ -84,8 +89,8 @@ function generateSystem(rng, quadrantState) {
     hazard: hazardLevel(quadrantState, rng),
     traffic: trafficLevel(quadrantState, rng),
     xenoTainted,
+    hasBeacon,
   };
-}
 
 function generateCluster(rng, quadrantState, naming) {
   const systemCount = 2 + Math.floor(rng.next() * 6);
