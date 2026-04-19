@@ -149,7 +149,6 @@ body {
   max-height: 60%;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.4s ease;
   border: 1px solid #006618;
   border-radius: 8px;
   padding: 16px 14px;
@@ -248,4 +247,13 @@ body::after {
   30%  { filter: brightness(1.5) blur(2px); transform: scaleY(1);    }
   60%  { filter: brightness(1.2) blur(0px);                          }
   100% { filter: brightness(1) blur(0px);                            }
+}
+@keyframes sidebarFadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 0.9; }
+}
+
+.sidebar-visible {
+  visibility: visible !important;
+  animation: sidebarFadeIn 0.8s ease forwards;
 }
