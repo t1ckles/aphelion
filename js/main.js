@@ -284,6 +284,18 @@ function startContinue(save) {
 
 // ── New Game ──────────────────────────────────
 
+function generateRandomSeed() {
+  const words = [
+    'KETH', 'VAEL', 'NULL', 'DROSS', 'OSSIAN',
+    'THAL', 'GYRE', 'VEXIS', 'NARR', 'CAERN',
+    'ULVAR', 'SHETH', 'AETHON', 'SOLUS', 'EREBUS'
+  ];
+  const numbers = Math.floor(Math.random() * 9000) + 1000;
+  const word    = words[Math.floor(Math.random() * words.length)];
+  const suffix  = Math.floor(Math.random() * 900) + 100;
+  return numbers + '-' + word + '-' + suffix;
+}
+
 function startNewGame() {
   deleteSave();
 
@@ -316,13 +328,20 @@ function startNewGame() {
         print('');
         updateSidebar();
 
-        setTimeout(() => {
-          queueDivider(60);
-          queue('REGISTRATION COMPLETE — GALAXY ACCESS GRANTED', 'output-label', 80);
-          queueDivider(60);
-          queueBlank(80);
+  // Generate a random seed for this universe
+        const autoSeed = generateRandomSeed();
 
-          initCommands(MASTER_SEED);
+        askPlayer('  Galaxy seed: ' + autoSeed + '  — press Enter to accept or type your own:', (seedInput) => {
+          const chosenSeed = seedInput.trim() || autoSeed;
+
+          setTimeout(() => {
+            queueDivider(60);
+            queue('REGISTRATION COMPLETE — GALAXY ACCESS GRANTED', 'output-label', 80);
+            queue('UNIVERSE SEED: ' + chosenSeed, 'output-dim', 80);
+            queueDivider(60);
+            queueBlank(80);
+
+            initCommands(chosenSeed);
 
           setTimeout(() => {
             bootSidebar(playerState.captainName, playerState.shipName, () => {
@@ -341,7 +360,8 @@ function startNewGame() {
             });
           }, 600);
 
-        }, 800);
+          }, 800);
+        });
       });
     });
 
