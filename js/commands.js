@@ -479,6 +479,7 @@ function cmdNav(args) {
     contactCache[playerState.location.systemName] = currentContacts;
   }
   currentContacts = null;
+  playerState.salvagedSystems = [];
 
   for (let qi = 0; qi < galaxy.quadrants.length; qi++) {
     const q = galaxy.quadrants[qi];
@@ -731,7 +732,7 @@ function cmdSalvage() {
   if (!sys) return '  [ERROR] Location data corrupted.';
 
   // Check if already salvaged this visit
-  const sysKey = sys.name + '_' + playerState.currentDay;
+  const sysKey = sys.name;
   if (playerState.salvagedSystems.includes(sysKey)) {
     return [
       '',
