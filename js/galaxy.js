@@ -201,9 +201,10 @@ function renderGalaxyOverview(galaxy) {
   return lines.join('\n');
 }
 
-function renderQuadrantDetail(galaxy, index) {
+function renderQuadrantDetail(galaxy, index, scannedSystems) {
   const q = galaxy.quadrants[index];
   if (!q) return '  [ERROR] Invalid quadrant index.';
+  const known = scannedSystems || {};
   const lines = [];
   lines.push('');
   lines.push('  ── QUADRANT ' + (index + 1) + ': ' + q.name.toUpperCase() + ' ──────────────────────────────');
@@ -212,14 +213,9 @@ function renderQuadrantDetail(galaxy, index) {
   q.clusters.forEach(function(cluster) {
     lines.push('  ▸ ' + cluster.name + '  [' + cluster.systems.length + ' systems]');
     cluster.systems.forEach(function(sys) {
-      const anchor  = sys.isAnchor ? ' ◆' : '';
-      const station = sys.bodies.some(function(b) { return b.hasStation; }) ? ' [STA]' : '';
-      const ruin    = sys.bodies.some(function(b) { return b.hasRuin; })    ? ' [RUN]' : '';
-      const veyd    = sys.bodies.some(function(b) { return b.veydrite; })   ? ' [VYD]' : '';
       const beacon  = sys.hasBeacon ? ' [BCN]' : '';
-      const xeno    = '';
-      const hazard  = '▲'.repeat(sys.hazard) + '△'.repeat(5 - sys.hazard);
-      lines.push('    ' + sys.name.padEnd(22) + ' ' + sys.starClass + '-class  HAZ:' + hazard + anchor + station + ruin + veyd + beacon + xeno);
+      const charted = known[sys.name] ? ' ◆' : '';
+      lines.push('    ' + sys.name.padEnd(24) + ' ' + sys.starClass + '-class' + beacon + charted);
     });
     lines.push('');
   });
