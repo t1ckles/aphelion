@@ -96,6 +96,7 @@ let playerState = {
   dockedFactionKey: null,
   inTrade:          false,
   pendingTx:        null,
+  pendingMenu:      false,
   currentDay:       0,
   bulletinContracts: [],
   logs:              [],
