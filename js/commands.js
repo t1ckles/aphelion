@@ -2554,40 +2554,8 @@ function cmdClusterDeepscan(args) {
     quadrantIndex: loc.quadrantIndex,
   };
 
-  // Apply power drain and record data now (before the async display)
-  toScan.forEach(sys => {
-    drainPower(ship, costPerSys);
-    const units   = astrographicYield(sys, 'deep', q.state);
-    const existing = playerState.astrographics.findIndex(a => a.systemName === sys.name);
-    const entry   = {
-      systemName:    sys.name,
-      quadrantIndex: loc.quadrantIndex,
-      quality:       'deep',
-      scannedDay:    playerState.currentDay,
-      units,
-      data: {
-        state:       q.state,
-        starClass:   sys.starClass,
-        hazard:      sys.hazard,
-        traffic:     sys.traffic,
-        jumpPoints:  sys.jumpPoints,
-        bodyCount:   sys.bodies.length,
-        hasStation:  sys.bodies.some(b => b.hasStation),
-        hasRuin:     sys.bodies.some(b => b.hasRuin),
-        hasVeydrite: sys.bodies.some(b => b.veydrite),
-      },
-    };
-    if (existing >= 0) {
-      playerState.astrographics[existing] = entry;
-    } else {
-      playerState.astrographics.push(entry);
-    }
-    playerState.scannedSystems[sys.name] = true;
-  });
-
-  return '__CLUSTERDEEPSCAN__' + JSON.stringify(payload);
-}
-
+// Data and power are applied per-system during display in main.js
+  
 // ── Deepscan ──────────────────────────────────
 
 function cmdDeepscan(args) {
