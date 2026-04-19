@@ -480,6 +480,18 @@ document.addEventListener('keydown', (e) => {
         }
       }
 
+      if (playerState.pendingMenu) {
+        playerState.pendingMenu = false;
+        if (raw.toLowerCase() === 'yes' || raw.toLowerCase() === 'y') {
+          print('  [MENU] Returning to main menu...', 'output-dim');
+          setTimeout(() => { location.reload(); }, 800);
+          return;
+        } else {
+          print('  [MENU] Cancelled.', 'output-dim');
+          return;
+        }
+      }
+
       if (raw.toLowerCase() === 'newsave') {
         pendingNewSave = true;
       }
