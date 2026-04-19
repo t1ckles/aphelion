@@ -45,6 +45,104 @@ const FACTIONS = {
   },
 };
 
+// ── Combat Engine ─────────────────────────────
+
+const ENCOUNTER_RATES = {
+  Established: 0.01,
+  Contested:   0.04,
+  Declining:   0.06,
+  Collapsed:   0.10,
+  Isolated:    0.03,
+  Forbidden:   0.08,
+};
+
+const ATTACKER_TYPES = {
+  feral: {
+    name:     'Feral Raiders',
+    short:    'FERAL',
+    want:     'cargo',
+    threat:   3,
+    openings: [
+      'Three vessels decloak off your port bow. No transponder. No hail. They are already in weapons range.',
+      'A salvage hauler — or something wearing its hull — drops out of the debris field and locks onto you.',
+      'They don\'t broadcast a demand. They just start closing. Feral. Hungry.',
+    ],
+  },
+  pirate: {
+    name:     'Unregistered Vessel',
+    short:    'PIRATE',
+    want:     'scrip',
+    threat:   2,
+    openings: [
+      'A single ship, running dark, drops in behind you. Hail incoming: "Cut your drive or we cut it for you."',
+      'Pirate intercept. They\'ve been waiting here. The ambush is clean — someone knew your route.',
+      '"Captain. Nice ship. Nicer cargo. Let\'s talk numbers." The targeting lock says the talking is optional.',
+    ],
+  },
+  hostile_faction: {
+    name:     'Faction Patrol',
+    short:    'PATROL',
+    want:     'expulsion',
+    threat:   4,
+    openings: [
+      'A patrol vessel hails you on the Guild frequency. The voice is not Guild. "You are not welcome here, Captain."',
+      'Two armed transports fall into escort formation — one ahead, one behind. You are being herded.',
+      'The station locks your docking codes remotely. A patrol decouples from the ring and burns toward you.',
+    ],
+  },
+  unknown: {
+    name:     'Unknown Contact',
+    short:    '????',
+    want:     'unknown',
+    threat:   5,
+    openings: [
+      'Something is on your sensors. It is not broadcasting. It is not moving. It is getting closer.',
+      'The Auspex returns a contact. The contact has no hull signature on record. It is very large.',
+      'Your drive cuts out for 4.2 seconds. When it restarts, there is something between you and the jump point.',
+    ],
+  },
+};
+
+function rollEncounter(sys, q, playerState, blindJump) {
+  let rate = ENCOUNTER_RATES[q.state] || 0.05;
+  if (blindJump) rate += 0.05;
+
+  const stationFactions = sys.bodies
+    .filter(b => b.hasStation && b.factionKey)
+    .map(b => b.factionKey);
+
+  stationFactions.forEach(fk => {
+    const rep = getRep(fk);
+    if (rep !== null && repTier(rep) === 'HOSTILE') rate += 0.15;
+  });
+
+  if (Math.random() > rate) return null;
+
+  let attackerKey = 'feral';
+  if (sys.xenoTainted && Math.random() < 0.3) {
+    attackerKey = 'unknown';
+  } else if (stationFactions.some(fk => {
+    const rep = getRep(fk);
+    return rep !== null && repTier(rep) === 'HOSTILE';
+  })) {
+    attackerKey = 'hostile_faction';
+  } else if (q.state === 'Collapsed' || q.state === 'Declining') {
+    attackerKey = Math.random() < 0.6 ? 'feral' : 'pirate';
+  } else {
+    attackerKey = Math.random() < 0.5 ? 'pirate' : 'feral';
+  }
+
+  const attacker = ATTACKER_TYPES[attackerKey];
+  const opening  = attacker.openings[Math.floor(Math.random() * attacker.openings.length)];
+
+  return {
+    attackerKey,
+    attacker,
+    openingLine: opening,
+    resolved:    false,
+  };
+}
+
 // ── Faction assignment ────────────────────────
 
 function assignFaction(state) {
