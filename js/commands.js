@@ -2138,7 +2138,7 @@ function cmdWhere() {
     '',
     '  System   : ' + sys.name + anchor,
     '  Cluster  : ' + cluster.name,
-    '  Quadrant : ' + q.name + '  [' + q.state + ']',
+    '  Quadrant : ' + q.name + '  [' + (loc.quadrantIndex + 1) + ']  [' + q.state + ']',
     '  Star     : ' + sys.starClass + '-class  |  Bodies: ' + sys.bodies.length,
     '  Day      : ' + playerState.currentDay,
     '',
