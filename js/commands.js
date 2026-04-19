@@ -104,6 +104,8 @@ let playerState = {
 
 function initCommands(seed) {
   galaxy = generateGalaxy(seed, Naming);
+  playerState.galaxySeed = seed;
+
 
   galaxy.quadrants.forEach(q => {
     q.clusters.forEach(cluster => {
