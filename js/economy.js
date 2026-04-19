@@ -367,3 +367,69 @@ function astrographicYield(sys, quality, quadrantState) {
 
   return variance + ruinBonus + stationBonus + veydBonus;
 }
+
+// ── Fold cell pricing ─────────────────────────
+
+function foldCellPrice(factionKey, repTier) {
+  const base = {
+    guild:       45,
+    pelk:        55,
+    colonial:    40,
+    independent: 65,
+    feral:       80,
+  }[factionKey] || 65;
+
+  // CCC requires KNOWN standing or better
+  if (factionKey === 'colonial' && repTier === 'WATCHED' || repTier === 'HOSTILE') {
+    return null; // refused
+  }
+
+  // Feral stations may not have stock — 40% chance empty
+  if (factionKey === 'feral') {
+    return { price: base, noStock: Math.random() < 0.4 };
+  }
+
+  // Guild standing discount/penalty
+  const modifier = {
+    TRUSTED:  0.85,
+    KNOWN:    1.00,
+    WATCHED:  1.15,
+    HOSTILE:  null,
+  }[repTier];
+
+  if (modifier === null) return null; // refused
+
+  return { price: Math.round(base * modifier), noStock: false };
+}
+
+// ── Raw veydrite emergency feed ───────────────
+
+function rawVeydriteToCell(kg) {
+  // 10kg = 1 cell equivalent
+  // Returns number of cells that can be generated
+  return Math.floor(kg / 10);
+}
+
+function feedRawVeydrite(playerState, cells) {
+  // Feed raw veydrite into drive — 10kg per cell
+  // 15% chance of minor drive wear per cell fed
+  const kgNeeded = cells * 10;
+  if (playerState.reserveVeydrite < kgNeeded) {
+    return { success: false, reason: 'Insufficient reserve veydrite.' };
+  }
+  playerState.reserveVeydrite -= kgNeeded;
+  playerState.foldCells       += cells;
+
+  const wearRolls = [];
+  for (let i = 0; i < cells; i++) {
+    if (Math.random() < 0.15) wearRolls.push(i);
+  }
+
+  return {
+    success:    true,
+    cellsAdded: cells,
+    kgConsumed: kgNeeded,
+    driveWear:  wearRolls.length > 0,
+    wearCount:  wearRolls.length,
+  };
+}
