@@ -280,8 +280,11 @@ function cmdJump(args) {
   if (!galaxy) return '  [ERROR] Galaxy not initialized.';
   if (args.length === 0) return '  [USAGE] jump <system name>';
   if (playerState.docked) return '  [JUMP] You are docked. Type "undock" first.';
+  // Cache current contacts before leaving
+  if (currentContacts && playerState.location) {
+    contactCache[playerState.location.systemName] = currentContacts;
+  }
   currentContacts = null;
-
   const query = args.join(' ').toLowerCase();
 
   // Find current cluster
@@ -419,7 +422,10 @@ function cmdNav(args) {
   if (!galaxy) return '  [ERROR] Galaxy not initialized.';
   if (args.length === 0) return '  [USAGE] nav <system name>';
   if (playerState.docked) return '  [NAV] You are docked. Type "undock" first.';
-// Clear contacts on nav — new system, fresh sweep needed
+  // Cache current contacts before leaving
+  if (currentContacts && playerState.location) {
+    contactCache[playerState.location.systemName] = currentContacts;
+  }
   currentContacts = null;
 
   const query = args.join(' ').toLowerCase();
@@ -1582,8 +1588,9 @@ function generateContactName() {
   return 'unnamed';
 }
 
-// Store contacts for current system
+// Store contacts for current system and cache by system name
 let currentContacts = null;
+const contactCache  = {};
 
 function cmdPing() {
   if (!playerState.location) return '  [PING] No location fix.';
@@ -1652,11 +1659,18 @@ function cmdPing() {
       }
     }
     // else — 92%+ chance nothing changes, fall through to display
-  } else {
-    // First ping — generate fresh contacts
-    currentContacts = generateContacts(sys, q.state);
+} else {
+    // Check cache first — return to system restores previous contacts
+    if (contactCache[sys.name]) {
+      currentContacts = contactCache[sys.name];
+    } else {
+      currentContacts = generateContacts(sys, q.state);
+      contactCache[sys.name] = currentContacts;
+    }
   }
 
+// Update cache
+  if (sys) contactCache[sys.name] = currentContacts;
 // Update auspex — use mixed mode if any contacts are already resolved
   const anyResolved = currentContacts.some(c => c.resolved);
   updateAuspexTraffic(currentContacts, anyResolved ? 'mixed' : false);
