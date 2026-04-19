@@ -613,58 +613,6 @@ function confirmDeleteSlot(slot) {
   });
 }
 
-function menuKeyHandler(e) {
-  if (menuDismissed) {
-    document.removeEventListener('keydown', menuKeyHandler);
-    return;
-  }
-  if (e.ctrlKey || e.metaKey || e.altKey) return;
-
-  const modalOpen = document.getElementById('slot-modal').style.display !== 'none';
-
-  if (e.key === 'Escape' && modalOpen) {
-    e.preventDefault();
-    closeSlotModal();
-    return;
-  }
-
-  if (e.key === '1' || e.key === '2' || e.key === '3') {
-    if (modalOpen) {
-      e.preventDefault();
-      selectSlot(parseInt(e.key));
-    }
-    return;
-  }
-
-  if (modalOpen) return;
-
-  if (e.key === 'c' || e.key === 'C') {
-    const mostRecent = getAllSlots()
-      .filter(s => s.save && s.save.savedAt)
-      .sort((a, b) => b.save.savedAt - a.save.savedAt)[0];
-    if (mostRecent) {
-      document.removeEventListener('keydown', menuKeyHandler);
-      e.preventDefault();
-      activeSlot = mostRecent.slot;
-      startContinue(mostRecent.save);
-    }
-  } else if (e.key === 'l' || e.key === 'L') {
-    e.preventDefault();
-    openSlotModal('load');
-  } else if (e.key === 'n' || e.key === 'N') {
-    document.removeEventListener('keydown', menuKeyHandler);
-    e.preventDefault();
-    const slots     = getAllSlots();
-    const emptySlot = slots.find(s => s.save === null);
-    if (emptySlot) {
-      dismissMenu();
-      setTimeout(() => { startNewGame(emptySlot.slot); }, 750);
-    } else {
-      openSlotModal('new');
-    }
-  }
-}
-
 // ── Achievements modal ────────────────────────
 
 function openAchievementsModal() {
