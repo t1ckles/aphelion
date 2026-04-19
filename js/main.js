@@ -267,6 +267,50 @@ function bootAuspex(onComplete) {
   }, 250);
 }
 
+// ── Death screen ──────────────────────────────
+
+function showDeathScreen() {
+  inputEnabled = false;
+
+  // Clear output
+  setTimeout(() => {
+    const output = document.getElementById('output');
+    if (output) output.innerHTML = '';
+
+    // Clear sidebar and auspex
+    const sidebar = document.getElementById('sidebar');
+    const auspex  = document.getElementById('auspex');
+    if (sidebar) sidebar.style.opacity = '0';
+    if (auspex)  auspex.style.opacity  = '0';
+
+    // Show death message
+    setTimeout(() => {
+      const cause = playerState.deathCause || 'unknown cause';
+      const name  = playerState.shipName   || 'Unknown vessel';
+      const captain = playerState.captainName || 'Unknown';
+      const day   = playerState.currentDay  || 0;
+
+      queue('', '', 200);
+      queue(name + ' did not return.', 'output-bright', 100);
+      queue('', '', 200);
+      queue('No distress beacon was recovered.', 'output-dim', 100);
+      queue('', '', 400);
+      queue('Captain ' + captain + '  |  Day ' + day + '  |  ' + cause + '.', 'output-dim', 100);
+      queue('', '', 800);
+      queue('─'.repeat(58), 'output-dim', 100);
+      queue('', '', 600);
+
+      const waitForDeath = setInterval(() => {
+        if (!isPrinting && printQueue.length === 0) {
+          clearInterval(waitForDeath);
+          setTimeout(() => { location.reload(); }, 2000);
+        }
+      }, 100);
+
+    }, 600);
+  }, 400);
+}
+
 // ── Autosave ──────────────────────────────────
 
 function autosave() {
@@ -612,6 +656,10 @@ document.addEventListener('keydown', (e) => {
       const thinkTime = 200 + Math.floor(Math.random() * 600);
       setTimeout(() => {
         const response = handleCommand(raw);
+        if (response === '__DEATH__') {
+          showDeathScreen();
+          return;
+        }
         if (response) {
           response.split('\n').forEach(line => queue(line, '', 55));
         }
