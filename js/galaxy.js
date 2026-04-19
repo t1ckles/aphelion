@@ -316,38 +316,55 @@ function foldCellCost(corridorType) {
 
 // ── Galaxy overview ───────────────────────────
 
-function renderGalaxyOverview(galaxy) {
-  const lines = [];
-  const bar   = (n, max) => '█'.repeat(Math.round(n)) + '░'.repeat(max - Math.round(n));
+function renderGalaxyOverview(galaxy, playerQuadrantIndex) {
+  const lines    = [];
+  const idx      = playerQuadrantIndex ?? 0;
+
+  // Build known quadrant set
+  const knownSet = new Set([idx]);
+  galaxy.knownCorridors.forEach(cidx => {
+    knownSet.add(galaxy.connections[cidx][0]);
+    knownSet.add(galaxy.connections[cidx][1]);
+  });
+
+  const bar = (n, max) => '█'.repeat(Math.round(n)) + '░'.repeat(max - Math.round(n));
+
   lines.push('');
-  lines.push('  ── DEEP SURVEY — GALAXY MANIFEST v0.3 ────────────────────');
+  lines.push('  ── GUILD NETWORK — KNOWN SPACE ────────────────────────────');
   lines.push('');
   lines.push(
     '  Seed: ' + galaxy.seed +
-    '  |  Quadrants: ' + galaxy.meta.quadrantCount +
-    '  |  Systems: ' + galaxy.meta.totalSystems +
-    '  |  Stations: ' + galaxy.meta.totalStations
+    '  |  Known: ' + knownSet.size + ' / ' + galaxy.meta.quadrantCount + ' quadrants' +
+    '  |  Systems on record: ' + galaxy.meta.totalSystems
   );
   lines.push('');
-  lines.push('  ── QUADRANT INDEX ──────────────────────────────────────────');
+  lines.push('  ── KNOWN QUADRANTS ─────────────────────────────────────────');
   lines.push('');
-  galaxy.quadrants.forEach(function(q, i) {
-    const totalSys   = q.clusters.reduce((n, c) => n + c.systems.length, 0);
-    const controlPct = Math.round(q.controlScore * 100);
-    const controlBar = bar(q.controlScore * 10, 10);
-    const stateTag   = q.state.toUpperCase().padEnd(12);
-    lines.push('  [' + String(i + 1).padStart(2) + '] ' + q.name.padEnd(32) + ' ' + stateTag + '  ' + controlBar + '  ' + controlPct + '%');
+
+  Array.from(knownSet).sort((a, b) => a - b).forEach(qi => {
+    const q        = galaxy.quadrants[qi];
+    const isCur    = qi === idx;
+    const marker   = isCur ? '►' : ' ';
+    const totalSys = q.clusters.reduce((n, c) => n + c.systems.length, 0);
+    const ctrlBar  = bar(q.controlScore * 10, 10);
+    const stateTag = q.state.toUpperCase().padEnd(12);
+    lines.push('  ' + marker + ' [' + String(qi + 1).padStart(2) + '] ' + q.name.padEnd(32) + ' ' + stateTag + '  ' + ctrlBar);
     lines.push('        ' + q.notableFeature.padEnd(40) + totalSys + ' systems');
     lines.push('');
   });
+
+  const unknownCount = galaxy.meta.quadrantCount - knownSet.size;
+  if (unknownCount > 0) {
+    lines.push('  ... ' + unknownCount + ' quadrant(s) lie beyond known corridors.');
+    lines.push('');
+  }
+
   lines.push('  ── COMMANDS ────────────────────────────────────────────────');
   lines.push('');
   lines.push('  scan <1-42>              — survey a quadrant');
   lines.push('  map                      — fold corridor map');
   lines.push('  fold <quadrant name>     — fold to connected quadrant');
-  lines.push('  blindfold <quadrant>     — overdrive fold (12 cells, dangerous)');
   lines.push('  nav <system name>        — navigate within quadrant');
-  lines.push('  help                     — full command list');
   lines.push('');
   return lines.join('\n');
 }
