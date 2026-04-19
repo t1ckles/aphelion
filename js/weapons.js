@@ -499,19 +499,46 @@ function renderSubsystemStatus(ship) {
   lines.push('');
   lines.push('  ── SUBSYSTEM STATUS ──────────────────────────────────────────');
   lines.push('');
+  lines.push('  ' + (ship.name || 'Unknown vessel') + '  —  ' + (ship.designation || ''));
+  lines.push('');
 
   Object.keys(ship.subsystems).forEach(key => {
-    const sub  = ship.subsystems[key];
+    const sub    = ship.subsystems[key];
     const hpPct  = Math.round((sub.hp  / sub.hpMax)  * 100);
     const staPct = Math.round((sub.sta / sub.staMax) * 100);
-    const hpBar  = '█'.repeat(Math.round(hpPct  / 10)) + '░'.repeat(10 - Math.round(hpPct  / 10));
-    const staBar = '█'.repeat(Math.round(staPct / 10)) + '░'.repeat(10 - Math.round(staPct / 10));
-    const status = sub.hp <= 0 ? ' [DESTROYED]' : sub.sta <= 0 ? ' [UNSTABLE]' : '';
 
-    lines.push('  ' + sub.name.padEnd(16) + ' HP:' + hpBar + ' ' + hpPct + '%  STA:' + staBar + ' ' + staPct + '%' + status);
+    const hpFilled  = Math.round(hpPct  / 10);
+    const staFilled = Math.round(staPct / 10);
+
+    const hpBar  = '█'.repeat(hpFilled)  + '░'.repeat(10 - hpFilled);
+    const staBar = '█'.repeat(staFilled) + '░'.repeat(10 - staFilled);
+
+    const status = sub.hp  <= 0  ? '  [DESTROYED]'
+                 : sub.sta <= 0  ? '  [UNSTABLE]'
+                 : hpPct   < 30  ? '  [CRITICAL]'
+                 : hpPct   < 60  ? '  [DAMAGED]'
+                 : '';
+
+    const label = sub.name.padEnd(16);
+
+    lines.push('  ' + label + ' HP ' + hpBar + ' ' + String(hpPct).padStart(3) + '%' + status);
+    lines.push('  ' + ' '.repeat(16)  + ' ST ' + staBar + ' ' + String(staPct).padStart(3) + '%');
+    lines.push('');
   });
 
+  // Power core summary
+  const powerPct = Math.round((ship.powerCore.current / ship.powerCore.max) * 100);
+  const powerFilled = Math.round(powerPct / 10);
+  const powerBar = '█'.repeat(powerFilled) + '░'.repeat(10 - powerFilled);
+  const powerStat = powerStatus(ship);
+
+  lines.push('  ── POWER CORE ────────────────────────────────────────────────');
   lines.push('');
+  lines.push('  Charge          ' + powerBar + ' ' + String(powerPct).padStart(3) + '%  [' + powerStat + ']');
+  lines.push('  ' + ship.powerCore.current + ' / ' + ship.powerCore.max + ' units');
+  lines.push('  Recharge rate   ' + ship.powerCore.rechargeActive + ' units/day  (passive: ' + ship.powerCore.recharge + ')');
+  lines.push('');
+
   return lines.join('\n');
 }
 
