@@ -148,19 +148,35 @@ function bootSidebar(captainName, shipName, onComplete) {
   const sidebar = document.getElementById('sidebar');
   if (!sidebar) { onComplete(); return; }
 
-  // Start with a power-on flash
-  sidebar.style.opacity = '0';
+  // Clear everything first
+  setText('sb-captain', '');
+  setText('sb-ship', '');
+  setText('sb-day', '');
+  setText('sb-system', '');
+  setText('sb-cluster', '');
+  setText('sb-quadrant', '');
+  setText('sb-state', '');
+  setText('sb-docked', '');
+  setText('sb-credits', '');
+  setText('sb-veydrite', '');
+  setText('sb-contract', '');
+  setText('sb-rep', '');
+  setText('sb-hull-bar', '');
+  setText('sb-fuel-bar', '');
 
   const steps = [
     () => { sidebar.style.opacity = '1'; setSidebarHtml('sb-captain', '<span style="color:#ffffff">INITIALIZING...</span>'); },
     () => { setText('sb-captain', '> PILOT RECORD'); },
     () => { setText('sb-captain', '> VERIFYING...'); },
-    () => { setText('sb-captain', captainName); setText('sb-ship', '...'); },
+    () => { setText('sb-captain', captainName); },
+    () => { setText('sb-ship', '> VESSEL ID...'); },
     () => { setText('sb-ship', shipName); setText('sb-day', 'Day 0'); },
-    () => { setSidebarHtml('sb-hull-bar', '<span style="color:#ffffff">CHECKING...</span>'); },
-    () => { setBar('sb-hull-bar', 80, 100, 10); setBar('sb-fuel-bar', 60, 100, 10); },
+    () => { setSidebarHtml('sb-hull-bar', '<span style="color:#ffffff">CHECKING SYS...</span>'); },
+    () => { setBar('sb-hull-bar', 80, 100, 10); },
+    () => { setBar('sb-fuel-bar', 60, 100, 10); },
     () => { setText('sb-credits', '200 CR'); setText('sb-veydrite', '0 kg'); },
-    () => { setText('sb-system', 'LOCATING...'); },
+    () => { setText('sb-system', '> LOCATING...'); },
+    () => { setText('sb-contract', 'none active'); setText('sb-rep', 'no contacts'); },
     () => { updateSidebar(); },
     () => { onComplete(); },
   ];
@@ -173,7 +189,7 @@ function bootSidebar(captainName, shipName, onComplete) {
     }
     steps[i]();
     i++;
-  }, 180);
+  }, 200);
 }
 
 // ── Boot sequence ─────────────────────────────
