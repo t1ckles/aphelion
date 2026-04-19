@@ -63,6 +63,8 @@ function saveGame(playerState, reputationData, contractData) {
         name: playerState.captainName,
       },
 
+      galaxySeed: playerState.galaxySeed || '4471-KETH-NULL',
+
       ship: {
         name:      playerState.shipName,
         class:     playerState.ship,
@@ -172,6 +174,7 @@ function applySave(save, playerState, reputationObj, activeContractsArr) {
   playerState.ship        = save.ship.class;
   playerState.hull        = save.ship.hull;
   playerState.fuel        = save.ship.fuel;
+  playerState.galaxySeed = save.galaxySeed || '4471-KETH-NULL';
 
   // Economy
   playerState.credits  = save.economy.credits;
