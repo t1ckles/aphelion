@@ -103,7 +103,15 @@ function updateSidebar() {
     setStyledText('sb-system',   sys     ? sys.name     : '—', 'sb-white');
     setStyledText('sb-cluster',  cluster ? cluster.name : '—', 'sb-dim');
     setStyledText('sb-quadrant', q       ? q.name       : '—', 'sb-dim');
-    setStyledText('sb-state',    q       ? '[' + q.state + ']' : '—', 'sb-dim');
+    const stateClass = {
+      Established: 'sb-green',
+      Contested:   'sb-orange',
+      Declining:   'sb-orange',
+      Collapsed:   'sb-orange',
+      Isolated:    'sb-cyan',
+      Forbidden:   'sb-white',
+    }[q.state] || 'sb-dim';
+    setStyledText('sb-state', q ? '[' + q.state + ']' : '—', stateClass);
     setText('sb-docked', playerState.docked ? '⬛ ' + playerState.dockedAt : '');
   }
 
@@ -191,6 +199,14 @@ function showMainMenu() {
 
 function menuKeyHandler(e) {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  // Only respond to C and N — block everything else
+  if (e.key !== 'c' && e.key !== 'C' && e.key !== 'n' && e.key !== 'N') {
+    e.preventDefault();
+    e.stopPropagation();
+    return;
+  }
+
   const save = loadGame();
 
   if (e.key === 'c' || e.key === 'C') {
@@ -204,11 +220,9 @@ function menuKeyHandler(e) {
     document.removeEventListener('keydown', menuKeyHandler);
     e.preventDefault();
     e.stopPropagation();
+    // Delay new game start until menu is fully gone
     dismissMenu();
-    startNewGame();
-  } else {
-    e.preventDefault();
-    e.stopPropagation();
+    setTimeout(() => { startNewGame(); }, 750);
   }
 }
 
