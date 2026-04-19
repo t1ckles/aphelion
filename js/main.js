@@ -891,6 +891,9 @@ function startNewGame(slot) {
           queueBlank(80);
 
           initCommands(chosenSeed);
+          playerState.foldCells       = 3;
+          playerState.reserveVeydrite = Math.floor(7 + Math.random() * 5);
+          
 
           const waitForBoot = setInterval(() => {
             if (!isPrinting && printQueue.length === 0) {
