@@ -1207,7 +1207,7 @@ if (response && response.trim().startsWith('__CLUSTERDEEPSCAN__')) {
           let phase = 1;
         
           const scrambleInterval = setInterval(() => {
-            const lines = terminal.querySelectorAll('div');
+            const lines = document.querySelectorAll('#output .line, #output p, #output span');
             lines.forEach(line => {
               if (Math.random() < 0.04) {
                 const orig = line.dataset.orig || line.textContent;
