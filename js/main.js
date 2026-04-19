@@ -235,10 +235,10 @@ function boot() {
 
           initCommands(MASTER_SEED);
 
-          const waitForPrint = setInterval(() => {
-            if (!isPrinting && printQueue.length === 0) {
-              clearInterval(waitForPrint);
-              bootSidebar(playerState.captainName, playerState.shipName, () => {
+// Force a delay then boot sidebar regardless of queue state
+          
+          setTimeout(() => {
+            bootSidebar(playerState.captainName, playerState.shipName, () => {
                 updateSidebar();
                 const overview = handleCommand('galaxy');
                 overview.split('\n').forEach(line => queue(line, '', 12));
@@ -250,9 +250,8 @@ function boot() {
                     updateSidebar();
                   }
                 }, 100);
-              });
-            }
-          }, 100);
+            });
+          }, 600);
         }, 800);
       });
     });
