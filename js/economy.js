@@ -232,3 +232,61 @@ function renderSalvageResult(result, playerState) {
 
   return lines.join('\n');
 }
+// ── Distress Beacons ──────────────────────────
+
+const BEACON_NORMAL = [
+  { age: 'recent',  text: 'MAYDAY — vessel Harrow\'s End, drive failure, crew of four. Transmitting position. No response on Guild freq. Day 12.' },
+  { age: 'recent',  text: 'This is Free Trader Sullen Light. We have hull breach on decks two and three. Cargo is secure. Crew is not. Please respond.' },
+  { age: 'old',     text: 'AUTOMATED BEACON — Pelk Logistics waystation 7-Keth. Station decommissioned 2291. Beacon deactivation order not received. Disregard.' },
+  { age: 'old',     text: 'This is the Colonial survey vessel Endurance. We are grounded on body three. Awaiting extraction. Beacon set to auto. — Commander Reyes, Day 1.' },
+  { age: 'old',     text: 'AUTOMATED EMERGENCY BEACON — origin vessel: Margin Call. Class: light freighter. Last crew manifest: 2. Beacon active since 2287.' },
+  { age: 'recent',  text: 'To anyone on this frequency. We found something in the ruins on body two. We are leaving. Do not come here. Do not respond to this beacon.' },
+  { age: 'old',     text: 'Guild Survey Team Kappa-9. We have completed our survey. Beacon left active per protocol. All personnel extracted. Nothing to report.' },
+  { age: 'recent',  text: 'This is Captain Idris Maren, vessel Iron Patience. We are not in distress. Repeat, not in distress. Someone else activated this beacon. We are investigating.' },
+];
+
+const BEACON_XENO = [
+  { age: 'unknown', text: 'BEACON ORIGIN: UNKNOWN — signal structure matches standard distress protocol. Content does not match any known language. Repeating on all frequencies since [DATE CORRUPTED].' },
+  { age: 'unknown', text: 'This is — [CORRUPTED] — we found — [CORRUPTED] — do not — [CORRUPTED] — it is still — [CORRUPTED] — please do not —' },
+  { age: 'old',     text: 'Guild Survey Team Omicron-3. Survey complete. All personnel — [SIGNAL LOOPS] — Survey complete. All personnel — [SIGNAL LOOPS] — Survey complete.' },
+  { age: 'unknown', text: 'AUTOMATED BEACON — vessel class not on record. Crew manifest: [NULL]. Cargo manifest: [NULL]. Destination: [NULL]. Beacon active since [NULL].' },
+  { age: 'recent',  text: 'We are returning the beacon to its original location. We should not have moved it. We understand that now. Please do not move it again.' },
+];
+
+function rollBeacon(sys) {
+  if (!sys.hasBeacon) return null;
+  if (sys.xenoTainted && Math.random() < 0.55) {
+    return BEACON_XENO[Math.floor(Math.random() * BEACON_XENO.length)];
+  }
+  return BEACON_NORMAL[Math.floor(Math.random() * BEACON_NORMAL.length)];
+}
+
+// ── Ruin Logs ─────────────────────────────────
+
+const RUIN_LOGS = [
+  'CREW LOG — Day 34. The extraction equipment failed again. Harmon says we can fix it. Harmon has been saying that for eleven days. We have enough food for nine more.',
+  'MANIFEST — Cargo: medical supplies, 40 units. Fuel cells, 120 units. Colonist personal effects, 847 crates. Destination: New Kethara Station. Departure: 14 March 2271. [ARRIVAL NOT LOGGED]',
+  'STATION LOG — 2289.07.12. Guild inspector completed review. Station rated: COMPLIANT. Inspector note: recommend expanded capacity. Management note: budget does not allow. Inspector note: understood.',
+  'PERSONAL LOG — I don\'t know who will find this. I left it here because I couldn\'t take it with me. Her name was Sana Voss. She was the best navigator I ever flew with. She deserved better than this place.',
+  'TRANSMISSION LOG — outbound — 2278.03.01 — TO: Pelk Regional HQ — FROM: Station Commander Dren Alcott — RE: Anomaly Report — Sir, I am filing this report for the record. I do not expect a response. The readings are attached. I recommend evacuation.',
+  'MAINTENANCE LOG — Entry 1,847. Replaced atmospheric filter bank C. Entry 1,848. Filter bank C failed again. Entry 1,849. Replaced atmospheric filter bank C. Entry 1,850. Something is wrong with the air.',
+  'CREW LOG — Day 1. We arrived. The ruins are exactly as described in the survey report. Day 2. The ruins are not exactly as described. Day 3. We are not sure the survey team came here.',
+  'CARGO MANIFEST — Sealed container, 1 unit. Origin: [REDACTED]. Destination: Guild Assessment Bureau, Solace Reach. Contents: [REDACTED]. Priority: IMMEDIATE. Authorization: Director Hael Contis. Note: do not scan.',
+  'STATION CLOSURE NOTICE — 2291.11.30. By order of Colonial Colonies Command, this station is hereby decommissioned. All personnel to evacuate within 30 days. Reason for closure: [CLASSIFIED]. Appeal process: none.',
+  'PERSONAL LOG — I keep thinking about what Rand said before he left. He said the planet wasn\'t always this size. I told him that was impossible. He said he knew.',
+];
+
+const RUIN_LOGS_XENO = [
+  'CREW LOG — Day 19. We have stopped trying to map the lower levels. The maps are always wrong by morning. Not wrong in a random way. Wrong in the same way. Something is correcting them.',
+  'SURVEY REPORT — BODY THREE — Structure identified: non-colonial, non-pre-collapse. Materials: partially unclassified. Age: instrument error. Recommend: immediate Guild notification. Personal note: do not send Guild. Do not send anyone.',
+  'TRANSMISSION — outbound — recipient unknown — content: WE ARE LEAVING THE THIRD LEVEL ALONE. WE UNDERSTAND. WE ARE LEAVING IT ALONE. — [no response on record]',
+  'MANIFEST — Items recovered from lower ruin level: 0. Items brought to lower ruin level: 7. Personnel who entered lower ruin level: 4. Personnel who exited lower ruin level: 4. Discrepancy note: they are not the same 4.',
+  'FINAL LOG — I am leaving this where someone will find it. Do not go below level two. It is not that the lower levels are dangerous. It is that they are interested. There is a difference. I understood that too late.',
+];
+
+function rollRuinLog(sys) {
+  if (sys.xenoTainted && Math.random() < 0.5) {
+    return RUIN_LOGS_XENO[Math.floor(Math.random() * RUIN_LOGS_XENO.length)];
+  }
+  return RUIN_LOGS[Math.floor(Math.random() * RUIN_LOGS.length)];
+}
