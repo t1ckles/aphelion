@@ -239,6 +239,34 @@ function updateAuspex() {
   body.innerHTML = html;
 }
 
+function updateCombatAlert() {
+  const terminal = document.getElementById('terminal');
+  const inCombat = typeof playerState !== 'undefined' && playerState.inEncounter;
+
+  if (inCombat) {
+    terminal.classList.add('in-combat');
+    // Add warning to auspex
+    const body = document.getElementById('auspex-body');
+    if (body) {
+      const existing  = body.innerHTML;
+      const alertTag  = '<!-- combat-alert -->';
+      const alertHtml = alertTag + '<div class="ax-orange" style="margin-bottom:6px;">⚠ CONTACT — THREAT ACTIVE</div><div class="auspex-divider"></div>';
+      if (!existing.includes(alertTag)) {
+        body.innerHTML = alertHtml + existing;
+      }
+    }
+  } else {
+    terminal.classList.remove('in-combat');
+    // Remove warning from auspex
+    const body = document.getElementById('auspex-body');
+    if (body && body.innerHTML.includes('<!-- combat-alert -->')) {
+      body.innerHTML = body.innerHTML.replace(
+        /<!-- combat-alert -->.*?<div class="auspex-divider"><\/div>/s, ''
+      );
+    }
+  }
+}
+
 function bootAuspex(onComplete) {
   const auspex = document.getElementById('auspex');
   if (!auspex) { if (onComplete) onComplete(); return; }
@@ -708,6 +736,7 @@ document.addEventListener('keydown', (e) => {
           if (!isPrinting && printQueue.length === 0) {
             clearInterval(waitForResponse);
             updateSidebar();
+            updateCombatAlert();
             autosave();
             // Update auspex on nav and where/look only
             if (cmdWord === 'nav' || cmdWord === 'where' || cmdWord === 'look') {
