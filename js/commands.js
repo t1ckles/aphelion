@@ -165,6 +165,8 @@ function handleCommand(raw) {
     case 'complete': return cmdComplete();
     case 'abandon':  return cmdAbandon();
     case 'status':   return cmdStatus();
+    case 'ping':       return cmdPing();
+    case 'resolve':    return cmdResolve();
     case 'logs':     return cmdLogs();
     case 'evade':      return cmdEvade();
     case 'negotiate':  return cmdNegotiate();
@@ -1361,6 +1363,192 @@ function handleDeath(cause) {
   playerState.deathCause = cause;
 
   return '__DEATH__';
+}
+
+// ── Traffic & Contact Engine ──────────────────
+
+const SHIP_CLASSES = [
+  { name: 'Bulk Freighter',      mass: 'mass-heavy',   named: 0.8 },
+  { name: 'Light Freighter',     mass: 'mass-light',   named: 0.6 },
+  { name: 'Prospector',          mass: 'mass-light',   named: 0.4 },
+  { name: 'Fuel Tanker',         mass: 'mass-heavy',   named: 0.5 },
+  { name: 'Patrol Vessel',       mass: 'mass-medium',  named: 0.9 },
+  { name: 'Salvage Hauler',      mass: 'mass-medium',  named: 0.3 },
+  { name: 'Survey Craft',        mass: 'mass-light',   named: 0.5 },
+  { name: 'Transport',           mass: 'mass-medium',  named: 0.6 },
+  { name: 'Armed Escort',        mass: 'mass-medium',  named: 0.7 },
+  { name: 'Derelict',            mass: 'mass-unknown', named: 0.0 },
+];
+
+const REGISTRIES = [
+  'Pelk registry', 'Guild registry', 'CCC registry',
+  'colonial registry', 'free registry', 'unregistered',
+  'unregistered', 'unregistered',
+];
+
+function generateContacts(sys, quadrantState) {
+  const traffic    = sys.traffic || 0;
+  const xenoTaint  = sys.xenoTainted || false;
+
+  // Contact count based on traffic level
+  const baseCount  = Math.floor(traffic * 1.5);
+  const variance   = Math.floor(Math.random() * 3) - 1;
+  let count        = Math.max(0, baseCount + variance);
+
+  const contacts   = [];
+
+  for (let i = 0; i < count; i++) {
+    const shipClass  = SHIP_CLASSES[Math.floor(Math.random() * (SHIP_CLASSES.length - 1))]; // exclude derelict
+    const dark       = Math.random() < 0.08 + (quadrantState === 'Collapsed' ? 0.12 : 0);
+    const registry   = REGISTRIES[Math.floor(Math.random() * REGISTRIES.length)];
+    const hasName    = !dark && Math.random() < shipClass.named;
+    const shipName   = hasName ? generateContactName() : null;
+
+    contacts.push({
+      shipClass:  shipClass.name,
+      mass:       shipClass.mass,
+      dark:       dark,
+      registry:   registry,
+      shipName:   shipName,
+      resolved:   false,
+    });
+  }
+
+  // Xeno contact — always present in tainted systems, never resolves
+  if (xenoTaint) {
+    contacts.push({
+      shipClass: null,
+      mass:      'mass-unknown',
+      dark:      true,
+      registry:  null,
+      shipName:  null,
+      resolved:  false,
+      xeno:      true,
+    });
+  }
+
+  return contacts;
+}
+
+function generateContactName() {
+  // Reuse ship naming from Naming system if available
+  if (typeof Naming !== 'undefined' && Naming.ship) {
+    const fakeRng = {
+      next: () => Math.random(),
+      pick: (arr) => arr[Math.floor(Math.random() * arr.length)],
+    };
+    return Naming.ship(fakeRng);
+  }
+  return null;
+}
+
+// Store contacts for current system
+let currentContacts = null;
+
+function cmdPing() {
+  if (!playerState.location) return '  [PING] No location fix.';
+
+  const loc     = playerState.location;
+  const q       = galaxy.quadrants[loc.quadrantIndex];
+  const cluster = q && q.clusters.find(c => c.name === loc.clusterName);
+  const sys     = cluster && cluster.systems.find(s => s.name === loc.systemName);
+  if (!sys) return '  [ERROR] Location data corrupted.';
+
+  // Generate fresh contacts for this system
+  currentContacts = generateContacts(sys, q.state);
+
+  // Update auspex with gravimetric view
+  updateAuspexTraffic(currentContacts, false);
+
+  if (currentContacts.length === 0) {
+    return [
+      '',
+      '  [PING] Gravimetric sweep complete.',
+      '  No contacts in local space.',
+      '',
+    ].join('\n');
+  }
+
+  const lines = [
+    '',
+    '  [PING] Gravimetric sweep complete.',
+    '  ' + currentContacts.length + ' contact(s) detected.',
+    '',
+  ];
+
+  currentContacts.forEach((c, i) => {
+    lines.push('  ◈ [' + (i + 1) + '] ' + c.mass);
+  });
+
+  lines.push('');
+  lines.push('  Type "resolve" for active identification scan.');
+  lines.push('');
+
+  return lines.join('\n');
+}
+
+function cmdResolve() {
+  if (!playerState.location) return '  [RESOLVE] No location fix.';
+  if (!currentContacts || currentContacts.length === 0) {
+    return [
+      '',
+      '  [RESOLVE] No contacts to resolve. Run "ping" first.',
+      '',
+    ].join('\n');
+  }
+
+  const loc     = playerState.location;
+  const q       = galaxy.quadrants[loc.quadrantIndex];
+  const cluster = q && q.clusters.find(c => c.name === loc.clusterName);
+  const sys     = cluster && cluster.systems.find(s => s.name === loc.systemName);
+  if (!sys) return '  [ERROR] Location data corrupted.';
+
+  // Active scan — costs time based on contact count
+  const scanDays = Math.max(0, Math.floor(currentContacts.length * 0.3));
+  if (scanDays > 0) playerState.currentDay += scanDays;
+
+  // Mark all non-xeno contacts as resolved
+  currentContacts.forEach(c => {
+    if (!c.xeno) c.resolved = true;
+  });
+
+  // Boost encounter chance — we just broadcast
+  const encounterBoost = rollEncounter(sys, q, playerState, false);
+  const broadcastTriggered = encounterBoost &&
+    (q.state === 'Forbidden' || q.state === 'Collapsed') &&
+    Math.random() < 0.15;
+
+  // Update auspex with resolved view
+  updateAuspexTraffic(currentContacts, true);
+
+  const lines = [
+    '',
+    '  [RESOLVE] Active emission scan complete.',
+    scanDays > 0 ? '  Scan duration: ' + scanDays + ' day(s).  Day: ' + playerState.currentDay : '',
+    '',
+  ];
+
+  currentContacts.forEach((c, i) => {
+    if (c.xeno) {
+      lines.push('  ◈ [' + (i + 1) + '] [NO SIGNATURE] — running dark');
+      lines.push('       does not resolve');
+    } else if (c.dark) {
+      lines.push('  ◈ [' + (i + 1) + '] [NO SIGNATURE] — running dark');
+    } else {
+      const nameStr = c.shipName ? '\n       "' + c.shipName + '"' : '';
+      lines.push('  ◈ [' + (i + 1) + '] ' + c.shipClass + ' — ' + c.registry + nameStr);
+    }
+  });
+
+  lines.push('');
+
+  if (broadcastTriggered) {
+    lines.push('  [!] Your active scan was detected.');
+    lines.push('  Someone in this space knows you are here.');
+    lines.push('');
+  }
+
+  return lines.join('\n');
 }
 
 // ── Where ─────────────────────────────────────
