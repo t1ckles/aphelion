@@ -323,3 +323,15 @@ body::after {
 .menu-key      { color: #00ff41; margin-right: 8px; }
 .menu-save-info { font-size: 11px; color: #006618; text-align: center; line-height: 1.8; max-width: 320px; }
 .menu-footer   { font-size: 11px; color: #003310; letter-spacing: 2px; }
+
+/* ── Combat alert ────────────────────────────── */
+
+@keyframes combatPulse {
+  0%   { border-color: #00ff41; box-shadow: 0 0 30px rgba(0, 255, 65, 0.08); }
+  50%  { border-color: #ff8800; box-shadow: 0 0 30px rgba(255, 136, 0, 0.4); }
+  100% { border-color: #00ff41; box-shadow: 0 0 30px rgba(255, 136, 0, 0.08); }
+}
+
+#terminal.in-combat {
+  animation: powerOn 1.4s ease-out forwards, combatPulse 1.5s ease-in-out infinite;
+}
