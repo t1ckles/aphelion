@@ -604,6 +604,8 @@ function cmdJump(args) {
     contactCache[playerState.location.systemName] = currentContacts;
   }
   currentContacts = null;
+  playerState.salvagedSystems = [];
+
 
   const loc        = playerState.location;
   const q          = galaxy.quadrants[loc.quadrantIndex];
