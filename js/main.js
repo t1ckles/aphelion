@@ -425,8 +425,7 @@ function startContinue(save) {
               clearInterval(waitForQueue);
               enableInput('command');
               updateSidebar();
-              bootAuspex(() => { updateAuspex(); });
-            }
+              bootAuspex(() => {});            }
           }, 100);
         });
       }
@@ -515,8 +514,7 @@ function startNewGame() {
                     updateSidebar();
                     autosave();
                     // Boot auspex AFTER everything else is done
-                    bootAuspex(() => { updateAuspex(); });
-                  }
+                    bootAuspex(() => {});                  }
                 }, 100);
               });
             }
