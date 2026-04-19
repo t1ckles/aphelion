@@ -175,6 +175,7 @@ function handleCommand(raw) {
 function cmdHelp() {
   return [
     '',
+    '  menu                — return to main menu',
     '  ── NAVIGATION ────────────────────────────────────────────────',
     '',
     '  galaxy              — full quadrant index',
