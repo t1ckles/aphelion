@@ -191,9 +191,11 @@ function updateAuspex() {
   const stations = sys.bodies.filter(b => b.hasStation);
   if (stations.length > 0) {
     html += '<div class="ax-label">STATIONS</div>';
-    stations.forEach(b => {
-      const f = b.faction || { short: 'INDP' };
-      html += '<div class="ax-cyan">' + (b.stationName || 'Unknown') + '</div>';
+  stations.forEach(b => {
+      const f        = b.faction || { short: 'INDP' };
+      const isDocked = playerState.docked && playerState.dockedAt === b.stationName;
+      html += '<div class="ax-cyan">' + (b.stationName || 'Unknown') +
+              (isDocked ? ' <span class="ax-orange">[DOCKED]</span>' : '') + '</div>';
       html += '<div class="ax-dim">[' + f.short + ']</div>';
     });
   }
