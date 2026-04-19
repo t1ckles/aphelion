@@ -357,6 +357,9 @@ function handleCommand(raw) {
     case 'sell':      return cmdSell(args);
     case 'buy':       return cmdBuy(args);
     case 'repair':    return cmdRepair(args);
+    case 'armory':    return cmdArmory(args);
+    case 'install':   return cmdInstall(args);
+    case 'uninstall': return cmdUninstall(args);
     case 'salvage':   return cmdSalvage();
     case 'rep':       return cmdRep();
     case 'bulletin':  return cmdBulletin();
@@ -409,6 +412,9 @@ function cmdHelp() {
     '  repair              — repair hull or weapons',
     '  bulletin            — view available contracts',
     '  accept <number>     — accept a contract',
+    '  armory              — browse weapons and ammo',
+    '  install <slot> <n>  — install cargo weapon into slot',
+    '  uninstall <slot>    — move weapon to cargo',
     '',
     '  ── FIELD ─────────────────────────────────────────────────────',
     '',
@@ -893,6 +899,9 @@ function handleTradeCommand(cmd, args) {
   if (cmd === 'sell')    return cmdSell(args);
   if (cmd === 'buy')     return cmdBuy(args);
   if (cmd === 'repair')  return cmdRepair(args);
+  if (cmd === 'armory')    return cmdArmory(args);
+  if (cmd === 'install')   return cmdInstall(args);
+  if (cmd === 'uninstall') return cmdUninstall(args);
   if (cmd === 'status')  return cmdStatus();
   if (cmd === 'weapons') return cmdWeapons();
   if (cmd === 'trade') {
@@ -946,21 +955,35 @@ function cmdSell(args) {
 
 function cmdBuy(args) {
   if (!playerState.docked) return '  [BUY] You must be docked to buy.';
+  if (!args[0]) return '  [BUY] Usage: buy fuel <n>  |  buy weapon <name> <slot>  |  buy ammo <slot> <type> <n>';
+
+  if (args[0] === 'weapon') return cmdBuyWeapon(args);
+  if (args[0] === 'ammo')   return cmdBuyAmmo(args);
+  if (args[0] === 'fuel')   return cmdBuyFuel(args);
+
+  return '  [BUY] Unknown item. Try: fuel, weapon, ammo';
+}
+
+function cmdBuyFuel(args) {
   const loc   = playerState.location;
   const q     = galaxy.quadrants[loc.quadrantIndex];
   const price = fuelPrice(q.state);
-  if (!args[0] || args[0] !== 'fuel') return '  [BUY] Usage: buy fuel <amount>';
+  const ship  = getShip();
+
   const amount = parseInt(args[1]);
-  if (isNaN(amount) || amount <= 0) return '  [BUY] Specify an amount.';
+  if (isNaN(amount) || amount <= 0) return '  [BUY] Specify an amount. Example: buy fuel 20';
+
   const cost = amount * price;
   if (playerState.credits < cost) {
     return ['', '  [BUY] Insufficient scrip.', '  Cost: ' + cost + ' CR  |  You have: ' + playerState.credits + ' CR', ''].join('\n');
   }
+
   playerState.pendingTx = { type: 'buy', commodity: 'fuel', amount, cost };
+
   return [
     '',
-    '  [BUY] Confirm transaction?',
-    '  Buy      : ' + amount + ' units fuel',
+    '  [BUY] Confirm fuel purchase?',
+    '  Buy      : ' + amount + ' units',
     '  Rate     : ' + price + ' CR/unit',
     '  You pay  : ' + cost + ' CR',
     '',
@@ -986,6 +1009,79 @@ function executeTrade(tx) {
     playerState.credits -= tx.cost;
     return ['', '  [REPAIR] Hull repairs complete.', '  Repaired: +' + tx.amount + '%  |  Hull: ' + ship.hull + '%', '  Scrip: ' + playerState.credits + ' CR', ''].join('\n');
   }
+
+  if (tx.type === 'buy_weapon') {
+    const ship = getShip();
+    playerState.credits -= tx.price;
+    const slot = ship.weaponSlots.find(s => s.id === tx.slotId);
+    if (slot) {
+      slot.name         = tx.def.name;
+      slot.type         = tx.weaponType;
+      slot.condition    = 100;
+      slot.conditionMax = 100;
+      slot.active       = true;
+      slot.ammo         = {};
+      slot.activeAmmo   = tx.def.compatibleAmmo[0] || null;
+      slot.massPerRound = tx.def.massPerRound || {};
+      slot.burstMin     = tx.def.burstMin;
+      slot.burstMax     = tx.def.burstMax;
+      slot.powerPerBurst = tx.def.powerPerBurst || 0;
+    }
+    return [
+      '',
+      '  [BUY] ' + tx.def.name + ' purchased and installed in slot ' + tx.slotId + '.',
+      '  Scrip: ' + playerState.credits + ' CR',
+      '',
+    ].join('\n');
+  }
+
+  if (tx.type === 'buy_ammo') {
+    const ship = getShip();
+    playerState.credits -= tx.cost;
+    const slot = ship.weaponSlots.find(s => s.id === tx.slotId);
+    if (slot) {
+      slot.ammo[tx.ammoType] = (slot.ammo[tx.ammoType] || 0) + tx.amount;
+      calcAmmoBayUsed(ship);
+    }
+    return [
+      '',
+      '  [BUY] Ammo loaded.',
+      '  ' + tx.ammoType + '  x' + tx.amount + '  →  Slot ' + tx.slotId,
+      '  Scrip: ' + playerState.credits + ' CR',
+      '  Ammo bay: ' + ship.ammoBayUsed + '/' + ship.ammoBayMax + ' kg',
+      '',
+    ].join('\n');
+  }
+
+  if (tx.type === 'sell_weapon') {
+    playerState.credits += tx.value;
+    if (tx.removeWeapon) tx.removeWeapon();
+    calcAmmoBayUsed(getShip());
+    return [
+      '',
+      '  [SELL] Transaction complete.',
+      '  ' + (WEAPON_DEFS[tx.weaponType] ? WEAPON_DEFS[tx.weaponType].name : tx.weaponType) + ' sold.',
+      '  Earned: ' + tx.value + ' CR  |  Scrip: ' + playerState.credits + ' CR',
+      '',
+    ].join('\n');
+  }
+
+  if (tx.type === 'repair_system') {
+    const ship = getShip();
+    const sub  = ship.subsystems[tx.subKey];
+    if (sub) {
+      sub.hp  = sub.hpMax;
+      sub.sta = sub.staMax;
+    }
+    playerState.credits -= tx.cost;
+    return [
+      '',
+      '  [REPAIR] ' + (sub ? sub.name : tx.subKey) + ' fully restored.',
+      '  Scrip: ' + playerState.credits + ' CR',
+      '',
+    ].join('\n');
+  }
+  
   return '  [ERROR] Unknown transaction type.';
 }
 
@@ -1047,7 +1143,10 @@ function cmdRepair(args) {
     ].join('\n');
   }
 
-  return '  [REPAIR] Usage: repair  |  repair hull full  |  repair hull <amount>';
+if (args[0] === 'weapon') return cmdRepairWeapon(args);
+  if (args[0] === 'system') return cmdRepairSystem(args);
+
+  return '  [REPAIR] Usage: repair hull full  |  repair weapon <slot>  |  repair system <name>';
 }
 
 // ── Weapons command ───────────────────────────
@@ -1064,6 +1163,444 @@ function cmdSystems() {
   const ship = getShip();
   if (!ship) return '  [ERROR] No ship data.';
   return renderSubsystemStatus(ship);
+}
+
+// ── Armory ────────────────────────────────────
+
+function getArmoryContext() {
+  if (!playerState.docked) return null;
+  const loc   = playerState.location;
+  const q     = galaxy.quadrants[loc.quadrantIndex];
+  const cluster = q.clusters.find(c => c.name === loc.clusterName);
+  const sys   = cluster && cluster.systems.find(s => s.name === loc.systemName);
+  if (!sys) return null;
+  const body  = sys.bodies.find(b => b.hasStation);
+  if (!body)  return null;
+  const rep   = getRep(body.factionKey);
+  const tier  = rep !== null ? repTier(rep) : 'UNKNOWN';
+  const stock = getArmoryStock(body.factionKey, q.state, rep);
+  return { q, sys, body, rep, tier, stock };
+}
+
+function cmdArmory(args) {
+  if (!playerState.docked) return ['', '  [ARMORY] You must be docked to access the armory.', ''].join('\n');
+  if (args[0] === 'exit') return '  [ARMORY] Closed.';
+
+  const ctx = getArmoryContext();
+  if (!ctx) return ['', '  [ARMORY] No armory data available.', ''].join('\n');
+
+  const ship = getShip();
+  if (!ship.cargoWeapons) ship.cargoWeapons = [];
+
+  return renderArmory(ctx.stock, ship, playerState.credits, playerState.dockedFactionKey, ctx.q.state);
+}
+
+function cmdBuyWeapon(args) {
+  if (!playerState.docked) return '  [BUY] Must be docked.';
+
+  const ctx  = getArmoryContext();
+  if (!ctx || !ctx.stock) return '  [ARMORY] No armory available.';
+  if (ctx.stock.restricted) return '  [ARMORY] Access restricted.';
+
+  const ship = getShip();
+  if (!ship.cargoWeapons) ship.cargoWeapons = [];
+
+  // Parse: buy weapon <type_keyword> <slot|cargo>
+  // args[0] = 'weapon', rest = weapon name keywords + slot
+  const slotArg    = args[args.length - 1]; // last arg is slot or 'cargo'
+  const nameArgs   = args.slice(1, args.length - 1);
+  const nameQuery  = nameArgs.join(' ').toLowerCase();
+
+  // Find matching weapon in stock
+  const matchedType = ctx.stock.weapons.find(wType => {
+    const def = WEAPON_DEFS[wType];
+    return def && def.name.toLowerCase().includes(nameQuery);
+  });
+
+  if (!matchedType) {
+    return ['', '  [BUY] No weapon matching "' + nameQuery + '" in stock.', '  Type "armory" to see available weapons.', ''].join('\n');
+  }
+
+  const def   = WEAPON_DEFS[matchedType];
+  const price = weaponPrice(matchedType, ctx.stock.priceMod, ctx.tier);
+
+  if (playerState.credits < price) {
+    return ['', '  [BUY] Insufficient scrip.', '  Cost: ' + price + ' CR  |  You have: ' + playerState.credits + ' CR', ''].join('\n');
+  }
+
+  // Determine destination
+  if (slotArg === 'cargo') {
+    // Store in cargo
+    playerState.credits -= price;
+    ship.cargoWeapons.push({
+      weaponType:   matchedType,
+      name:         def.name,
+      condition:    100,
+      conditionMax: 100,
+      ammo:         {},
+      activeAmmo:   def.compatibleAmmo[0] || null,
+      massPerRound: def.massPerRound || {},
+    });
+    return [
+      '',
+      '  [BUY] ' + def.name + ' purchased.',
+      '  Stored in cargo hold.',
+      '  Cost: ' + price + ' CR  |  Scrip: ' + playerState.credits + ' CR',
+      '',
+    ].join('\n');
+  }
+
+  const slotId = parseInt(slotArg);
+  if (isNaN(slotId)) {
+    return ['', '  [BUY] Specify a slot number or "cargo". Usage: buy weapon <name> <slot|cargo>', ''].join('\n');
+  }
+
+  const slot = ship.weaponSlots.find(s => s.id === slotId);
+  if (!slot) return '  [BUY] Invalid slot number.';
+
+  if (slot.type) {
+    return [
+      '',
+      '  [BUY] Slot ' + slotId + ' is occupied by ' + slot.name + '.',
+      '  Uninstall it first, or choose another slot or "cargo".',
+      '',
+    ].join('\n');
+  }
+
+  // Stage confirmation
+  playerState.pendingTx = {
+    type:        'buy_weapon',
+    weaponType:  matchedType,
+    slotId,
+    price,
+    def,
+  };
+
+  return [
+    '',
+    '  [BUY] Confirm purchase?',
+    '',
+    '  Weapon : ' + def.name,
+    '  Slot   : ' + slotId,
+    '  Cost   : ' + price + ' CR',
+    '  Scrip  : ' + playerState.credits + ' CR',
+    '',
+    '  Type "yes" to confirm or anything else to cancel.',
+    '',
+  ].join('\n');
+}
+
+function cmdBuyAmmo(args) {
+  if (!playerState.docked) return '  [BUY] Must be docked.';
+
+  const ctx = getArmoryContext();
+  if (!ctx || !ctx.stock) return '  [ARMORY] No armory available.';
+
+  const ship = getShip();
+
+  // buy ammo <slot> <type> <amount>
+  const slotId   = parseInt(args[1]);
+  const ammoType = args[2] ? args[2].toUpperCase() : null;
+  const amount   = parseInt(args[3]);
+
+  if (isNaN(slotId) || !ammoType || isNaN(amount) || amount <= 0) {
+    return '  [BUY] Usage: buy ammo <slot> <type> <amount>';
+  }
+
+  const slot = ship.weaponSlots.find(s => s.id === slotId);
+  if (!slot || !slot.type) return '  [BUY] No weapon in slot ' + slotId + '.';
+
+  const weaponDef = WEAPON_DEFS[slot.type];
+  if (!weaponDef || !weaponDef.compatibleAmmo.includes(ammoType)) {
+    return ['', '  [BUY] ' + slot.name + ' cannot use ' + ammoType + ' ammo.', '  Compatible: ' + (weaponDef ? weaponDef.compatibleAmmo.join(', ') : 'none'), ''].join('\n');
+  }
+
+  if (!ctx.stock.ammo.includes(ammoType)) {
+    return ['', '  [BUY] ' + ammoType + ' not in stock here.', ''].join('\n');
+  }
+
+  const cost = ammoPrice(ammoType, amount, ctx.stock.priceMod, ctx.tier);
+
+  if (playerState.credits < cost) {
+    return ['', '  [BUY] Insufficient scrip.', '  Cost: ' + cost + ' CR  |  You have: ' + playerState.credits + ' CR', ''].join('\n');
+  }
+
+  // Check ammo bay mass
+  const massPerRound = weaponDef.massPerRound[ammoType] || 0;
+  const addedMass    = massPerRound * amount;
+  const currentMass  = calcAmmoBayUsed(ship);
+
+  if (currentMass + addedMass > ship.ammoBayMax) {
+    const canFit = Math.floor((ship.ammoBayMax - currentMass) / massPerRound);
+    return [
+      '',
+      '  [BUY] Insufficient ammo bay capacity.',
+      '  Requested: ' + addedMass.toFixed(1) + ' kg  |  Available: ' + (ship.ammoBayMax - currentMass).toFixed(1) + ' kg',
+      '  Can fit: ' + canFit + ' rounds of ' + ammoType,
+      '',
+    ].join('\n');
+  }
+
+  // Stage confirmation
+  playerState.pendingTx = {
+    type:      'buy_ammo',
+    slotId,
+    ammoType,
+    amount,
+    cost,
+    massPerRound,
+  };
+
+  return [
+    '',
+    '  [BUY] Confirm ammo purchase?',
+    '',
+    '  Weapon : ' + slot.name + '  [Slot ' + slotId + ']',
+    '  Ammo   : ' + ammoType + '  x' + amount,
+    '  Mass   : +' + addedMass.toFixed(1) + ' kg',
+    '  Cost   : ' + cost + ' CR',
+    '',
+    '  Type "yes" to confirm or anything else to cancel.',
+    '',
+  ].join('\n');
+}
+
+function cmdSellWeapon(args) {
+  if (!playerState.docked) return '  [SELL] Must be docked.';
+  if (args[0] === 'weapon' || args[0] === 'cargo') return cmdSellWeapon(args);
+I don't und
+  
+  const ctx  = getArmoryContext();
+  const ship = getShip();
+  if (!ship.cargoWeapons) ship.cargoWeapons = [];
+
+  const source = args[1]; // 'slot' number or 'cargo' number
+  const index  = parseInt(args[2]);
+
+  let weaponType, condition, sourceName, removeWeapon;
+
+  if (source === 'cargo') {
+    const cargoIdx = index - 1;
+    const cw = ship.cargoWeapons[cargoIdx];
+    if (!cw) return '  [SELL] No weapon in cargo slot ' + index + '.';
+    weaponType  = cw.weaponType;
+    condition   = cw.condition;
+    sourceName  = 'Cargo ' + index;
+    removeWeapon = () => ship.cargoWeapons.splice(cargoIdx, 1);
+  } else {
+    const slotId = parseInt(source);
+    const slot   = ship.weaponSlots.find(s => s.id === slotId);
+    if (!slot || !slot.type) return '  [SELL] No weapon in slot ' + slotId + '.';
+    weaponType  = slot.type;
+    condition   = slot.condition;
+    sourceName  = 'Slot ' + slotId;
+    removeWeapon = () => {
+      slot.name = null; slot.type = null; slot.condition = null;
+      slot.conditionMax = null; slot.active = false;
+      slot.ammo = {}; slot.activeAmmo = null; slot.massPerRound = {};
+    };
+  }
+
+  const value = sellWeaponValue(weaponType, condition, ctx ? ctx.tier : 'UNKNOWN');
+  const def   = WEAPON_DEFS[weaponType];
+
+  playerState.pendingTx = {
+    type:         'sell_weapon',
+    weaponType,
+    value,
+    sourceName,
+    removeWeapon,
+  };
+
+  return [
+    '',
+    '  [SELL] Confirm sale?',
+    '',
+    '  Weapon    : ' + (def ? def.name : weaponType) + '  [' + sourceName + ']',
+    '  Condition : ' + condition + '/100',
+    '  You get   : ' + value + ' CR  (market rate)',
+    '',
+    '  Type "yes" to confirm or anything else to cancel.',
+    '',
+  ].join('\n');
+}
+
+function cmdRepairWeapon(args) {
+  if (!playerState.docked) return '  [REPAIR] Must be docked.';
+
+  const ctx = getArmoryContext();
+  if (!ctx || !ctx.stock || !ctx.stock.repair) {
+    return ['', '  [REPAIR] No weapon repair service at this station.', ''].join('\n');
+  }
+
+  const ship   = getShip();
+  const slotId = parseInt(args[1]);
+  if (isNaN(slotId)) return '  [REPAIR] Usage: repair weapon <slot>';
+
+  const slot = ship.weaponSlots.find(s => s.id === slotId);
+  if (!slot || !slot.type) return '  [REPAIR] No weapon in slot ' + slotId + '.';
+
+  const damage = slot.conditionMax - slot.condition;
+  if (damage <= 0) return ['', '  [REPAIR] Weapon is already at full condition.', ''].join('\n');
+
+  const loc = playerState.location;
+  const q   = galaxy.quadrants[loc.quadrantIndex];
+  const costPerPoint = { Established: 5, Contested: 8, Declining: 12,
+                          Collapsed: 20, Isolated: 15, Forbidden: 25 }[q.state] || 8;
+  const fullCost = damage * costPerPoint;
+
+  return [
+    '',
+    '  [REPAIR] ' + slot.name,
+    '  Condition : ' + slot.condition + '/100',
+    '  Damage    : ' + damage + ' points',
+    '  Cost      : ' + fullCost + ' CR  (' + costPerPoint + ' CR/point)',
+    '  Scrip     : ' + playerState.credits + ' CR',
+    '',
+    '  repair weapon ' + slotId + ' full     — full repair',
+    '  repair weapon ' + slotId + ' <amount> — partial repair',
+    '',
+  ].join('\n');
+}
+
+function cmdRepairSystem(args) {
+  if (!playerState.docked) return '  [REPAIR] Must be docked.';
+
+  const ctx = getArmoryContext();
+  if (!ctx || !ctx.stock || !ctx.stock.repair) {
+    return ['', '  [REPAIR] No subsystem repair service at this station.', ''].join('\n');
+  }
+
+  const ship  = getShip();
+  const query = args.slice(1).join('_').toLowerCase();
+
+  // Find matching subsystem
+  const subKey = Object.keys(ship.subsystems).find(k =>
+    k.includes(query) || query.includes(k.replace('_', ''))
+  );
+
+  if (!subKey) {
+    return [
+      '',
+      '  [REPAIR] Unknown subsystem.',
+      '  Available: ' + Object.keys(ship.subsystems).map(k => k.replace('_', ' ')).join(', '),
+      '',
+    ].join('\n');
+  }
+
+  const sub      = ship.subsystems[subKey];
+  const hpDamage = sub.hpMax - sub.hp;
+  const staDamage = sub.staMax - sub.sta;
+
+  if (hpDamage === 0 && staDamage === 0) {
+    return ['', '  [REPAIR] ' + sub.name + ' is fully operational.', ''].join('\n');
+  }
+
+  const loc = playerState.location;
+  const q   = galaxy.quadrants[loc.quadrantIndex];
+  const costPerPoint = { Established: 12, Contested: 18, Declining: 25,
+                          Collapsed: 50, Isolated: 30, Forbidden: 60 }[q.state] || 18;
+  const totalCost = (hpDamage + staDamage) * costPerPoint;
+
+  playerState.pendingTx = {
+    type:    'repair_system',
+    subKey,
+    hpDamage,
+    staDamage,
+    cost:    totalCost,
+  };
+
+  return [
+    '',
+    '  [REPAIR] Confirm subsystem repair?',
+    '',
+    '  Subsystem : ' + sub.name,
+    '  HP damage : ' + hpDamage + ' points',
+    '  STA damage: ' + staDamage + ' points',
+    '  Cost      : ' + totalCost + ' CR',
+    '  Scrip     : ' + playerState.credits + ' CR',
+    '',
+    '  Type "yes" to confirm or anything else to cancel.',
+    '',
+  ].join('\n');
+}
+
+function cmdInstall(args) {
+  const ship = getShip();
+  if (!ship.cargoWeapons) ship.cargoWeapons = [];
+
+  const slotId   = parseInt(args[0]);
+  const cargoIdx = parseInt(args[1]) - 1;
+
+  if (isNaN(slotId) || isNaN(cargoIdx)) {
+    return '  [INSTALL] Usage: install <slot> <cargo#>';
+  }
+
+  const slot = ship.weaponSlots.find(s => s.id === slotId);
+  if (!slot) return '  [INSTALL] Invalid slot number.';
+  if (slot.type) return '  [INSTALL] Slot ' + slotId + ' is occupied. Uninstall first.';
+
+  const cw = ship.cargoWeapons[cargoIdx];
+  if (!cw) return '  [INSTALL] No weapon in cargo position ' + (cargoIdx + 1) + '.';
+
+  // Install
+  slot.name         = cw.name;
+  slot.type         = cw.weaponType;
+  slot.condition    = cw.condition;
+  slot.conditionMax = cw.conditionMax;
+  slot.active       = true;
+  slot.ammo         = cw.ammo || {};
+  slot.activeAmmo   = cw.activeAmmo;
+  slot.massPerRound = cw.massPerRound || {};
+
+  const def = WEAPON_DEFS[cw.weaponType];
+  if (def) {
+    slot.burstMin      = def.burstMin;
+    slot.burstMax      = def.burstMax;
+    slot.powerPerBurst = def.powerPerBurst;
+  }
+
+  ship.cargoWeapons.splice(cargoIdx, 1);
+
+  return [
+    '',
+    '  [INSTALL] ' + slot.name + ' installed in slot ' + slotId + '.',
+    '  Condition: ' + slot.condition + '/100',
+    '',
+  ].join('\n');
+}
+
+function cmdUninstall(args) {
+  const ship   = getShip();
+  if (!ship.cargoWeapons) ship.cargoWeapons = [];
+
+  const slotId = parseInt(args[0]);
+  if (isNaN(slotId)) return '  [UNINSTALL] Usage: uninstall <slot>';
+
+  const slot = ship.weaponSlots.find(s => s.id === slotId);
+  if (!slot || !slot.type) return '  [UNINSTALL] No weapon in slot ' + slotId + '.';
+
+  ship.cargoWeapons.push({
+    weaponType:   slot.type,
+    name:         slot.name,
+    condition:    slot.condition,
+    conditionMax: slot.conditionMax,
+    ammo:         slot.ammo || {},
+    activeAmmo:   slot.activeAmmo,
+    massPerRound: slot.massPerRound || {},
+  });
+
+  const name = slot.name;
+  slot.name = null; slot.type = null; slot.condition = null;
+  slot.conditionMax = null; slot.active = false;
+  slot.ammo = {}; slot.activeAmmo = null; slot.massPerRound = {};
+
+  return [
+    '',
+    '  [UNINSTALL] ' + name + ' moved to cargo hold.',
+    '  Cargo weapons: ' + ship.cargoWeapons.length,
+    '',
+  ].join('\n');
 }
 
 // ── Status ────────────────────────────────────
