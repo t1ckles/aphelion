@@ -1662,8 +1662,9 @@ function cmdPing() {
     currentContacts = generateContacts(sys, q.state);
   }
 
-  // Update auspex
-  updateAuspexTraffic(currentContacts, false);
+// Update auspex — use mixed mode if any contacts are already resolved
+  const anyResolved = currentContacts.some(c => c.resolved);
+  updateAuspexTraffic(currentContacts, anyResolved ? 'mixed' : false);
 
   if (currentContacts.length === 0) {
     return [
