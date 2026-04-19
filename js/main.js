@@ -315,7 +315,7 @@ function updateAuspexTraffic(contacts, resolved) {
 
   if (contacts.length === 0) {
     trafficHtml += '<div class="ax-dim">no contacts</div>';
-  } else if (!resolved) {
+} else if (!resolved) {
     trafficHtml += '<div class="ax-dim">gravimetric sweep</div>';
     trafficHtml += '<div class="ax-dim">' + contacts.length + ' contact(s)</div>';
     contacts.forEach(c => {
@@ -323,11 +323,15 @@ function updateAuspexTraffic(contacts, resolved) {
       trafficHtml += '<div class="' + cls + '">  ◈ ' + c.mass + '</div>';
     });
   } else {
-    trafficHtml += '<div class="ax-dim">active scan</div>';
+    // mixed or true — render each contact based on its own resolved state
+    trafficHtml += '<div class="ax-dim">' + contacts.length + ' contact(s)</div>';
     contacts.forEach(c => {
       if (c.xeno) {
-        trafficHtml += '<div class="ax-orange">  ◈ [NO SIG] dark</div>';
-        trafficHtml += '<div class="ax-dim">    does not resolve</div>';
+        trafficHtml += '<div class="ax-orange">  ◈ [NO SIG]</div>';
+        if (c.resolved) trafficHtml += '<div class="ax-dim">    does not resolve</div>';
+      } else if (!c.resolved) {
+        // Not yet resolved — show mass only
+        trafficHtml += '<div class="ax-dim">  ◈ ' + c.mass + '</div>';
       } else if (c.dark) {
         trafficHtml += '<div class="ax-orange">  ◈ [NO SIG] dark</div>';
       } else {
