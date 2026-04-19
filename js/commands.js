@@ -345,8 +345,8 @@ function getCurrentSystem() {
   const loc     = playerState.location;
   const q       = galaxy.quadrants[loc.quadrantIndex];
 const cluster = loc.clusterName
-  ? q.clusters.find(c => c.name === loc.clusterName)
-  : q.clusters[loc.clusterIndex || 0];
+    ? q.clusters.find(c => c.name === loc.clusterName)
+    : q.clusters[loc.clusterIndex || 0];
   return cluster && cluster.systems.find(s => s.name === loc.systemName);
 }
 
