@@ -404,22 +404,26 @@ function autosave() {
 // ── Main Menu ─────────────────────────────────
 
 function showMainMenu() {
+  console.log('showMainMenu start');
+
   let slots;
   try {
     slots = getAllSlots();
+    console.log('slots:', slots);
   } catch(e) {
     console.error('getAllSlots failed:', e);
     slots = [{slot:1,save:null},{slot:2,save:null},{slot:3,save:null}];
   }
+
   const hasSave = slots.some(s => s.save !== null);
 
-  // Show continue button only if there's a most-recent save
   const mostRecent = slots
     .filter(s => s.save && s.save.savedAt)
     .sort((a, b) => b.save.savedAt - a.save.savedAt)[0];
 
   const contBtn = document.getElementById('menu-continue');
   const info    = document.getElementById('menu-save-info');
+  console.log('contBtn:', contBtn, 'info:', info);
 
   if (mostRecent) {
     contBtn.style.display = 'block';
@@ -435,9 +439,10 @@ function showMainMenu() {
     contBtn.style.display = 'none';
   }
 
-  // Populate slot list (for modal)
+  console.log('populating slots...');
   slots.forEach(({ slot, save }) => {
-    const el       = document.getElementById('menu-slot-' + slot);
+    const el = document.getElementById('menu-slot-' + slot);
+    console.log('slot el:', slot, el);
     const infoSpan = el.querySelector('.slot-info');
     if (save) {
       const ship = save.ship ? save.ship.name : 'Unknown vessel';
@@ -453,8 +458,11 @@ function showMainMenu() {
     el.addEventListener('click', () => selectSlot(slot));
   });
 
+  console.log('attaching menu-load...');
   document.getElementById('menu-load').addEventListener('click', openSlotModal);
+  console.log('attaching slot-cancel...');
   document.getElementById('slot-cancel').addEventListener('click', closeSlotModal);
+  console.log('attaching menu-new...');
   document.getElementById('menu-new').addEventListener('click', () => {
     const emptySlot = slots.find(s => s.save === null);
     if (emptySlot) {
@@ -465,46 +473,9 @@ function showMainMenu() {
     }
   });
 
+  console.log('attaching keydown...');
   document.addEventListener('keydown', menuKeyHandler);
-}
-
-let slotModalMode = null; // 'load' or 'new'
-
-function openSlotModal(mode) {
-  slotModalMode = (mode === 'new') ? 'new' : 'load';
-  const hint = document.getElementById('slot-modal-hint');
-  hint.textContent = slotModalMode === 'new'
-    ? 'All slots occupied. Choose a slot to overwrite.'
-    : 'Press 1, 2, or 3 to select a pilot record.';
-  document.getElementById('slot-modal').style.display = 'block';
-}
-
-function closeSlotModal() {
-  document.getElementById('slot-modal').style.display = 'none';
-  slotModalMode = null;
-  activeSlot    = null;
-  [1, 2, 3].forEach(s => {
-    document.getElementById('menu-slot-' + s).classList.remove('slot-selected');
-  });
-}
-
-function selectSlot(slot) {
-  activeSlot = slot;
-  [1, 2, 3].forEach(s => {
-    document.getElementById('menu-slot-' + s).classList.toggle('slot-selected', s === slot);
-  });
-
-  const save = loadGameFromSlot(slot);
-
-  if (slotModalMode === 'new') {
-    dismissMenu();
-    startNewGame(slot);
-  } else {
-    if (save) {
-      dismissMenu();
-      startContinue(save);
-    }
-  }
+  console.log('showMainMenu complete');
 }
 
 function menuKeyHandler(e) {
