@@ -1534,7 +1534,8 @@ function generateContacts(sys, quadrantState) {
     const shipClass  = SHIP_CLASSES[Math.floor(Math.random() * (SHIP_CLASSES.length - 1))]; // exclude derelict
     const dark       = Math.random() < 0.08 + (quadrantState === 'Collapsed' ? 0.12 : 0);
     const registry   = REGISTRIES[Math.floor(Math.random() * REGISTRIES.length)];
-    const hasName    = !dark && Math.random() < shipClass.named;
+    const isRegistered = registry !== 'unregistered';
+    const hasName      = !dark && isRegistered && Math.random() < shipClass.named;
     const shipName   = hasName ? generateContactName() : null;
 
     contacts.push({
@@ -1681,7 +1682,16 @@ function cmdPing() {
   ];
 
   currentContacts.forEach((c, i) => {
-    lines.push('  ◈ [' + (i + 1) + '] ' + c.mass);
+    if (c.resolved && !c.xeno) {
+      if (c.dark) {
+        lines.push('  ◈ [' + (i + 1) + '] [NO SIGNATURE] — running dark');
+      } else {
+        lines.push('  ◈ [' + (i + 1) + '] ' + c.shipClass + ' — ' + c.registry);
+        if (c.shipName) lines.push('       "' + c.shipName + '"');
+      }
+    } else {
+      lines.push('  ◈ [' + (i + 1) + '] ' + c.mass);
+    }
   });
 
   lines.push('');
