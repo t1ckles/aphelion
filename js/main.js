@@ -250,7 +250,7 @@ function startContinue(save) {
     queueDivider(60);
     queueBlank(80);
 
-    initCommands(MASTER_SEED);
+    initCommands(save.galaxySeed || MASTER_SEED);
     applySave(save, playerState, reputation, activeContracts);
 
     const waitForPrint = setInterval(() => {
