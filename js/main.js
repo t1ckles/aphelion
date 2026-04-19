@@ -142,6 +142,40 @@ function setBar(id, value, max, width) {
   el.textContent = '█'.repeat(filled) + '░'.repeat(empty) + ' ' + value + '%';
 }
 
+// ── Sidebar boot sequence ─────────────────────
+
+function bootSidebar(captainName, shipName, onComplete) {
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar) { onComplete(); return; }
+
+  // Start with a power-on flash
+  sidebar.style.opacity = '0';
+
+  const steps = [
+    () => { sidebar.style.opacity = '1'; setSidebarHtml('sb-captain', '<span style="color:#ffffff">INITIALIZING...</span>'); },
+    () => { setText('sb-captain', '> PILOT RECORD'); },
+    () => { setText('sb-captain', '> VERIFYING...'); },
+    () => { setText('sb-captain', captainName); setText('sb-ship', '...'); },
+    () => { setText('sb-ship', shipName); setText('sb-day', 'Day 0'); },
+    () => { setSidebarHtml('sb-hull-bar', '<span style="color:#ffffff">CHECKING...</span>'); },
+    () => { setBar('sb-hull-bar', 80, 100, 10); setBar('sb-fuel-bar', 60, 100, 10); },
+    () => { setText('sb-credits', '200 CR'); setText('sb-veydrite', '0 kg'); },
+    () => { setText('sb-system', 'LOCATING...'); },
+    () => { updateSidebar(); },
+    () => { onComplete(); },
+  ];
+
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i >= steps.length) {
+      clearInterval(interval);
+      return;
+    }
+    steps[i]();
+    i++;
+  }, 180);
+}
+
 // ── Boot sequence ─────────────────────────────
 
 function boot() {
@@ -184,23 +218,25 @@ function boot() {
           queueBlank(80);
 
           initCommands(MASTER_SEED);
-          updateSidebar();
 
-          const overview = handleCommand('galaxy');
-          overview.split('\n').forEach(line => queue(line, '', 12));
+          // Boot the sidebar with a dramatic sequence
+          bootSidebar(playerState.captainName, playerState.shipName, () => {
+            updateSidebar();
+            const overview = handleCommand('galaxy');
+            overview.split('\n').forEach(line => queue(line, '', 12));
 
-          const waitForQueue = setInterval(() => {
-            if (!isPrinting && printQueue.length === 0) {
-              clearInterval(waitForQueue);
-              enableInput('command');
-              updateSidebar();
-            }
-          }, 100);
+            const waitForQueue = setInterval(() => {
+              if (!isPrinting && printQueue.length === 0) {
+                clearInterval(waitForQueue);
+                enableInput('command');
+                updateSidebar();
+              }
+            }, 100);
+          });
 
         }, 800);
       });
     });
-
   }, 1400);
 }
 
