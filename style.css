@@ -37,13 +37,14 @@ body {
   width: 100%;
   max-width: 1200px;
   height: calc(100vh - 80px);
+  justify-content: center;
 }
 
 /* ── Main Terminal ───────────────────────────── */
 
 #terminal {
-  flex: 1;
-  min-width: 0;
+  flex: none;
+  width: 860px;
   height: calc(100vh - 320px);
   border: 1px solid #00ff41;
   border-radius: 8px;
