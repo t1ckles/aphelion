@@ -1111,3 +1111,14 @@ function cmdNewSave() {
     '',
   ].join('\n');
 }
+function cmdMenu() {
+  playerState.pendingMenu = true;
+  return [
+    '',
+    '  [MENU] Return to main menu?',
+    '  Your progress has been autosaved.',
+    '',
+    '  Type "yes" to confirm or anything else to cancel.',
+    '',
+  ].join('\n');
+}
