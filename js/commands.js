@@ -1074,7 +1074,9 @@ function cmdSalvage() {
 
   const loc     = playerState.location;
   const q       = galaxy.quadrants[loc.quadrantIndex];
-  const cluster = q.clusters.find(c => c.name === loc.clusterName);
+  const cluster = loc.clusterName
+    ? q.clusters.find(c => c.name === loc.clusterName)
+    : q.clusters[loc.clusterIndex || 0];
   const sys     = cluster && cluster.systems.find(s => s.name === loc.systemName);
   if (!sys) return '  [ERROR] Location data corrupted.';
 
