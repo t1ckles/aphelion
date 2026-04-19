@@ -7,6 +7,44 @@
 const SAVE_KEY     = 'aphelion_save';
 const SAVE_VERSION = 4;
 
+function slotKey(slot) { return 'aphelion_save_' + slot; }
+
+function saveGameToSlot(slot, playerState, reputationData, contractData) {
+  const result = saveGame(playerState, reputationData, contractData);
+  if (result.success) {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) localStorage.setItem(slotKey(slot), raw);
+  }
+  return result;
+}
+
+function loadGameFromSlot(slot) {
+  try {
+    const raw = localStorage.getItem(slotKey(slot));
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    return deepMerge(SAVE_DEFAULTS, data);
+  } catch (e) {
+    console.warn('Slot load failed:', e);
+    return null;
+  }
+}
+
+function hasSlotSave(slot) {
+  return localStorage.getItem(slotKey(slot)) !== null;
+}
+
+function deleteSlotSave(slot) {
+  localStorage.removeItem(slotKey(slot));
+}
+
+function getAllSlots() {
+  return [1, 2, 3].map(slot => ({
+    slot,
+    save: loadGameFromSlot(slot),
+  }));
+}
+
 // ── Defaults ──────────────────────────────────
 
 const SAVE_DEFAULTS = {
