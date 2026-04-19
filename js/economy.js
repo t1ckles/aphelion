@@ -175,10 +175,25 @@ function renderSalvageResult(result, playerState) {
     lines.push('');
   }
 
-  if (result.veydriteFound > 0) {
-    playerState.veydrite += result.veydriteFound;
+if (result.veydriteFound > 0) {
+    const reserveSpace = 15 - (playerState.reserveVeydrite || 0);
+    const toReserve    = Math.min(result.veydriteFound, reserveSpace);
+    const toCargo      = result.veydriteFound - toReserve;
+
+    if (toReserve > 0) {
+      playerState.reserveVeydrite = (playerState.reserveVeydrite || 0) + toReserve;
+    }
+    if (toCargo > 0) {
+      playerState.veydrite += toCargo;
+    }
+
     lines.push('  Veydrite recovered : ' + result.veydriteFound + ' kg');
-    lines.push('  Hold total         : ' + playerState.veydrite + ' kg');
+    if (toReserve > 0) {
+      lines.push('  Reserve topped up  : +' + toReserve + ' kg  (' + playerState.reserveVeydrite.toFixed(1) + ' / 15 kg)');
+    }
+    if (toCargo > 0) {
+      lines.push('  Hold total         : ' + playerState.veydrite + ' kg');
+    }
   } else {
     lines.push('  Veydrite recovered : none');
   }
