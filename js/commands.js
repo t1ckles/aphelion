@@ -2458,7 +2458,7 @@ function cmdSave() {
 }
 
 function cmdNewSave() {
-  return ['', '  [NEWSAVE] This will erase your current save and start over.', '  Type "yes" to confirm or anything else to cancel.', ''].join('\n');
+  return ['', '  [NEWSAVE] This will delete this pilot record permanently.', '  There is no recovery. The void does not give back.', '  Type "yes" to confirm or anything else to cancel.', ''].join('\n');
 }
 
 function cmdMenu() {
