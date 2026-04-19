@@ -885,6 +885,7 @@ function cmdUndock() {
   playerState.dockedFactionKey = null;
   playerState.inTrade          = false;
   playerState.bulletinContracts = [];
+  if (typeof updateAuspex === 'function') updateAuspex();
   return ['', '  [UNDOCK] Departing ' + name + '.', '  Thrusters nominal. Open space.', ''].join('\n');
 }
 
