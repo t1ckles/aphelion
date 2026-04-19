@@ -466,6 +466,7 @@ function cmdHelp() {
     '',
     '  rep                 — faction standing',
     '  logs                — recovered records',
+    '  record              — guild record archive',
     '  menu                — return to main menu',
     '',
   ].join('\n');
