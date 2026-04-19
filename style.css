@@ -335,19 +335,39 @@ body::after {
 #terminal.in-combat {
   animation: powerOn 1.4s ease-out forwards, combatPulse 1.5s ease-in-out infinite;
 }
-#menu-slots {
+
+#slot-modal {
+  margin-top: 10px;
+}
+
+.slot-modal-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #4a7a4a;
+  letter-spacing: 0.15em;
+  margin-bottom: 10px;
+}
+
+.slot-modal-hint {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #4a7a4a;
+  margin: 8px 0 4px;
+  min-height: 14px;
+}
+
+#slot-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin: 12px 0;
+  gap: 6px;
 }
 
 .menu-slot {
-  padding: 8px 12px;
+  padding: 6px 10px;
   border: 1px solid #1a2a1a;
   cursor: pointer;
   font-family: 'Share Tech Mono', monospace;
-  font-size: 13px;
+  font-size: 12px;
   color: #4a7a4a;
   transition: border-color 0.15s, color 0.15s;
 }
@@ -357,7 +377,7 @@ body::after {
   color: #7aaa7a;
 }
 
-.menu-slot.slot-occupied {
+.menu-slot.slot-occupied .slot-info {
   color: #8ab88a;
 }
 
@@ -367,7 +387,7 @@ body::after {
   background: #0a140a;
 }
 
-.menu-key {
-  color: #aaffaa;
-  margin-right: 8px;
+.slot-cancel {
+  margin-top: 8px;
+  font-size: 12px;
 }
