@@ -58,6 +58,8 @@ function saveGame(playerState, reputationData, contractData) {
     const data = {
       version: SAVE_VERSION,
       savedAt: Date.now(),
+      galaxySeed: playerState.galaxySeed || '4471-KETH-NULL',
+
 
       captain: {
         name: playerState.captainName,
