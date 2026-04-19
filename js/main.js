@@ -974,7 +974,7 @@ document.addEventListener('keydown', (e) => {
           return;
         }
 
-        if (response && response.startsWith('__CLUSTERDEEPSCAN__')) {
+        if (response && response.trim().startsWith('__CLUSTERDEEPSCAN__')) {
           const payload = JSON.parse(response.slice(19));
           const SCAN_MESSAGES = [
             'Array focusing...',
@@ -1055,7 +1055,7 @@ document.addEventListener('keydown', (e) => {
           return;
         }
         
-        if (response && response.startsWith('__DEEPSCAN__')) {
+        if (response && response.trim().startsWith('__DEEPSCAN__')) {
           const payload = JSON.parse(response.slice(12));
           queue('', '', 40);
           queue('  [DEEPSCAN] Initializing deep sensor sweep...', 'output-dim', 80);
