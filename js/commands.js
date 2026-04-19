@@ -1598,10 +1598,70 @@ function cmdPing() {
   const sys     = cluster && cluster.systems.find(s => s.name === loc.systemName);
   if (!sys) return '  [ERROR] Location data corrupted.';
 
-  // Generate fresh contacts for this system
-  currentContacts = generateContacts(sys, q.state);
+  const isRepeatPing = currentContacts !== null;
 
-  // Update auspex with gravimetric view
+  if (isRepeatPing) {
+    // Apply slow variance
+    const roll = Math.random();
+
+    if (roll < 0.02) {
+      // Weapons signature detected
+      const validContacts = currentContacts.filter(c => !c.xeno);
+      if (validContacts.length >= 2) {
+        const c1 = validContacts[Math.floor(Math.random() * validContacts.length)];
+        let c2 = validContacts[Math.floor(Math.random() * validContacts.length)];
+        while (c2 === c1) c2 = validContacts[Math.floor(Math.random() * validContacts.length)];
+
+        const c1index = currentContacts.indexOf(c1) + 1;
+        const c2index = currentContacts.indexOf(c2) + 1;
+
+        // One contact disappears
+        if (Math.random() < 0.6) {
+          currentContacts.splice(currentContacts.indexOf(c2), 1);
+        }
+
+        const lines = [
+          '',
+          '  [PING] Gravimetric sweep complete.',
+          '  ' + currentContacts.length + ' contact(s) detected.',
+          '',
+        ];
+
+        currentContacts.forEach((c, i) => {
+          const cls = c.xeno ? '  ◈ [' + (i+1) + '] mass-unknown' : '  ◈ [' + (i+1) + '] ' + c.mass;
+          lines.push(cls);
+        });
+
+        lines.push('');
+        lines.push('  [!] Weapons discharge detected — contacts ' + c1index + ' and ' + c2index + '.');
+        lines.push('  One contact is no longer responding.');
+        lines.push('');
+
+        return lines.join('\n');
+      }
+
+    } else if (roll < 0.05) {
+      // One contact departs
+      const removable = currentContacts.filter(c => !c.xeno);
+      if (removable.length > 0) {
+        const gone = removable[Math.floor(Math.random() * removable.length)];
+        currentContacts.splice(currentContacts.indexOf(gone), 1);
+      }
+
+    } else if (roll < 0.08) {
+      // One new contact arrives
+      const newContact = generateContacts(sys, q.state);
+      if (newContact.length > 0) {
+        currentContacts.push(newContact[0]);
+      }
+    }
+    // else — 92%+ chance nothing changes, fall through to display
+  } else {
+    // First ping — generate fresh contacts
+    currentContacts = generateContacts(sys, q.state);
+  }
+
+  // Update auspex
   updateAuspexTraffic(currentContacts, false);
 
   if (currentContacts.length === 0) {
@@ -1625,7 +1685,7 @@ function cmdPing() {
   });
 
   lines.push('');
-  lines.push('  Type "resolve" for active identification scan.');
+  lines.push('  Type "resolve <number>" to identify a contact.');
   lines.push('');
 
   return lines.join('\n');
