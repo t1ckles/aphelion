@@ -465,7 +465,6 @@ function startNewGame() {
       print('');
       print('  Registered: ' + playerState.captainName, 'output-dim');
       updateSidebar();
-      updateAuspex();
 
       askPlayer('  Name your vessel:', (shipName) => {
         playerState.shipName = shipName || 'The Unspoken';
@@ -473,7 +472,6 @@ function startNewGame() {
         print('  Vessel registered: ' + playerState.shipName, 'output-dim');
         print('');
         updateSidebar();
-        updateAuspex();
 
         const autoSeed = generateRandomSeed();
 
@@ -659,7 +657,6 @@ document.addEventListener('keydown', (e) => {
           if (!isPrinting && printQueue.length === 0) {
             clearInterval(waitForResponse);
             updateSidebar();
-            updateAuspex();
             autosave();
             const output = document.getElementById('output');
             if (output) output.scrollTop = output.scrollHeight;
