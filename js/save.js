@@ -92,6 +92,7 @@ const SAVE_DEFAULTS = {
 
   logs:  [],
   flags: {},
+  salvagedSystems: [],
 
   stats: {
     jumps:         0,
@@ -160,6 +161,8 @@ function saveGame(playerState, reputationData, contractData) {
 
       logs:  playerState.logs  || [],
       flags: playerState.flags || {},
+      salvagedSystems: playerState.salvagedSystems || [],
+
 
       stats: {
         jumps:         playerState.stats ? playerState.stats.jumps        : 0,
@@ -255,6 +258,7 @@ function applySave(save, playerState, reputationObj, activeContractsArr) {
   // Logs and flags
   playerState.logs  = save.logs  || [];
   playerState.flags = save.flags || {};
+  playerState.salvagedSystems = save.salvagedSystems || [];
   playerState.stats = save.stats || {};
 
   // Reputation
