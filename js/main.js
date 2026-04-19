@@ -643,6 +643,8 @@ document.addEventListener('keydown', (e) => {
       }
 
       const thinkTime = 200 + Math.floor(Math.random() * 600);
+      const cmdWord   = raw.trim().toLowerCase().split(/\s+/)[0];
+
       setTimeout(() => {
         const response = handleCommand(raw);
         if (response === '__DEATH__') {
@@ -658,6 +660,10 @@ document.addEventListener('keydown', (e) => {
             clearInterval(waitForResponse);
             updateSidebar();
             autosave();
+            // Update auspex on nav and where/look only
+            if (cmdWord === 'nav' || cmdWord === 'where' || cmdWord === 'look') {
+              updateAuspex();
+            }
             const output = document.getElementById('output');
             if (output) output.scrollTop = output.scrollHeight;
           }
