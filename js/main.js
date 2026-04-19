@@ -1190,6 +1190,69 @@ if (response && response.trim().startsWith('__CLUSTERDEEPSCAN__')) {
           return;
         }
 
+        function startFoldGlitch() {
+          const terminal = document.getElementById('terminal');
+          const sidebar  = document.getElementById('sidebar');
+          const titleEl  = document.querySelector('.title');
+          if (!terminal) return null;
+        
+          terminal.style.transition  = 'border-color 2s ease';
+          terminal.style.borderColor = '#00e5ff';
+        
+          let phase = 1;
+        
+          const scrambleInterval = setInterval(() => {
+            const lines = terminal.querySelectorAll('div');
+            lines.forEach(line => {
+              if (Math.random() < 0.04) {
+                const orig = line.dataset.orig || line.textContent;
+                if (!orig.trim()) return;
+                line.dataset.orig = orig;
+                line.textContent  = orig.split('').map(c =>
+                  Math.random() < (phase === 1 ? 0.04 : 0.18)
+                    ? '█▓▒░╬╪╫┼╔╗╚╝'[Math.floor(Math.random() * 14)]
+                    : c
+                ).join('');
+                setTimeout(() => {
+                  if (line.dataset.orig) line.textContent = line.dataset.orig;
+                }, 180);
+              }
+            });
+          }, phase === 1 ? 900 : 350);
+        
+          function escalate() {
+            phase = 2;
+            terminal.style.transition  = 'border-color 0.5s ease';
+            terminal.style.borderColor = '#ffffff';
+            if (sidebar) sidebar.style.opacity = '0.4';
+          }
+        
+          function peak() {
+            clearInterval(scrambleInterval);
+            terminal.style.transition  = 'all 0.3s ease';
+            terminal.style.transform   = 'skewX(1.5deg)';
+            terminal.style.borderColor = '#ffffff';
+            if (sidebar) sidebar.style.opacity = '0';
+            if (titleEl) titleEl.style.textShadow = '2px 0 red, -2px 0 blue, 0 0 8px white';
+            setTimeout(() => {
+              terminal.style.transition  = 'all 0.4s ease';
+              terminal.style.transform   = 'skewX(0deg)';
+              terminal.style.borderColor = '#00ff41';
+              if (sidebar) sidebar.style.opacity = '1';
+              if (titleEl) titleEl.style.textShadow = '';
+              const allLines = terminal.querySelectorAll('div');
+              allLines.forEach(line => {
+                if (line.dataset.orig) {
+                  line.textContent = line.dataset.orig;
+                  delete line.dataset.orig;
+                }
+              });
+            }, 400);
+          }
+        
+          return { escalate, peak };
+        }
+        
         function applyDriveWear(ship, level) {
           if (!ship || !ship.systems) return;
           const drive = ship.systems.find(s => s.name === 'Drive');
