@@ -819,8 +819,12 @@ function cmdDock() {
   if (fee > 0) playerState.credits -= fee;
 
   meetFaction(body.factionKey);
-  const repResult = adjustRep(body.factionKey, 1, 'Docked and paid fees');
-
+  // Only gain rep once per day per station
+  const repKey = 'docked_' + body.stationName + '_' + playerState.currentDay;
+  const repResult = playerState.flags[repKey]
+    ? null
+    : adjustRep(body.factionKey, 1, 'Docked and paid fees');
+  if (repResult) playerState.flags[repKey] = true;
   // Shore power — recharge core fully
   ship.powerCore.current = ship.powerCore.max;
 
