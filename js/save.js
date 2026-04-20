@@ -191,9 +191,12 @@ function saveGame(playerState, reputationData, contractData) {
       economy: {
         credits:         playerState.credits,
         veydrite:        playerState.veydrite,
-        cargo:           playerState.cargo         || [],
-        foldCells:       playerState.foldCells     ?? 3,
+        cargo:           playerState.cargo           || [],
+        foldCells:       playerState.foldCells       ?? 3,
         reserveVeydrite: playerState.reserveVeydrite ?? 0,
+        oreHold:         playerState.oreHold         || {},
+        refinedHold:     playerState.refinedHold     || {},
+        orePods:         playerState.orePods         || { solid: 0, liquid: 0 },
       },
 
       reputation: reputationData || {},
@@ -298,6 +301,9 @@ function applySave(save, playerState, reputationObj, activeContractsArr) {
   playerState.cargo           = save.economy.cargo           || [];
   playerState.foldCells       = save.economy.foldCells       ?? 3;
   playerState.reserveVeydrite = save.economy.reserveVeydrite ?? 0;
+  playerState.oreHold         = save.economy.oreHold         || {};
+  playerState.refinedHold     = save.economy.refinedHold     || {};
+  playerState.orePods         = save.economy.orePods         || { solid: 0, liquid: 0 };
 
   // Location
   playerState.location = {
