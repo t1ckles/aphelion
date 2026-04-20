@@ -2682,6 +2682,8 @@ function cmdStatus() {
       ? '  CONTRACT  : ' + active.title + '  [Day ' + (active.issuedDay + active.timeLimitDays) + ' deadline]'
       : '  CONTRACT  : none active',
     '',
+    '  UTILITY   : ' + (ship && ship.utilitySlots[0] ? ship.utilitySlots[0].name : '— empty') ,
+    '',
   ].join('\n');
 }
 
