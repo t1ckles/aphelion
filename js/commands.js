@@ -258,6 +258,7 @@ let playerState = {
   orePods:          { solid: 0, liquid: 0 },
   salvagedSystems:  [],
   astrographics:    [],
+  visitedSystems:   {},
   scannedSystems:   {},
   credits:          200,
   veydrite:         0,
@@ -1082,7 +1083,7 @@ function cmdSurvey(args) {
   // survey node — broad system geological sweep
   if (!args[0] || args[0] === 'node') {
     // Must have run where or clusterdeepscan first
-    if (!playerState.scannedSystems[sys.name] && !playerState.astrographics.find(a => a.systemName === sys.name)) {
+    if (!playerState.visitedSystems || !playerState.visitedSystems[sys.name]) {
       return [
         '',
         '  [SURVEY] No astrographic data on file for this system.',
@@ -1185,7 +1186,7 @@ function cmdSurvey(args) {
     }
 
     // Must have run survey node first
-    if (!playerState.scannedSystems[sys.name] && !playerState.astrographics.find(a => a.systemName === sys.name)) {
+    if (!playerState.visitedSystems || !playerState.visitedSystems[sys.name]) {
       return [
         '',
         '  [SURVEY] No system data on file. Run "survey node" first.',
@@ -2756,6 +2757,8 @@ function cmdWhere() {
   if (playerState.docked) { lines.push('  Docked at: ' + playerState.dockedAt); lines.push(''); }
 
   if (typeof updateAuspex === 'function') updateAuspex();
+  if (!playerState.visitedSystems) playerState.visitedSystems = {};
+  playerState.visitedSystems[sys.name] = true;
   return lines.join('\n');
 }
 
