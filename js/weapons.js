@@ -150,6 +150,25 @@ const WEAPON_DEFS = {
   },
 };
 
+// ── Utility tool definitions ──────────────────
+
+const TOOL_DEFS = {
+  salvage_cutter: {
+    name:      'Harrow-7 Salvage Head',
+    type:      'salvage_cutter',
+    powerCost: 30,
+    price:     800,
+    desc:      'Standard salvage tool. Extracts materials from debris and ruin sites.',
+  },
+  mining_auger: {
+    name:      'Auger-1 Light Mining Head',
+    type:      'mining_auger',
+    powerCost: 25,
+    price:     950,
+    desc:      'Light extraction tool. Geological survey and ore mining from rocky bodies.',
+  },
+};
+
 // ── Ammo Definitions ──────────────────────────
 
 const AMMO_DEFS = {
