@@ -448,3 +448,340 @@ function feedRawVeydrite(playerState, cells) {
     wearCount:  wearRolls.length,
   };
 }
+
+// ============================================
+//  MINING SYSTEM
+// ============================================
+
+// ── Ore definitions ───────────────────────────
+
+const ORE_DEFS = {
+  // Common
+  ferrite:    { name: 'Ferrite',           refinesTo: 'iron',             grade: 'common',   units: 1.0 },
+  copperite:  { name: 'Copperite',         refinesTo: 'copper',           grade: 'common',   units: 1.0 },
+  stannite:   { name: 'Stannite',          refinesTo: 'tin',              grade: 'common',   units: 1.0 },
+  nickeline:  { name: 'Nickeline',         refinesTo: 'nickel',           grade: 'common',   units: 1.0 },
+  silicate:   { name: 'Silicate',          refinesTo: 'polysilicon',      grade: 'common',   units: 1.0 },
+  cobaltite:  { name: 'Cobaltite',         refinesTo: 'cobalt',           grade: 'common',   units: 1.0 },
+  galena:     { name: 'Galena',            refinesTo: 'lead',             grade: 'common',   units: 1.0 },
+
+  // Uncommon
+  titanite:   { name: 'Titanite',          refinesTo: 'titanium',         grade: 'uncommon', units: 0.8 },
+  chromite:   { name: 'Chromite',          refinesTo: 'chromium',         grade: 'uncommon', units: 0.8 },
+  wolframite: { name: 'Wolframite',        refinesTo: 'tungsten',         grade: 'uncommon', units: 0.8 },
+  uraninite:  { name: 'Uraninite',         refinesTo: 'enriched_uranium', grade: 'uncommon', units: 0.6 },
+  malachite:  { name: 'Malachite',         refinesTo: 'manganese',        grade: 'uncommon', units: 0.8 },
+
+  // Rare
+  platinite:  { name: 'Platinite',         refinesTo: 'platinum',         grade: 'rare',     units: 0.5 },
+  palladite:  { name: 'Palladite',         refinesTo: 'palladium',        grade: 'rare',     units: 0.5 },
+  iridite:    { name: 'Iridite',           refinesTo: 'iridium',          grade: 'rare',     units: 0.4 },
+  osmite:     { name: 'Osmite',            refinesTo: 'osmium',           grade: 'rare',     units: 0.4 },
+
+  // Ice compounds
+  water_ice:        { name: 'Water Ice',         refinesTo: 'purified_water',   grade: 'ice',      units: 1.2, liquid: true },
+  ammonia_ice:      { name: 'Ammonia Ice',       refinesTo: 'liquid_ammonia',   grade: 'ice',      units: 1.0, liquid: true },
+  methane_clathrate:{ name: 'Methane Clathrate', refinesTo: 'methane_gas',      grade: 'ice',      units: 0.9, liquid: true },
+  helium3_ice:      { name: 'Helium-3 Ice',      refinesTo: 'helium3',          grade: 'ice_rare', units: 0.6, liquid: true },
+
+  // Exotic
+  veydritic_silicate: { name: 'Veydritic Silicate', refinesTo: 'fold_grade_silicon', grade: 'exotic', units: 0.5 },
+  null_residue:       { name: 'Null Residue',        refinesTo: 'null_alloy',         grade: 'exotic', units: 0.3 },
+  archaeoferrite:     { name: 'Archaeoferrite',      refinesTo: 'archaeosteel',       grade: 'exotic', units: 0.7 },
+
+  // The Ash — contamination state, not a real ore
+  ash_compactate: { name: 'Ash Compactate', refinesTo: null, grade: 'ash', units: 0, worthless: true },
+};
+
+// ── Refined metals ────────────────────────────
+
+const REFINED_DEFS = {
+  iron:              { name: 'Iron',              grade: 'common',   basePrice: 12  },
+  copper:            { name: 'Copper',            grade: 'common',   basePrice: 18  },
+  tin:               { name: 'Tin',               grade: 'common',   basePrice: 15  },
+  nickel:            { name: 'Nickel',            grade: 'common',   basePrice: 14  },
+  polysilicon:       { name: 'Polysilicon',       grade: 'common',   basePrice: 20  },
+  cobalt:            { name: 'Cobalt',            grade: 'common',   basePrice: 22  },
+  lead:              { name: 'Lead',              grade: 'common',   basePrice: 10  },
+  titanium:          { name: 'Titanium',          grade: 'uncommon', basePrice: 45  },
+  chromium:          { name: 'Chromium',          grade: 'uncommon', basePrice: 38  },
+  tungsten:          { name: 'Tungsten',          grade: 'uncommon', basePrice: 42  },
+  enriched_uranium:  { name: 'Enriched Uranium',  grade: 'uncommon', basePrice: 120 },
+  manganese:         { name: 'Manganese',         grade: 'uncommon', basePrice: 28  },
+  platinum:          { name: 'Platinum',          grade: 'rare',     basePrice: 180 },
+  palladium:         { name: 'Palladium',         grade: 'rare',     basePrice: 160 },
+  iridium:           { name: 'Iridium',           grade: 'rare',     basePrice: 220 },
+  osmium:            { name: 'Osmium',            grade: 'rare',     basePrice: 200 },
+  purified_water:    { name: 'Purified Water',    grade: 'ice',      basePrice: 8   },
+  liquid_ammonia:    { name: 'Liquid Ammonia',    grade: 'ice',      basePrice: 25  },
+  methane_gas:       { name: 'Methane Gas',       grade: 'ice',      basePrice: 30  },
+  helium3:           { name: 'Helium-3',          grade: 'ice_rare', basePrice: 280 },
+  fold_grade_silicon:{ name: 'Fold-Grade Silicon',grade: 'exotic',   basePrice: 350 },
+  null_alloy:        { name: 'Null Alloy',        grade: 'exotic',   basePrice: 500 },
+  archaeosteel:      { name: 'Archaeosteel',      grade: 'exotic',   basePrice: 420 },
+};
+
+// ── Body type ore tables ──────────────────────
+
+const BODY_ORE_TABLE = {
+  'Barren Rock': {
+    common:   ['ferrite', 'copperite', 'silicate', 'galena'],
+    uncommon: ['titanite'],
+    rare:     [],
+    exotic:   ['archaeoferrite'],
+    ashChance: 0.005,
+  },
+  'Desert World': {
+    common:   ['ferrite', 'silicate', 'copperite'],
+    uncommon: ['malachite', 'galena'],
+    rare:     [],
+    exotic:   [],
+    ashChance: 0.005,
+  },
+  'Ice Giant': {
+    common:   [],
+    uncommon: [],
+    rare:     [],
+    ice:      ['water_ice', 'ammonia_ice', 'methane_clathrate'],
+    ice_rare: ['helium3_ice'],
+    exotic:   [],
+    ashChance: 0.002,
+  },
+  'Gas Giant': {
+    common:   [],
+    uncommon: [],
+    rare:     [],
+    ice:      ['methane_clathrate'],
+    ice_rare: ['helium3_ice'],
+    exotic:   [],
+    ashChance: 0,
+  },
+  'Ocean World': {
+    common:   [],
+    uncommon: [],
+    rare:     [],
+    ice:      ['water_ice', 'ammonia_ice'],
+    exotic:   [],
+    ashChance: 0.001,
+  },
+  'Irradiated Hulk': {
+    common:   ['nickeline', 'cobaltite'],
+    uncommon: ['chromite', 'uraninite'],
+    rare:     ['platinite', 'palladite'],
+    exotic:   ['null_residue'],
+    ashChance: 0.015,
+  },
+  'Dust Belt': {
+    common:   ['ferrite', 'nickeline'],
+    uncommon: [],
+    rare:     ['palladite'],
+    exotic:   ['veydritic_silicate'],
+    ashChance: 0.008,
+  },
+  'Rogue Moon': {
+    common:   ['ferrite', 'nickeline', 'cobaltite'],
+    uncommon: ['titanite', 'wolframite'],
+    rare:     ['osmite'],
+    exotic:   ['archaeoferrite'],
+    ashChance: 0.005,
+  },
+  'Shattered Planet': {
+    common:   ['ferrite', 'copperite', 'stannite', 'nickeline', 'silicate', 'cobaltite'],
+    uncommon: ['chromite', 'wolframite', 'malachite'],
+    rare:     ['iridite', 'platinite'],
+    exotic:   ['archaeoferrite', 'null_residue'],
+    ashChance: 0.012,
+  },
+  'Debris Field': {
+    common:   [],
+    uncommon: [],
+    rare:     [],
+    exotic:   [],
+    ashChance: 0,
+    salvageOnly: true,
+  },
+};
+
+// ── Ore generation for a body ─────────────────
+
+function generateBodyOres(bodyType, rng, xenoTainted) {
+  const table = BODY_ORE_TABLE[bodyType];
+  if (!table || table.salvageOnly) return null;
+
+  const ores = [];
+
+  // Common — 2-4 types
+  const commonPool = table.common || [];
+  const commonCount = Math.min(commonPool.length, 1 + Math.floor(rng.next() * 3));
+  const shuffledCommon = [...commonPool].sort(() => rng.next() - 0.5);
+  shuffledCommon.slice(0, commonCount).forEach(ore => {
+    ores.push({
+      type:     ore,
+      quantity: 40 + Math.floor(rng.next() * 60),
+      quality:  rng.next() < 0.3 ? 'rich' : rng.next() < 0.6 ? 'standard' : 'depleted',
+    });
+  });
+
+  // Uncommon — 0-2 types, 40% chance each
+  (table.uncommon || []).forEach(ore => {
+    if (rng.next() < 0.4) {
+      ores.push({
+        type:     ore,
+        quantity: 20 + Math.floor(rng.next() * 30),
+        quality:  rng.next() < 0.2 ? 'rich' : 'standard',
+      });
+    }
+  });
+
+  // Rare — 0-1 types, 15% chance each
+  (table.rare || []).forEach(ore => {
+    if (rng.next() < 0.15) {
+      ores.push({
+        type:     ore,
+        quantity: 5 + Math.floor(rng.next() * 15),
+        quality:  'standard',
+      });
+    }
+  });
+
+  // Ice — if applicable
+  (table.ice || []).forEach(ore => {
+    if (rng.next() < 0.7) {
+      ores.push({
+        type:     ore,
+        quantity: 30 + Math.floor(rng.next() * 50),
+        quality:  'standard',
+        liquid:   true,
+      });
+    }
+  });
+
+  // Ice rare
+  (table.ice_rare || []).forEach(ore => {
+    if (rng.next() < 0.1) {
+      ores.push({
+        type:     ore,
+        quantity: 5 + Math.floor(rng.next() * 10),
+        quality:  'standard',
+        liquid:   true,
+      });
+    }
+  });
+
+  // Exotic — 10% chance each, higher in xeno systems
+  (table.exotic || []).forEach(ore => {
+    const chance = xenoTainted && ore === 'null_residue' ? 0.35 : 0.1;
+    if (rng.next() < chance) {
+      ores.push({
+        type:     ore,
+        quantity: 3 + Math.floor(rng.next() * 10),
+        quality:  'standard',
+      });
+    }
+  });
+
+  // The Ash — tiny chance, higher in xeno systems
+  const ashBase = table.ashChance || 0;
+  const ashChance = xenoTainted ? ashBase * 6 : ashBase;
+  const hasAsh = rng.next() < ashChance;
+
+  return {
+    ores:        ores.length > 0 ? ores : null,
+    ashFlag:     hasAsh,
+    ashProgress: 0,
+    surveyed:    false,
+    mined:       false,
+    nodeYield:   ores.reduce((n, o) => n + o.quantity, 0),
+  };
+}
+
+// ── Refinery pricing ──────────────────────────
+
+function refineryYieldShare(factionKey, rng) {
+  const ranges = {
+    guild:       [0.10, 0.16],
+    pelk:        [0.12, 0.18],
+    colonial:    [0.14, 0.20],
+    independent: [0.18, 0.26],
+    feral:       [0.25, 0.35],
+  };
+  const range = ranges[factionKey] || ranges.independent;
+  return range[0] + rng.next() * (range[1] - range[0]);
+}
+
+function refineryScripFee(factionKey, quadrantState) {
+  const base = {
+    guild:       8,
+    pelk:        6,
+    colonial:    5,
+    independent: 10,
+    feral:       15,
+  }[factionKey] || 10;
+
+  const stateMod = {
+    Established: 1.0,
+    Contested:   1.2,
+    Declining:   1.5,
+    Collapsed:   2.0,
+    Isolated:    1.7,
+    Forbidden:   2.5,
+  }[quadrantState] || 1.0;
+
+  return Math.round(base * stateMod);
+}
+
+function hasRefinery(factionKey) {
+  return ['guild', 'pelk', 'colonial', 'independent'].includes(factionKey);
+}
+
+function refineryGrade(factionKey) {
+  return {
+    guild:       'basic',
+    pelk:        'standard',
+    colonial:    'standard',
+    independent: 'basic',
+    feral:       'improvised',
+  }[factionKey] || 'basic';
+}
+
+// ── Refining yield rates ──────────────────────
+
+function refineYieldRate(oreGrade, refineryGradeStr, repTier) {
+  const base = {
+    common:   0.70,
+    uncommon: 0.60,
+    rare:     0.50,
+    ice:      0.75,
+    ice_rare: 0.55,
+    exotic:   0.45,
+  }[oreGrade] || 0.60;
+
+  const gradeMod = {
+    improvised: -0.15,
+    basic:       0.00,
+    standard:    0.08,
+    advanced:    0.15,
+  }[refineryGradeStr] || 0;
+
+  const repMod = repTier === 'TRUSTED' ? 0.03 : repTier === 'HOSTILE' ? -0.10 : 0;
+
+  return Math.min(0.95, Math.max(0.20, base + gradeMod + repMod));
+}
+
+// ── Ore market pricing ────────────────────────
+
+function oreMarketPrice(oreKey, quadrantState) {
+  const def = REFINED_DEFS[oreKey];
+  if (!def) return 0;
+
+  const stateMod = {
+    Established: 0.8,
+    Contested:   1.0,
+    Declining:   1.2,
+    Collapsed:   1.5,
+    Isolated:    1.3,
+    Forbidden:   1.8,
+  }[quadrantState] || 1.0;
+
+  return Math.round(def.basePrice * stateMod);
+}
