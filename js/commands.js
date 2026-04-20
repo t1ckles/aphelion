@@ -473,6 +473,7 @@ function cmdHelp() {
     '  undock              — leave station',
     '  trade               — open trade terminal',
     '  repair              — repair hull or weapons',
+    '  buy tool            — purchase utility tool (Harrow-7 or Auger-1)',
     '  bulletin            — view available contracts',
     '  accept <number>     — accept a contract',
     '  armory              — browse weapons and ammo',
@@ -1900,7 +1901,8 @@ function cmdBuy(args) {
   if (args[0] === 'ammo')   return cmdBuyAmmo(args);
   if (args[0] === 'fuel')  return cmdBuyFuel(args);
   if (args[0] === 'cells') return cmdBuyCells(args);
-  return '  [BUY] Unknown item. Try: fuel, weapon, ammo, cells';
+  if (args[0] === 'tool')  return cmdBuyTool(args);
+  return '  [BUY] Unknown item. Try: fuel, weapon, ammo, cells, tool';
 }
 
 function cmdBuyFuel(args) {
@@ -1960,6 +1962,67 @@ function cmdBuyCells(args) {
     '  Rate     : ' + result.price + ' CR/cell',
     '  You pay  : ' + total + ' CR',
     '  Magazine : ' + playerState.foldCells + ' / 20  →  ' + (playerState.foldCells + buying) + ' / 20',
+    '',
+    '  Type "yes" to confirm or anything else to cancel.',
+    '',
+  ].join('\n');
+}
+
+function cmdBuyTool(args) {
+  if (!playerState.docked) return '  [BUY] Must be docked.';
+  const ship = getShip();
+
+  // List available tools if no args
+  if (!args[1]) {
+    const lines = [
+      '',
+      '  ── UTILITY TOOLS ─────────────────────────────────────────────',
+      '',
+    ];
+    Object.values(TOOL_DEFS).forEach((tool, i) => {
+      const installed = ship.utilitySlots.some(s => s.type === tool.type);
+      const tag = installed ? '  [INSTALLED]' : '';
+      lines.push('  [' + (i + 1) + '] ' + tool.name.padEnd(32) + tool.price + ' CR' + tag);
+      lines.push('      ' + tool.desc);
+      lines.push('');
+    });
+    lines.push('  buy tool <#>         — purchase and install tool');
+    lines.push('  buy tool <#> cargo   — purchase and store in cargo');
+    lines.push('');
+    return lines.join('\n');
+  }
+
+  const toolIndex = parseInt(args[1]) - 1;
+  const toolKeys  = Object.keys(TOOL_DEFS);
+  const toolKey   = toolKeys[toolIndex];
+  if (!toolKey) return '  [BUY] Invalid tool index. Type "buy tool" to see available tools.';
+
+  const def   = TOOL_DEFS[toolKey];
+  const toCargo = args[2] === 'cargo';
+
+  if (playerState.credits < def.price) {
+    return [
+      '',
+      '  [BUY] Insufficient scrip.',
+      '  Cost: ' + def.price + ' CR  |  You have: ' + playerState.credits + ' CR',
+      '',
+    ].join('\n');
+  }
+
+  playerState.pendingTx = {
+    type:    'buy_tool',
+    toolKey,
+    def,
+    toCargo,
+  };
+
+  return [
+    '',
+    '  [BUY] Confirm tool purchase?',
+    '',
+    '  Tool     : ' + def.name,
+    '  Installs : ' + (toCargo ? 'cargo hold' : 'utility slot (replaces current)'),
+    '  Cost     : ' + def.price + ' CR',
     '',
     '  Type "yes" to confirm or anything else to cancel.',
     '',
@@ -2066,6 +2129,47 @@ function executeTrade(tx) {
     ].join('\n');
   }
 
+if (tx.type === 'buy_tool') {
+    const ship = getShip();
+    playerState.credits -= tx.def.price;
+    if (tx.toCargo) {
+      if (!ship.cargoTools) ship.cargoTools = [];
+      ship.cargoTools.push({ ...tx.def });
+      return [
+        '',
+        '  [BUY] ' + tx.def.name + ' stored in cargo.',
+        '  Use "install tool <slot>" to equip it.',
+        '  Scrip: ' + playerState.credits + ' CR',
+        '',
+      ].join('\n');
+    }
+    // Install directly — replaces current utility slot
+    const slot = ship.utilitySlots[0];
+    if (slot) {
+      // Move current tool to cargo if present
+      if (slot.type) {
+        if (!ship.cargoTools) ship.cargoTools = [];
+        ship.cargoTools.push({
+          name:      slot.name,
+          type:      slot.type,
+          powerCost: slot.powerCost,
+        });
+      }
+      slot.name      = tx.def.name;
+      slot.type      = tx.def.type;
+      slot.powerCost = tx.def.powerCost;
+      slot.condition = 100;
+    }
+    updateSidebar();
+    return [
+      '',
+      '  [BUY] ' + tx.def.name + ' installed in utility slot.',
+      '  Previous tool moved to cargo hold.',
+      '  Scrip: ' + playerState.credits + ' CR',
+      '',
+    ].join('\n');
+  }
+  
   if (tx.type === 'sell_weapon') {
     playerState.credits += tx.value;
     if (tx.removeWeapon) tx.removeWeapon();
