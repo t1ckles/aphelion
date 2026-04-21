@@ -734,6 +734,7 @@ function cmdFold(args) {
       '  Deficit  : ' + deficit + ' cells  (' + rawNeeded + ' kg raw veydrite equivalent)',
       '',
       '  Buy cells at a station or feed raw reserve: feed <cells>',
+      '  Buy cells at a station or use: emergency refine <n>',
       '',
     ].join('\n');
   }
