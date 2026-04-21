@@ -94,7 +94,20 @@
         <div id="input-line">
           <span class="prompt">&gt;&nbsp;</span>
           <span id="typed"></span>
+          <div id="input-line" onclick="document.getElementById('mobile-input').focus();">
+          <span class="prompt">&gt;&nbsp;</span>
+          <span id="typed"></span>
           <span class="cursor">█</span>
+        </div>
+        <input 
+          id="mobile-input" 
+          type="text" 
+          autocomplete="off" 
+          autocorrect="off" 
+          autocapitalize="off" 
+          spellcheck="false"
+          style="position:absolute;opacity:0;width:1px;height:1px;top:0;left:0;pointer-events:none;"
+        >
         </div>
       </div>
     </div>
