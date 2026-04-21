@@ -5,41 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>APHELION — Deep Survey Operator's Field Manual</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Share+Tech&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="https://t1ckles.github.io/aphelion/flavicon.png">
-
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --green:       #00ff41;
-      --green-mid:   #00aa2a;
-      --green-dim:   #006618;
-      --green-dark:  #003310;
-      --green-deep:  #001a08;
-      --orange:      #ff8800;
-      --cyan:        #00e5ff;
-      --white:       #ffffff;
-      --bg:          #0a0a0a;
-      --bg-card:     #0d120d;
-    }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--green-mid);
+    html, body {
+      background: #0a0a0a;
+      color: #00ff41;
       font-family: 'Share Tech Mono', 'Courier New', monospace;
       font-size: 14px;
       line-height: 1.8;
-      padding: 0;
-      animation: flicker 12s infinite;
     }
 
-    @keyframes flicker {
-      0%,91%,95%,100% { opacity: 1; }
-      92% { opacity: 0.96; }
-      94% { opacity: 0.98; }
+    body {
+      padding: 40px 20px 80px 20px;
+      max-width: 860px;
+      margin: 0 auto;
     }
 
     body::after {
@@ -52,1480 +33,687 @@
       background: repeating-linear-gradient(
         to bottom,
         transparent 0px, transparent 3px,
-        rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px
+        rgba(0,0,0,0.12) 3px, rgba(0,0,0,0.12) 4px
       );
     }
 
-    .page {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 60px 40px;
+    .manual-header {
+      text-align: center;
+      padding: 40px 0 32px 0;
+      border-bottom: 1px solid #006618;
+      margin-bottom: 48px;
     }
 
-    .cover {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
-      border-bottom: 1px solid var(--green-dark);
-      padding: 80px 40px;
-      max-width: 860px;
-      margin: 0 auto;
-    }
-
-    .cover-seal {
-      font-size: 11px;
-      letter-spacing: 0.3em;
-      color: var(--green-dim);
-      margin-bottom: 40px;
-      text-transform: uppercase;
-    }
-
-    .cover-title {
-      font-size: 48px;
-      letter-spacing: 10px;
-      color: var(--green);
-      text-shadow:
-        0 0 8px rgba(0,255,65,0.8),
-        0 0 24px rgba(0,255,65,0.3);
-      margin-bottom: 8px;
-      line-height: 1.1;
-    }
-
-    .cover-subtitle {
-      font-size: 16px;
-      letter-spacing: 4px;
-      color: var(--green-dim);
-      margin-bottom: 60px;
-    }
-
-    .cover-meta {
-      border-top: 1px solid var(--green-dark);
-      padding-top: 24px;
-      width: 100%;
-    }
-
-    .cover-meta p {
-      font-size: 12px;
-      color: var(--green-dim);
-      letter-spacing: 0.1em;
-      margin-bottom: 6px;
-    }
-
-    .cover-meta p span { color: var(--green-mid); }
-
-    .cover-warning {
-      margin-top: 40px;
-      border: 1px solid var(--green-dark);
-      padding: 16px 20px;
-      font-size: 11px;
-      color: var(--green-dim);
-      line-height: 1.7;
-      max-width: 520px;
-    }
-
-    .cover-warning strong {
-      color: var(--orange);
-      display: block;
-      margin-bottom: 6px;
-      letter-spacing: 0.15em;
-    }
-
-    .toc {
-      border-bottom: 1px solid var(--green-dark);
-      padding: 60px 40px;
-      max-width: 860px;
-      margin: 0 auto;
-    }
-
-    .toc-title {
-      font-size: 11px;
-      letter-spacing: 0.3em;
-      color: var(--green-dim);
-      margin-bottom: 24px;
-    }
-
-    .toc-list {
-      list-style: none;
-      columns: 2;
-      column-gap: 40px;
-    }
-
-    .toc-list li { margin-bottom: 8px; }
-
-    .toc-list a {
-      color: var(--green-mid);
-      text-decoration: none;
-      font-size: 13px;
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      transition: color 0.2s;
-    }
-
-    .toc-list a:hover { color: var(--green); }
-
-    .toc-list .toc-num {
-      color: var(--green-dim);
-      font-size: 11px;
-      flex-shrink: 0;
-    }
-
-    .section {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 60px 40px;
-      border-bottom: 1px solid var(--green-dark);
-    }
-
-    .section-header { margin-bottom: 40px; }
-
-    .section-num {
-      font-size: 11px;
-      letter-spacing: 0.3em;
-      color: var(--green-dim);
-      margin-bottom: 8px;
-    }
-
-    .section-title {
-      font-size: 24px;
-      letter-spacing: 6px;
-      color: var(--green);
-      text-shadow: 0 0 6px rgba(0,255,65,0.4);
-    }
-
-    .section-divider {
-      border-top: 1px solid var(--green-dark);
-      margin: 32px 0;
-    }
-
-    h3 {
-      font-size: 13px;
-      letter-spacing: 0.25em;
-      color: var(--green);
-      margin: 32px 0 12px;
-      text-transform: uppercase;
-    }
-
-    h4 {
-      font-size: 12px;
-      letter-spacing: 0.15em;
-      color: var(--orange);
-      margin: 24px 0 8px;
-      text-transform: uppercase;
-    }
-
-    p {
-      color: var(--green-mid);
-      margin-bottom: 14px;
-      font-size: 13px;
-      line-height: 1.9;
-      max-width: 680px;
-    }
-
-    .lore {
-      color: var(--green-dim);
-      font-style: italic;
-      border-left: 2px solid var(--green-dark);
-      padding-left: 16px;
-      margin: 20px 0;
-      font-size: 12px;
-      line-height: 1.8;
-      max-width: 640px;
-    }
-
-    .warning {
-      color: var(--orange);
-      border-left: 2px solid var(--orange);
-      padding-left: 16px;
-      margin: 20px 0;
-      font-size: 12px;
-      line-height: 1.8;
-      max-width: 640px;
-    }
-
-    .warning strong { color: var(--orange); letter-spacing: 0.1em; }
-
-    .cmd-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0 24px;
-      font-size: 12px;
-    }
-
-    .cmd-table tr { border-bottom: 1px solid var(--green-deep); }
-
-    .cmd-table td {
-      padding: 7px 0;
-      vertical-align: top;
-    }
-
-    .cmd-table .cmd {
-      color: var(--cyan);
-      width: 260px;
-      padding-right: 20px;
-      white-space: nowrap;
-    }
-
-    .cmd-table .desc {
-      color: var(--green-dim);
-      line-height: 1.6;
-    }
-
-    .cmd-table .desc em {
-      color: var(--green-mid);
-      font-style: normal;
-    }
-
-    .stat-block {
-      background: var(--bg-card);
-      border: 1px solid var(--green-dark);
-      padding: 20px 24px;
-      margin: 16px 0;
-      font-size: 12px;
-    }
-
-    .stat-block .stat-title {
-      color: var(--green);
-      letter-spacing: 0.2em;
-      font-size: 11px;
+    .manual-title {
+      font-size: 36px;
+      letter-spacing: 12px;
+      color: #00ff41;
+      text-shadow: 0 0 8px rgba(0,255,65,0.6), 0 0 20px rgba(0,255,65,0.2);
       margin-bottom: 12px;
-      text-transform: uppercase;
     }
 
-    .stat-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 4px 0;
-      border-bottom: 1px solid var(--green-deep);
-      color: var(--green-dim);
-    }
+    .manual-org { font-size: 11px; color: #006618; letter-spacing: 3px; margin-bottom: 6px; }
+    .manual-doc-title { font-size: 13px; color: #00aa2a; letter-spacing: 2px; margin-bottom: 20px; }
+    .manual-meta { font-size: 11px; color: #006618; line-height: 2; }
 
-    .stat-row:last-child { border-bottom: none; }
-    .stat-row span:last-child { color: var(--green-mid); }
-
-    .faction-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin: 16px 0;
-    }
-
-    .faction-card {
-      border: 1px solid var(--green-dark);
-      padding: 16px;
+    .manual-notice {
+      margin-top: 24px;
+      border: 1px solid #006618;
+      padding: 16px 20px;
       font-size: 12px;
-    }
-
-    .faction-card .faction-name {
-      color: var(--green);
-      letter-spacing: 0.15em;
-      font-size: 11px;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
-    .faction-card .faction-short {
-      color: var(--orange);
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      margin-bottom: 10px;
-    }
-
-    .faction-card p {
-      font-size: 11px;
-      color: var(--green-dim);
-      margin: 0;
-      max-width: none;
+      color: #006618;
       line-height: 1.7;
-    }
-
-    .rep-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-      font-size: 12px;
-    }
-
-    .rep-table td {
-      padding: 8px 12px;
-      border: 1px solid var(--green-dark);
-      vertical-align: top;
-    }
-
-    .rep-table .rep-tier { color: var(--green); font-weight: bold; }
-    .rep-table .rep-range { color: var(--green-dim); }
-    .rep-table .rep-effect { color: var(--green-mid); }
-
-    .ammo-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-      font-size: 12px;
-    }
-
-    .ammo-table th {
       text-align: left;
-      color: var(--green-dim);
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      padding: 6px 8px;
-      border-bottom: 1px solid var(--green-dark);
-      text-transform: uppercase;
     }
 
-    .ammo-table td {
-      padding: 7px 8px;
-      border-bottom: 1px solid var(--green-deep);
-      color: var(--green-dim);
-      vertical-align: top;
+    .manual-notice strong { color: #00aa2a; display: block; margin-bottom: 6px; letter-spacing: 1px; }
+
+    .toc { margin-bottom: 48px; border: 1px solid #003310; padding: 24px 28px; }
+    .toc-title { font-size: 10px; color: #006618; letter-spacing: 3px; margin-bottom: 16px; }
+    .toc a { display: block; color: #006618; text-decoration: none; padding: 3px 0; font-size: 12px; transition: color 0.15s; }
+    .toc a:hover { color: #00ff41; }
+    .toc a .toc-num { color: #003310; margin-right: 8px; }
+
+    .section { margin-bottom: 64px; }
+
+    .section-header { margin-bottom: 28px; padding-bottom: 12px; border-bottom: 1px solid #003310; }
+    .section-number { font-size: 10px; color: #003310; letter-spacing: 3px; display: block; margin-bottom: 4px; }
+    .section-title { font-size: 18px; letter-spacing: 4px; color: #00ff41; text-shadow: 0 0 6px rgba(0,255,65,0.3); }
+
+    h3 { font-size: 12px; letter-spacing: 2px; color: #00aa2a; margin: 28px 0 12px 0; }
+    h4 { font-size: 11px; letter-spacing: 1px; color: #006618; margin: 20px 0 8px 0; }
+
+    p { color: #006618; margin-bottom: 14px; font-size: 13px; }
+    p strong { color: #00aa2a; }
+
+    table { width: 100%; border-collapse: collapse; margin: 16px 0 24px 0; font-size: 12px; }
+    th { color: #006618; text-align: left; padding: 6px 12px; border-bottom: 1px solid #003310; font-size: 10px; letter-spacing: 1px; }
+    td { padding: 7px 12px; color: #006618; border-bottom: 1px solid #0a1a0a; vertical-align: top; }
+    td:first-child { color: #00aa2a; white-space: nowrap; }
+    tr:hover td { background: #050f05; }
+
+    .stat-table { margin: 16px 0 24px 0; font-size: 12px; }
+    .stat-row { display: flex; padding: 5px 0; border-bottom: 1px solid #0a1a0a; }
+    .stat-key { color: #006618; min-width: 240px; flex-shrink: 0; }
+    .stat-val { color: #00aa2a; }
+
+    .notice { border-left: 2px solid #006618; padding: 12px 16px; margin: 20px 0; font-size: 12px; color: #006618; line-height: 1.7; }
+    .notice strong { color: #00aa2a; display: block; margin-bottom: 6px; font-size: 11px; letter-spacing: 1px; }
+    .notice.warn { border-left-color: #ff8800; }
+    .notice.warn strong { color: #ff8800; }
+
+    code { color: #00e5ff; font-family: 'Share Tech Mono', monospace; }
+
+    hr { border: none; border-top: 1px solid #003310; margin: 40px 0; opacity: 0.5; }
+
+    .manual-footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid #006618; text-align: center; font-size: 11px; color: #003310; letter-spacing: 2px; line-height: 2.2; }
+    .manual-footer .footer-sign { color: #006618; margin-top: 16px; font-size: 12px; }
+
+    .back-link { display: inline-block; margin-bottom: 32px; color: #006618; text-decoration: none; font-size: 12px; letter-spacing: 1px; transition: color 0.15s; }
+    .back-link:hover { color: #00aa2a; }
+
+    @media (max-width: 600px) {
+      body { padding: 20px 14px 60px 14px; font-size: 12px; }
+      .manual-title { font-size: 22px; letter-spacing: 6px; }
+      .section-title { font-size: 14px; letter-spacing: 2px; }
+      .stat-key { min-width: 160px; }
+      table { font-size: 11px; }
     }
-
-    .ammo-table td:first-child { color: var(--cyan); }
-
-    .state-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-      font-size: 12px;
-    }
-
-    .state-table th {
-      text-align: left;
-      color: var(--green-dim);
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      padding: 6px 8px;
-      border-bottom: 1px solid var(--green-dark);
-      text-transform: uppercase;
-    }
-
-    .state-table td {
-      padding: 7px 8px;
-      border-bottom: 1px solid var(--green-deep);
-      color: var(--green-dim);
-      vertical-align: top;
-      line-height: 1.6;
-    }
-
-    .state-table td:first-child { color: var(--green); }
-
-    .fold-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-      font-size: 12px;
-    }
-
-    .fold-table th {
-      text-align: left;
-      color: var(--green-dim);
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      padding: 6px 8px;
-      border-bottom: 1px solid var(--green-dark);
-      text-transform: uppercase;
-    }
-
-    .fold-table td {
-      padding: 7px 8px;
-      border-bottom: 1px solid var(--green-deep);
-      color: var(--green-dim);
-      vertical-align: top;
-      line-height: 1.6;
-    }
-
-    .fold-table td:first-child { color: var(--cyan); }
-
-    .risk-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-      font-size: 12px;
-    }
-
-    .risk-table th {
-      text-align: left;
-      color: var(--green-dim);
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      padding: 6px 8px;
-      border-bottom: 1px solid var(--green-dark);
-      text-transform: uppercase;
-    }
-
-    .risk-table td {
-      padding: 7px 8px;
-      border-bottom: 1px solid var(--green-deep);
-      color: var(--green-dim);
-      vertical-align: top;
-    }
-
-    .risk-table td:first-child { color: var(--orange); }
-
-    .manual-footer {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 40px 40px;
-      font-size: 11px;
-      color: var(--green-dark);
-      letter-spacing: 0.1em;
-      line-height: 2;
-    }
-
-    code {
-      color: var(--cyan);
-      font-family: 'Share Tech Mono', monospace;
-    }
-
-    [id] { scroll-margin-top: 40px; }
   </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════ COVER -->
+  <a href="index.html" class="back-link">&lt;- Return to Terminal</a>
 
-<div class="cover">
-  <div class="cover-seal">VEYDRITE ASSAYER'S GUILD — CONTRACTOR PUBLICATIONS DIVISION</div>
-  <div class="cover-title">APHELION</div>
-  <div class="cover-subtitle">DEEP SURVEY TERMINAL — OPERATOR'S FIELD MANUAL</div>
-  <div class="cover-meta">
-    <p>Document Class: <span>Contractor Reference — Unrestricted Distribution</span></p>
-    <p>Revision: <span>5 — Current as of Guild Standard Year 2301</span></p>
-    <p>Issuing Authority: <span>Assayer's Guild, Contractor Relations Office, Solace Reach</span></p>
-    <p>Terminal Version: <span>v0.3.0-dev — Veydric Fold Drive Build</span></p>
-  </div>
-  <div class="cover-warning">
-    <strong>NOTICE TO INDEPENDENT CONTRACTORS</strong>
-    This document is issued upon registration confirmation and constitutes the complete operational reference for Guild-networked deep survey terminals. Revision 5 incorporates updated guidance on the Veydric Fold Drive, corridor navigation, and galaxy structure. Contractors are presumed to have read and understood all sections prior to field operations. The Guild accepts no liability for losses arising from operational unfamiliarity. The galaxy is not forgiving of ignorance. Neither is the Guild.
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════ TOC -->
-
-<div class="toc">
-  <div class="toc-title">TABLE OF CONTENTS</div>
-  <ul class="toc-list">
-    <li><a href="#s1"><span class="toc-num">01.</span> The Galaxy and Your Place in It</a></li>
-    <li><a href="#s2"><span class="toc-num">02.</span> The Assayer's Guild</a></li>
-    <li><a href="#s3"><span class="toc-num">03.</span> Currency and Economy</a></li>
-    <li><a href="#s4"><span class="toc-num">04.</span> Factions and Standing</a></li>
-    <li><a href="#s5"><span class="toc-num">05.</span> The Veydric Fold Drive</a></li>
-    <li><a href="#s6"><span class="toc-num">06.</span> Navigation and Traversal</a></li>
-    <li><a href="#s7"><span class="toc-num">07.</span> The Terminal Interface</a></li>
-    <li><a href="#s8"><span class="toc-num">08.</span> Station Operations</a></li>
-    <li><a href="#s9"><span class="toc-num">09.</span> Survey Operations</a></li>
-    <li><a href="#s10"><span class="toc-num">10.</span> Salvage Operations</a></li>
-    <li><a href="#s11"><span class="toc-num">11.</span> Contracts and the Bulletin Board</a></li>
-    <li><a href="#s12"><span class="toc-num">12.</span> Combat Doctrine</a></li>
-    <li><a href="#s13"><span class="toc-num">13.</span> Ship Systems Reference</a></li>
-    <li><a href="#s14"><span class="toc-num">14.</span> Astrographics — Chart Management</a></li>
-    <li><a href="#s15"><span class="toc-num">15.</span> The Guild Record Archive</a></li>
-    <li><a href="#s16"><span class="toc-num">16.</span> Survival Notes</a></li>
-    <li><a href="#s17"><span class="toc-num">17.</span> Quick Command Reference</a></li>
-  </ul>
-</div>
-
-<!-- ═══════════════════════════════════════════ S1: THE GALAXY -->
-
-<div class="section" id="s1">
-  <div class="section-header">
-    <div class="section-num">SECTION 01</div>
-    <div class="section-title">THE GALAXY AND YOUR PLACE IN IT</div>
-  </div>
-
-  <p>The galaxy is not what it was. This is not a complaint. It is a survey finding, and the Guild records survey findings without editorializing. What the data shows is a civilization in structural decline: fewer stations operational, more systems running dark, infrastructure failing faster than it is being replaced. The Guild has been documenting this trend for approximately forty years. The trend has not reversed.</p>
-
-  <p>Your role as an independent contractor is to operate within this environment — to move through space that larger institutions cannot efficiently reach, to gather data and commodities that the network needs, and to survive long enough to file your reports. The Guild does not require you to fix the galaxy. It requires you to chart it accurately.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Galaxy Structure</h3>
-
-  <p>The known galaxy consists of 42 quadrants — scattered pockets of civilization, not a grid, not a map, but a web of isolated nodes connected by fold corridors. Some quadrants are densely connected. Some are accessible only through a single corridor. Some lie beyond all charted routes entirely, reachable only by those willing to overdrive their fold drives into uncharted void.</p>
-
-  <p>Each quadrant contains one or two clusters, each cluster containing two to five star systems. Every galaxy is procedurally generated from a seed — a four-part code assigned at registration. The seed determines everything: quadrant names, system names, station locations, faction presence, veydrite deposits, corridor connections, hazard ratings. Two pilots with different seeds inhabit entirely different galaxies.</p>
-
-  <div class="lore">The seed is not metaphorical. The Guild's deep mapping engines require a starting value from which to derive the full structure of local space. In practice, this means that no two registration events produce the same galaxy. The contractor who registered before you and the contractor who registers after you are each alone in their own version of the dark. The Guild finds this philosophically unremarkable.</div>
-
-  <div class="section-divider"></div>
-
-  <h3>Known and Unknown Space</h3>
-
-  <p>At registration, the Guild issues a partial corridor chart — roughly 33% of fold connections are pre-loaded into your terminal's navigation memory. The remaining 67% are dark. You know they exist. You do not know where they lead. The galaxy reveals itself as you move through it: folding into a new quadrant reveals all corridors emanating from that position. Deepscan operations can detect corridor signatures in adjacent space. Guild data purchases can provide named connection records. Salvaged logs sometimes contain navigation data. Contacts mention corridors they have used.</p>
-
-  <p>The guild does not consider the partial chart a deficiency. They consider it an invitation.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Quadrant States</h3>
-
-  <p>Each quadrant carries a civilization state that determines station density, encounter frequency, veydrite pricing, faction mix, and hazard levels. States propagate — collapse spreads like a disease. A Collapsed quadrant pulls its Declining neighbors toward collapse at a 40% rate per generation. Declining pulls Contested at 25%. Established space creates pressure, but recovery is pocketed, fragile, and rare. The galaxy trends in one direction.</p>
-
-  <table class="state-table">
-    <tr>
-      <th>State</th><th>Character</th><th>Encounter Risk</th><th>Economy</th>
-    </tr>
-    <tr>
-      <td>Established</td>
-      <td>Functional infrastructure, Guild presence, reliable services</td>
-      <td>Low</td>
-      <td>Low veydrite premium. Competitive fold cell pricing.</td>
-    </tr>
-    <tr>
-      <td>Contested</td>
-      <td>Disputed control, armed presence, unstable docking</td>
-      <td>Moderate</td>
-      <td>Moderate premiums. Black market corridors possible.</td>
-    </tr>
-    <tr>
-      <td>Declining</td>
-      <td>Infrastructure failing, population exodus, reduced services</td>
-      <td>Moderate-High</td>
-      <td>Significant premiums. Fewer sellers. Fold cells scarce.</td>
-    </tr>
-    <tr>
-      <td>Collapsed</td>
-      <td>Effectively lawless. Feral settlements. No formal authority.</td>
-      <td>High</td>
-      <td>Extreme premiums. Salvage-rich. Fold cells may be unavailable.</td>
-    </tr>
-    <tr>
-      <td>Isolated</td>
-      <td>Cut off from Guild network. Unknown internal conditions.</td>
-      <td>Moderate</td>
-      <td>Elevated premiums. Idiosyncratic local economies.</td>
-    </tr>
-    <tr>
-      <td>Forbidden</td>
-      <td>Access prohibited. Enforcement presence unconfirmed.</td>
-      <td>High</td>
-      <td>Astrographic data commands extreme premium.</td>
-    </tr>
-  </table>
-
-  <div class="section-divider"></div>
-
-  <h3>The Xeno Question</h3>
-
-  <p>The Guild's official position is that certain anomalous survey findings remain under active review. This document will not elaborate further. Contractors operating in systems flagged with anomalous sensor returns are advised to complete their survey quickly and file their data. The Guild is particularly interested in astrographic records from such systems. The premium reflects this interest.</p>
-
-  <div class="warning">
-    <strong>FIELD NOTE</strong>
-    If something in a system does not resolve on sensors, do not attempt repeated resolution sweeps. Log the anomaly. Leave the system. File your data. The Guild will handle classification. You are a surveyor, not an investigator.
-  </div>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S2: THE GUILD -->
-
-<div class="section" id="s2">
-  <div class="section-header">
-    <div class="section-num">SECTION 02</div>
-    <div class="section-title">THE ASSAYER'S GUILD</div>
-  </div>
-
-  <p>The Assayer's Guild is the oldest continuously operating institution in known space. It predates the current collapse cycle by several centuries and has survived every previous one. Its longevity is not accidental. The Guild survives because every other faction — Pelk Logistics, Colonial Colonies Command, feral settlements, independent operators — needs what the Guild provides: neutral monetary infrastructure and authoritative cartographic records. The Guild does not take sides. It takes percentages.</p>
-
-  <div class="lore">The Guild's neutrality is its entire value. The moment it favors one corp over another, it loses the thing that makes the galaxy function around it. Every major faction in known space spends considerable political energy ensuring the Guild never has reason to weaponize its position. The Guild is aware of this dynamic. The Guild finds it a satisfactory arrangement.</div>
-
-  <div class="section-divider"></div>
-
-  <h3>What the Guild Does</h3>
-
-  <p>The Guild performs three core functions: it maintains the monetary exchange system (Veydrite Dust pricing, Corp Scrip exchange, currency certification), it maintains the cartographic record (astrographic data collection, star chart distribution, fold corridor mapping, survey certification), and it maintains the contractor network (registration, contract facilitation, reputation tracking).</p>
-
-  <p>As a registered independent contractor, you operate on Guild-issued credentials. Your terminal connects to the Guild network. Your astrographic data sells to Guild archive stations. Your reputation score is maintained in Guild ledgers. Your fold corridor data — when you file it — is incorporated into the Guild's cartographic record. You are, in a meaningful sense, a Guild instrument deployed into space at no cost to themselves, because you bear all the operational risk.</p>
-
-  <div class="lore">The Guild does not think of contractors this way, officially. Officially, contractors are valued independent partners whose contributions to the cartographic record are essential to Guild operations. This is also true. Both things can be true simultaneously. The Guild is comfortable with this.</div>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S3: ECONOMY -->
-
-<div class="section" id="s3">
-  <div class="section-header">
-    <div class="section-num">SECTION 03</div>
-    <div class="section-title">CURRENCY AND ECONOMY</div>
-  </div>
-
-  <h3>Veydrite Dust</h3>
-
-  <p>Veydrite Dust is the bedrock commodity of the known economy — and, as of the Veydric Fold Drive's widespread adoption, the bedrock of propulsion as well. It occurs in trace quantities around certain stellar classes — O and B-class stars produce the richest deposits — and is extracted through field salvage operations. Veydrite does not corrode, does not decay, cannot be synthesized, and has verified mass. These properties make it the only universally accepted store of value in a galaxy where institutional trust is eroding along with everything else.</p>
-
-  <p>The tension every contractor faces: sell veydrite for scrip, or use it to go somewhere. This is not a metaphorical tension. It is an operational one. Manage it accordingly.</p>
-
-  <div class="stat-block">
-    <div class="stat-title">Veydrite Pricing by Quadrant State</div>
-    <div class="stat-row"><span>Established</span><span>84 CR/kg</span></div>
-    <div class="stat-row"><span>Contested</span><span>120 CR/kg</span></div>
-    <div class="stat-row"><span>Declining</span><span>144 CR/kg</span></div>
-    <div class="stat-row"><span>Collapsed</span><span>192 CR/kg</span></div>
-    <div class="stat-row"><span>Isolated</span><span>168 CR/kg</span></div>
-    <div class="stat-row"><span>Forbidden</span><span>216 CR/kg</span></div>
-  </div>
-
-  <div class="section-divider"></div>
-
-  <h3>Corp Scrip</h3>
-
-  <p>Corp Scrip is the transactional layer — the local currency used for day-to-day purchases. It is issued and backstopped by the dominant corporate presence in a given region. Scrip buys fuel. Scrip pays docking fees. Scrip denominates contract payments and fold cell purchases. The Assayer's Guild certifies exchange rates between competing scrip systems.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Fuel</h3>
-
-  <p>Conventional fuel powers the drive systems for nav transit and cluster jumps within a quadrant. Fuel is separate from Veydric Fold Cells — fuel handles local movement, cells handle inter-quadrant folding. Running out of fuel in deep space is a death sentence. Running low is a warning. Monitor both resources independently.</p>
-
-  <div class="stat-block">
-    <div class="stat-title">Fuel Pricing by Quadrant State</div>
-    <div class="stat-row"><span>Established</span><span>32 CR/unit</span></div>
-    <div class="stat-row"><span>Contested</span><span>44 CR/unit</span></div>
-    <div class="stat-row"><span>Declining</span><span>52 CR/unit</span></div>
-    <div class="stat-row"><span>Collapsed</span><span>80 CR/unit</span></div>
-    <div class="stat-row"><span>Isolated</span><span>64 CR/unit</span></div>
-    <div class="stat-row"><span>Forbidden</span><span>100 CR/unit</span></div>
-  </div>
-
-  <div class="section-divider"></div>
-
-  <h3>Docking Fees</h3>
-
-  <div class="stat-block">
-    <div class="stat-title">Docking Fees by Faction</div>
-    <div class="stat-row"><span>Assayer's Guild</span><span>50 CR</span></div>
-    <div class="stat-row"><span>Pelk Logistics</span><span>35 CR</span></div>
-    <div class="stat-row"><span>Colonial Colonies Command</span><span>20 CR</span></div>
-    <div class="stat-row"><span>Independent</span><span>25 CR</span></div>
-    <div class="stat-row"><span>Feral Settlement</span><span>0 CR (negotiated on arrival)</span></div>
-  </div>
-
-  <p>Docking recharges your Power Core to full via shore power. This is the most reliable way to restore power outside of passive recharge over travel time.</p>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S4: FACTIONS -->
-
-<div class="section" id="s4">
-  <div class="section-header">
-    <div class="section-num">SECTION 04</div>
-    <div class="section-title">FACTIONS AND STANDING</div>
-  </div>
-
-  <p>Five faction groups operate within Guild-mapped space. Your standing with each is tracked independently on a scale of -100 to +100. Standing affects pricing, docking access, contract availability, fold cell pricing, and the likelihood of hostile encounters.</p>
-
-  <div class="faction-grid">
-    <div class="faction-card">
-      <div class="faction-name">The Assayer's Guild</div>
-      <div class="faction-short">GUILD — NEUTRAL</div>
-      <p>The monetary and cartographic authority. Operates the network you are connected to. The only faction that purchases astrographic data. TRUSTED status improves veydrite rates and fold cell pricing significantly. HOSTILE status means docking refused everywhere that flies Guild colors.</p>
+  <div class="manual-header">
+    <div class="manual-title">A P H E L I O N</div>
+    <div class="manual-org">VEYDRITE ASSAYER'S GUILD — CONTRACTOR PUBLICATIONS DIVISION</div>
+    <div class="manual-doc-title">DEEP SURVEY TERMINAL — OPERATOR'S FIELD MANUAL</div>
+    <div class="manual-meta">
+      Document Class: Contractor Reference — Unrestricted Distribution<br>
+      Revision: 6 — Current as of Guild Standard Year 2302<br>
+      Issuing Authority: Assayer's Guild, Contractor Relations Office, Solace Reach<br>
+      Terminal Version: v0.2.0-dev — Extraction Operations Build
     </div>
-    <div class="faction-card">
-      <div class="faction-name">Pelk Logistics</div>
-      <div class="faction-short">PELK — COMMERCIAL</div>
-      <p>The dominant commercial freight and logistics operation. Common in Contested and Declining space. Posts delivery and interdiction contracts. Commercially minded — standing builds through successful transactions. Fold cells available at moderate markup. They do not ask what is in the sealed cargo.</p>
-    </div>
-    <div class="faction-card">
-      <div class="faction-name">Colonial Colonies Command</div>
-      <div class="faction-short">CCC — MILITARY</div>
-      <p>The remnant military authority. Lower docking fees, but their contracts and fold cell sales require KNOWN standing or better to access. Post elimination orders and escort contracts. Completing CCC combat contracts may affect standing with other factions whose vessels you destroy.</p>
-    </div>
-    <div class="faction-card">
-      <div class="faction-name">Independent Operators</div>
-      <div class="faction-short">INDP — NEUTRAL</div>
-      <p>Stations operating outside formal corporate affiliation. Modest docking fees. Basic services. Fold cells available but at premium pricing. The most common station type in Declining space. Not glamorous, but reliable — within the limits of reliability in a decaying galaxy.</p>
-    </div>
-    <div class="faction-card">
-      <div class="faction-name">Feral Settlements</div>
-      <div class="faction-short">FERAL — HOSTILE</div>
-      <p>Not a faction in the conventional sense — a category of settlement that has opted out of the corporate framework. No docking fees. Few questions. Fold cells may or may not be available — 40% of Feral stations have no stock at all. Feral standing is not on public record.</p>
-    </div>
-    <div class="faction-card">
-      <div class="faction-name">Unknown Authority</div>
-      <div class="faction-short">???? — UNKNOWN</div>
-      <p>Certain stations do not respond on standard frequencies. Your transponder is logged. Services are not listed. The Guild's official position is that these installations are under active jurisdictional review. Contractors are not advised to speculate further.</p>
+    <div class="manual-notice">
+      <strong>NOTICE TO INDEPENDENT CONTRACTORS</strong>
+      Revision 6 incorporates updated guidance on the Veydric Fold Drive, extraction operations, ore processing, geological survey doctrine, and the Null-Propagating Crystalline Parasite (NPCP). Contractors registered prior to Guild Standard Year 2302 are advised to read Sections 11 and 12 in full. Prior operational doctrine does not cover extraction operations. The Guild accepts no liability for losses arising from operational unfamiliarity. The galaxy is not forgiving of ignorance. Neither is the Guild.
     </div>
   </div>
 
-  <div class="section-divider"></div>
-
-  <h3>Reputation Tiers</h3>
-
-  <table class="rep-table">
-    <tr>
-      <td class="rep-tier">TRUSTED</td>
-      <td class="rep-range">+61 to +100</td>
-      <td class="rep-effect">Preferential pricing on veydrite and fold cells. Full contract access. Warmest reception.</td>
-    </tr>
-    <tr>
-      <td class="rep-tier">KNOWN</td>
-      <td class="rep-range">+1 to +60</td>
-      <td class="rep-effect">Standard services. Normal pricing. Access to most contracts and cell purchases.</td>
-    </tr>
-    <tr>
-      <td class="rep-tier">WATCHED</td>
-      <td class="rep-range">-60 to 0</td>
-      <td class="rep-effect">Some services restricted. Contract boards may deny access. Cell pricing elevated.</td>
-    </tr>
-    <tr>
-      <td class="rep-tier" style="color:var(--orange)">HOSTILE</td>
-      <td class="rep-range">-100 to -61</td>
-      <td class="rep-effect">Docking refused. Patrol vessels may engage on sight. No cell sales.</td>
-    </tr>
-  </table>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S5: FOLD DRIVE -->
-
-<div class="section" id="s5">
-  <div class="section-header">
-    <div class="section-num">SECTION 05</div>
-    <div class="section-title">THE VEYDRIC FOLD DRIVE</div>
+  <div class="toc">
+    <div class="toc-title">TABLE OF CONTENTS</div>
+    <a href="#s1"><span class="toc-num">01.</span> The Galaxy and Your Place in It</a>
+    <a href="#s2"><span class="toc-num">02.</span> The Assayer's Guild</a>
+    <a href="#s3"><span class="toc-num">03.</span> Currency and Economy</a>
+    <a href="#s4"><span class="toc-num">04.</span> Factions and Standing</a>
+    <a href="#s5"><span class="toc-num">05.</span> The Veydric Fold Drive</a>
+    <a href="#s6"><span class="toc-num">06.</span> Navigation and Traversal</a>
+    <a href="#s7"><span class="toc-num">07.</span> The Terminal Interface</a>
+    <a href="#s8"><span class="toc-num">08.</span> Station Operations</a>
+    <a href="#s9"><span class="toc-num">09.</span> Survey Operations</a>
+    <a href="#s10"><span class="toc-num">10.</span> Salvage Operations</a>
+    <a href="#s11"><span class="toc-num">11.</span> Extraction Operations</a>
+    <a href="#s12"><span class="toc-num">12.</span> Ore Processing and Refinery Operations</a>
+    <a href="#s13"><span class="toc-num">13.</span> Contracts and the Bulletin Board</a>
+    <a href="#s14"><span class="toc-num">14.</span> Combat Doctrine</a>
+    <a href="#s15"><span class="toc-num">15.</span> Ship Systems Reference</a>
+    <a href="#s16"><span class="toc-num">16.</span> Astrographics — Chart Management</a>
+    <a href="#s17"><span class="toc-num">17.</span> The Guild Record Archive</a>
+    <a href="#s18"><span class="toc-num">18.</span> Survival Notes</a>
+    <a href="#s19"><span class="toc-num">19.</span> Quick Command Reference</a>
   </div>
 
-  <p>The Veydric Fold Drive is the mechanism by which vessels transit between quadrants. It does not travel faster than light. It travels shorter. Early survey teams, operating in veydrite-rich stellar environments, documented measurable spacetime density differentials in high-veydrite fields. The Fold Drive exploits these differentials to compress transit geometry — folding the space between origin and destination until they are effectively adjacent, transiting, then releasing. The math is old Guild science. The hardware is increasingly hard to maintain as manufacturing capacity collapses.</p>
-
-  <div class="lore">Pilots colloquially refer to inter-quadrant transit as "folding" or "a fold." The verb is accurate in ways that make physicists uncomfortable and Guild bureaucrats reach for the official terminology guidelines. The guidelines have not resolved the issue. Contractors continue to say "folding." The Guild continues to write "Veydric Fold Transit" in official documents. This has been the state of affairs for approximately sixty years.</div>
-
-  <div class="section-divider"></div>
-
-  <h3>Veydric Fold Cells</h3>
-
-  <p>Veydric Fold Cells are the primary fuel medium for the Fold Drive. They are machined, refined, and standardized — approximately the size and mass of a reactor rod, slotted into the drive housing one at a time. The Guild manufactures them to specification. Stations stock them at prices that vary by faction affiliation and your standing with that faction. They are what the drive is designed to run on: clean fold, predictable geometry, no drive wear.</p>
-
-  <div class="stat-block">
-    <div class="stat-title">Fold Cell Pricing by Faction</div>
-    <div class="stat-row"><span>Assayer's Guild</span><span>45 CR/cell  (standing discount applies)</span></div>
-    <div class="stat-row"><span>Pelk Logistics</span><span>55 CR/cell</span></div>
-    <div class="stat-row"><span>Colonial Colonies Command</span><span>40 CR/cell  (KNOWN standing required)</span></div>
-    <div class="stat-row"><span>Independent</span><span>65 CR/cell</span></div>
-    <div class="stat-row"><span>Feral Settlement</span><span>80 CR/cell  (40% chance: no stock)</span></div>
+  <div class="section" id="s1">
+    <div class="section-header">
+      <span class="section-number">SECTION 01</span>
+      <div class="section-title">THE GALAXY AND YOUR PLACE IN IT</div>
+    </div>
+    <p>The galaxy is not what it was. This is not a complaint. It is a survey finding, and the Guild records survey findings without editorializing. What the data shows is a civilization in structural decline: fewer stations operational, more systems running dark, infrastructure failing faster than it is being replaced. The Guild has been documenting this trend for approximately forty years. The trend has not reversed.</p>
+    <p>Your role as an independent contractor is to operate within this environment — to move through space that larger institutions cannot efficiently reach, to gather data and commodities that the network needs, and to survive long enough to file your reports. The Guild does not require you to fix the galaxy. It requires you to chart it accurately.</p>
+    <h3>GALAXY STRUCTURE</h3>
+    <p>The known galaxy consists of 42 quadrants connected by fold corridors. Each quadrant contains one or two clusters of two to five star systems. Every galaxy is procedurally generated from a seed — a four-part code assigned at registration. The seed determines everything: quadrant names, system names, station locations, faction presence, veydrite deposits, corridor connections, hazard ratings, and the ore composition of every mineable body in every system. Two pilots with different seeds inhabit entirely different galaxies.</p>
+    <h3>KNOWN AND UNKNOWN SPACE</h3>
+    <p>At registration, the Guild issues a partial corridor chart — roughly 33% of fold connections are pre-loaded into your terminal's navigation memory. The remaining 67% are dark. The galaxy reveals itself as you move through it. The Guild does not consider the partial chart a deficiency. They consider it an invitation.</p>
+    <h3>QUADRANT STATES</h3>
+    <table>
+      <tr><th>State</th><th>Character</th><th>Risk</th><th>Economy</th></tr>
+      <tr><td>Established</td><td>Functional infrastructure, Guild presence</td><td>Low</td><td>Low premium. Competitive cell pricing.</td></tr>
+      <tr><td>Contested</td><td>Disputed control, armed presence</td><td>Moderate</td><td>Moderate premiums.</td></tr>
+      <tr><td>Declining</td><td>Infrastructure failing, population exodus</td><td>Moderate-High</td><td>Significant premiums. Cells scarce.</td></tr>
+      <tr><td>Collapsed</td><td>Lawless. Feral settlements.</td><td>High</td><td>Extreme premiums. Salvage-rich.</td></tr>
+      <tr><td>Isolated</td><td>Cut off from Guild network.</td><td>Moderate</td><td>Elevated premiums.</td></tr>
+      <tr><td>Forbidden</td><td>Access prohibited.</td><td>High</td><td>Chart data commands extreme premium.</td></tr>
+    </table>
+    <h3>THE XENO QUESTION</h3>
+    <p>The Guild's official position is that certain anomalous survey findings remain under active review. Contractors operating in flagged systems are advised to complete their survey quickly and file their data. The premium reflects this interest.</p>
+    <div class="notice warn">
+      <strong>FIELD NOTE</strong>
+      If something in a system does not resolve on sensors, do not attempt repeated resolution sweeps. Log the anomaly. Leave the system. File your data. You are a surveyor, not an investigator.
+    </div>
   </div>
 
-  <p>Purchase fold cells at any station trade terminal with <code>buy cells &lt;amount&gt;</code>. Your vessel's fold cell magazine holds a maximum of 20 cells. The sidebar displays current cell count at all times.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>The Emergency Reserve — Raw Veydrite</h3>
-
-  <p>Your vessel maintains a separate emergency reserve tank — a secondary feed system that accepts raw, unrefined veydrite directly from salvage operations. The emergency reserve holds a maximum of 15 kg. It is not elegant. It is not recommended as a primary fuel source. It exists because the people who designed the Light Surveyor understood that contractors operating in Collapsed space cannot always find a station.</p>
-
-  <p>The emergency feed converts 10 kg of raw veydrite into one cell equivalent. The drive runs hotter. The fold geometry is less precise. There is a 15% chance of minor Drive subsystem wear per feed operation. Like running a reactor on unprocessed ore — technically functional, not recommended as a lifestyle.</p>
-
-  <div class="stat-block">
-    <div class="stat-title">Emergency Reserve — Light Surveyor</div>
-    <div class="stat-row"><span>Tank capacity</span><span>15 kg raw veydrite</span></div>
-    <div class="stat-row"><span>Starting reserve</span><span>7–11 kg (randomized at registration)</span></div>
-    <div class="stat-row"><span>Conversion rate</span><span>10 kg = 1 cell equivalent</span></div>
-    <div class="stat-row"><span>Drive wear risk</span><span>15% per feed operation</span></div>
-    <div class="stat-row"><span>Salvage priority</span><span>Reserve fills first, then cargo hold</span></div>
+  <div class="section" id="s2">
+    <div class="section-header">
+      <span class="section-number">SECTION 02</span>
+      <div class="section-title">THE ASSAYER'S GUILD</div>
+    </div>
+    <p>The Assayer's Guild is the oldest continuously operating institution in known space. It predates the current collapse cycle by several centuries and has survived every previous one. Its longevity is not accidental. The Guild survives because every other faction needs what the Guild provides: neutral monetary infrastructure and authoritative cartographic records. The Guild does not take sides. It takes percentages.</p>
+    <p>The Guild's neutrality is its entire value. Every major faction in known space spends considerable political energy ensuring the Guild never has reason to weaponize its position. The Guild is aware of this dynamic. The Guild finds it a satisfactory arrangement.</p>
+    <p>As a registered independent contractor, you operate on Guild-issued credentials. Your terminal connects to the Guild network. Your astrographic data sells to Guild archive stations. Your ore sells at Guild-regulated market rates. Your reputation score is maintained in Guild ledgers. You are, in a meaningful sense, a Guild instrument deployed into space at no cost to themselves, because you bear all the operational risk. The Guild does not think of contractors this way, officially.</p>
   </div>
 
-  <p>Salvage operations automatically fill the emergency reserve before adding veydrite to the sellable cargo hold. A full reserve means you always have at least one emergency fold available — if you have 10 kg. This is not a large margin. Plan accordingly.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Fold Cell Costs by Transit Type</h3>
-
-  <table class="fold-table">
-    <tr>
-      <th>Transit Type</th><th>Cell Cost</th><th>Notes</th>
-    </tr>
-    <tr>
-      <td>Cluster jump (within quadrant)</td>
-      <td>1 cell</td>
-      <td>Short-range blind jump. Minor hull stress risk.</td>
-    </tr>
-    <tr>
-      <td>Nav transit (within quadrant)</td>
-      <td>3 cells</td>
-      <td>Calculated course. Standard risk.</td>
-    </tr>
-    <tr>
-      <td>Fold — highway corridor</td>
-      <td>2 cells</td>
-      <td>Pre-calculated geometry. Cheaper. Find these.</td>
-    </tr>
-    <tr>
-      <td>Fold — primary corridor</td>
-      <td>3 cells</td>
-      <td>Standard charted fold. Normal risk.</td>
-    </tr>
-    <tr>
-      <td>Fold — secondary corridor</td>
-      <td>4 cells</td>
-      <td>Less reliable geometry. Slightly elevated risk.</td>
-    </tr>
-    <tr>
-      <td>Blindfold — uncharted void</td>
-      <td>12 cells</td>
-      <td>Overdrive. Drive must be NOMINAL. Risk table applies.</td>
-    </tr>
-  </table>
-
-  <div class="section-divider"></div>
-
-  <h3>Highway Corridors</h3>
-
-  <p>Every galaxy contains three to four highway corridors — fold connections between quadrants whose geometry has been so thoroughly pre-calculated by Guild survey vessels that the drive barely has to work. Two cells instead of three. Faster transit. No additional risk. Highway corridors exist between historically high-traffic quadrants — Established space, major trade routes, Guild administrative connections. They are displayed on the fold map as <code>═══</code> rather than <code>───</code>. Find them. Use them. Plan routes through them when possible.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>The Blind Fold — Overdrive Transit</h3>
-
-  <p>The blind fold is not a navigation technique. It is a last resort. It commits the Fold Drive to transit across uncharted void — space where no corridor geometry exists, where the drive must generate its own fold field from scratch rather than following a pre-calculated path. Twelve cells. Drive must be at NOMINAL condition. Something will happen. What happens is not fully under your control.</p>
-
-  <div class="warning">
-    <strong>GUILD LIABILITY NOTICE</strong>
-    The Guild accepts no liability for overdrive fold incidents. Contractors who initiate blind fold sequences do so with full knowledge of the risk table below. The Guild's official recommendation is that blind fold transit should be considered only when all alternatives have been exhausted. The Guild's unofficial observation is that the contractors who use it most are the ones who ran out of fold cells in Collapsed space.
+  <div class="section" id="s3">
+    <div class="section-header">
+      <span class="section-number">SECTION 03</span>
+      <div class="section-title">CURRENCY AND ECONOMY</div>
+    </div>
+    <h3>VEYDRITE DUST</h3>
+    <p>Veydrite Dust is the bedrock commodity of the known economy and, as of the Veydric Fold Drive's widespread adoption, the bedrock of propulsion as well. It occurs in trace quantities around certain stellar classes — O and B-class stars produce the richest deposits. The tension every contractor faces: sell veydrite for scrip, or use it to go somewhere. Manage it accordingly.</p>
+    <div class="stat-table">
+      <div class="stat-row"><span class="stat-key">Established</span><span class="stat-val">84 CR/kg</span></div>
+      <div class="stat-row"><span class="stat-key">Contested</span><span class="stat-val">120 CR/kg</span></div>
+      <div class="stat-row"><span class="stat-key">Declining</span><span class="stat-val">144 CR/kg</span></div>
+      <div class="stat-row"><span class="stat-key">Collapsed</span><span class="stat-val">192 CR/kg</span></div>
+      <div class="stat-row"><span class="stat-key">Isolated</span><span class="stat-val">168 CR/kg</span></div>
+      <div class="stat-row"><span class="stat-key">Forbidden</span><span class="stat-val">216 CR/kg</span></div>
+    </div>
+    <h3>CORP SCRIP AND FUEL</h3>
+    <p>Corp Scrip is the transactional layer for day-to-day purchases. Fuel powers nav transit and cluster jumps within a quadrant — separate from Veydric Fold Cells. Running out of fuel in deep space is a death sentence.</p>
+    <div class="stat-table">
+      <div class="stat-row"><span class="stat-key">Fuel — Established</span><span class="stat-val">32 CR/unit</span></div>
+      <div class="stat-row"><span class="stat-key">Fuel — Contested</span><span class="stat-val">44 CR/unit</span></div>
+      <div class="stat-row"><span class="stat-key">Fuel — Declining</span><span class="stat-val">52 CR/unit</span></div>
+      <div class="stat-row"><span class="stat-key">Fuel — Collapsed</span><span class="stat-val">80 CR/unit</span></div>
+      <div class="stat-row"><span class="stat-key">Docking — Guild</span><span class="stat-val">50 CR (shore power included)</span></div>
+      <div class="stat-row"><span class="stat-key">Docking — Pelk</span><span class="stat-val">35 CR</span></div>
+      <div class="stat-row"><span class="stat-key">Docking — CCC</span><span class="stat-val">20 CR</span></div>
+      <div class="stat-row"><span class="stat-key">Docking — Independent</span><span class="stat-val">25 CR</span></div>
+      <div class="stat-row"><span class="stat-key">Docking — Feral</span><span class="stat-val">0 CR (negotiated on arrival)</span></div>
+    </div>
   </div>
 
-  <table class="risk-table">
-    <tr>
-      <th>Probability</th><th>Outcome</th><th>Consequences</th>
-    </tr>
-    <tr>
-      <td>70%</td>
-      <td>Clean fold</td>
-      <td>Arrive at destination. Drive condition degrades to WORN.</td>
-    </tr>
-    <tr>
-      <td>15%</td>
-      <td>Rough fold</td>
-      <td>Hull stress -10. Drive degrades to DEGRADED.</td>
-    </tr>
-    <tr>
-      <td>10%</td>
-      <td>Bad fold</td>
-      <td>Hull stress -25. Drive degrades to CRITICAL. Arrival offset — wrong system.</td>
-    </tr>
-    <tr>
-      <td>5%</td>
-      <td>Catastrophic</td>
-      <td>Hull stress -50. Drive DESTROYED. Stranded until repaired.</td>
-    </tr>
-  </table>
-
-  <p>A destroyed Drive subsystem disables all fold and nav functions. You cannot move between systems until the Drive is repaired at a station. If the nearest station requires a fold to reach and your drive is destroyed, you are stranded. This outcome is recoverable only if you have enough reserve veydrite and hull integrity to wait for a contact or negotiate with whatever is in the system with you.</p>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S6: NAVIGATION -->
-
-<div class="section" id="s6">
-  <div class="section-header">
-    <div class="section-num">SECTION 06</div>
-    <div class="section-title">NAVIGATION AND TRAVERSAL</div>
+  <div class="section" id="s4">
+    <div class="section-header">
+      <span class="section-number">SECTION 04</span>
+      <div class="section-title">FACTIONS AND STANDING</div>
+    </div>
+    <p>Five faction groups operate within Guild-mapped space. Your standing with each is tracked independently on a scale of -100 to +100. Standing affects pricing, docking access, contract availability, fold cell pricing, and refinery yield share.</p>
+    <table>
+      <tr><th>Tier</th><th>Range</th><th>Access</th></tr>
+      <tr><td>TRUSTED</td><td>+61 to +100</td><td>Preferential pricing. Full contract access. Refinery yield share reduced.</td></tr>
+      <tr><td>KNOWN</td><td>+1 to +60</td><td>Standard services. Normal pricing.</td></tr>
+      <tr><td>WATCHED</td><td>-60 to 0</td><td>Some services restricted. Elevated pricing.</td></tr>
+      <tr><td>HOSTILE</td><td>-100 to -61</td><td>Docking refused. No cell or refinery services. Patrols may engage.</td></tr>
+    </table>
   </div>
 
-  <p>Movement is the foundation of contractor operations. There are two levels of transit: movement within your current quadrant, and movement between quadrants via the Fold Drive. Both consume resources. Both advance the day counter. Both carry risk. Plan before committing.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>The Fold Corridor Map — <code>map</code></h3>
-
-  <p>Before going anywhere, consult the fold map. The <code>map</code> command displays your current position, all known corridors from your current quadrant with their types and cell costs, and a complete list of all quadrants in your current knowledge network. Unknown quadrants — those beyond charted corridors — appear only as a count. The map is your primary navigation reference. Use it before every fold decision.</p>
-
-  <p>Corridor display symbols: <code>═══</code> highway corridor (2 cells), <code>───</code> primary corridor (3 cells), <code>···</code> secondary corridor (4 cells). Unknown corridors display a fold signature flavor line — you know something is there, but not what or where it leads.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Galaxy Overview — <code>galaxy</code></h3>
-
-  <p>The <code>galaxy</code> command displays all quadrants currently in your knowledge network — those you have visited or that are connected to your position via known corridors. Unknown quadrants do not appear. The list grows as you explore. Your current position is marked with a ► indicator.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Quadrant Survey — <code>scan &lt;1-42&gt;</code></h3>
-
-  <p>Passive sensor sweep of a numbered quadrant. Returns system names, star classes, beacon presence, and ◆ markers on charted systems. Does not consume power. Does not generate astrographic data. It tells you what exists in that quadrant. Nothing more.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Folding Between Quadrants — <code>fold &lt;quadrant name&gt;</code></h3>
-
-  <p>The primary method of inter-quadrant transit. Specify a destination quadrant by name. The terminal will confirm the corridor type, cell cost, destination state, and notable feature before asking for confirmation. Type <code>yes</code> to initiate the fold sequence or anything else to cancel.</p>
-
-  <p>The fold sequence is not instantaneous. Geometry calculation takes 12 seconds for a standard fold, 18 for a blind fold. The countdown runs with real-time flavor text. This is expected. This is not a fast game. The drive is doing genuine work.</p>
-
-  <div class="warning">
-    <strong>IMPORTANT — EXPLICIT CONFIRMATION REQUIRED</strong>
-    The fold command will never execute without a yes confirmation. You will never accidentally fold into the void. This is by design. The galaxy is dangerous enough without the terminal making unilateral propulsion decisions.
+  <div class="section" id="s5">
+    <div class="section-header">
+      <span class="section-number">SECTION 05</span>
+      <div class="section-title">THE VEYDRIC FOLD DRIVE</div>
+    </div>
+    <p>The Veydric Fold Drive exploits spacetime density differentials in veydrite-rich fields to compress transit geometry — folding the space between origin and destination until they are effectively adjacent, transiting, then releasing. The math is old Guild science. The hardware is increasingly hard to maintain as manufacturing capacity collapses.</p>
+    <h3>VEYDRIC FOLD CELLS</h3>
+    <p>Veydric Fold Cells are the primary fuel medium for the Fold Drive — machined, refined, standardized. Purchase with <code>buy cells &lt;amount&gt;</code>. Maximum magazine: 20 cells.</p>
+    <div class="stat-table">
+      <div class="stat-row"><span class="stat-key">Assayer's Guild</span><span class="stat-val">45 CR/cell</span></div>
+      <div class="stat-row"><span class="stat-key">Pelk Logistics</span><span class="stat-val">55 CR/cell</span></div>
+      <div class="stat-row"><span class="stat-key">Colonial Colonies Command</span><span class="stat-val">40 CR/cell (KNOWN standing required)</span></div>
+      <div class="stat-row"><span class="stat-key">Independent</span><span class="stat-val">65 CR/cell</span></div>
+      <div class="stat-row"><span class="stat-key">Feral Settlement</span><span class="stat-val">80 CR/cell (40% chance: no stock)</span></div>
+    </div>
+    <h3>THE EMERGENCY RESERVE — RAW VEYDRITE</h3>
+    <p>Your vessel maintains a separate emergency reserve tank — a secondary feed system accepting raw unrefined veydrite from salvage and mining operations. The <code>emergency refine &lt;n&gt;</code> command converts 10 kg into one fold cell equivalent. The drive runs hotter. There is a 15% chance of Drive wear per operation.</p>
+    <div class="stat-table">
+      <div class="stat-row"><span class="stat-key">Tank capacity</span><span class="stat-val">15 kg raw veydrite</span></div>
+      <div class="stat-row"><span class="stat-key">Starting reserve</span><span class="stat-val">7–11 kg (randomized at registration)</span></div>
+      <div class="stat-row"><span class="stat-key">Conversion rate</span><span class="stat-val">10 kg = 1 cell equivalent</span></div>
+      <div class="stat-row"><span class="stat-key">Drive wear risk</span><span class="stat-val">15% per operation</span></div>
+      <div class="stat-row"><span class="stat-key">Fill priority</span><span class="stat-val">Reserve fills first on salvage/mining, then cargo hold</span></div>
+    </div>
+    <h3>FOLD CELL COSTS BY TRANSIT TYPE</h3>
+    <table>
+      <tr><th>Transit Type</th><th>Cell Cost</th><th>Notes</th></tr>
+      <tr><td>Nav transit (within quadrant)</td><td>0 cells</td><td>Fuel and power only.</td></tr>
+      <tr><td>Cluster jump (within quadrant)</td><td>0 cells</td><td>Fuel and power only. Minor hull stress risk.</td></tr>
+      <tr><td>Fold — highway corridor</td><td>2 cells</td><td>Pre-calculated geometry. Find these.</td></tr>
+      <tr><td>Fold — primary corridor</td><td>3 cells</td><td>Standard charted fold.</td></tr>
+      <tr><td>Fold — secondary corridor</td><td>4 cells</td><td>Less reliable geometry.</td></tr>
+      <tr><td>Blindfold — uncharted void</td><td>12 cells</td><td>Overdrive. Drive must be NOMINAL. Risk table applies.</td></tr>
+    </table>
+    <h3>THE BLIND FOLD — OVERDRIVE TRANSIT</h3>
+    <div class="notice warn">
+      <strong>GUILD LIABILITY NOTICE</strong>
+      The Guild accepts no liability for overdrive fold incidents. The Guild's official recommendation is that blind fold transit should be considered only when all alternatives have been exhausted.
+    </div>
+    <table>
+      <tr><th>Probability</th><th>Outcome</th><th>Consequences</th></tr>
+      <tr><td>70%</td><td>Clean fold</td><td>Arrive at destination. Drive degrades to WORN.</td></tr>
+      <tr><td>15%</td><td>Rough fold</td><td>Hull stress -10. Drive degrades to DEGRADED.</td></tr>
+      <tr><td>10%</td><td>Bad fold</td><td>Hull stress -25. Drive degrades to CRITICAL. Arrival offset.</td></tr>
+      <tr><td>5%</td><td>Catastrophic</td><td>Hull stress -50. Drive DESTROYED. Stranded until repaired.</td></tr>
+    </table>
   </div>
 
-  <div class="section-divider"></div>
-
-  <h3>Overdrive Fold — <code>blindfold &lt;quadrant name&gt;</code></h3>
-
-  <p>Transit to a quadrant with no charted corridor connection. Requires 12 fold cells and a Drive subsystem at NOMINAL condition. If the terminal detects that a charted corridor exists to your destination, it will redirect you to the standard fold command. The blind fold is only available for genuinely unconnected destinations. See Section 05 for the full risk table.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Within-Quadrant Transit — <code>nav</code> and <code>jump</code></h3>
-
-  <p><code>nav &lt;system name&gt;</code> plots a calculated course to any named system in the galaxy. Costs fuel and Power Core units. Advances the day counter by 4–11 days. An encounter check triggers on arrival. The terminal will refuse nav transit if fuel is insufficient — it will not warn you when you are approaching the margin.</p>
-
-  <p><code>jump &lt;system name&gt;</code> initiates a blind cluster jump to a system in your current quadrant. Less fuel, fewer days (1–3), elevated encounter probability due to uncomputed arrival vector. Useful for rapid local traversal.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Corridor Discovery</h3>
-
-  <p>Dark corridors become known through several methods: folding into a new quadrant reveals all corridors from that position; deepscan operations detect corridor signatures in adjacent space; Guild data purchases can provide named connection records at Guild station trade terminals; salvaged ruin logs occasionally contain navigation data; resolved contacts sometimes mention specific corridors they have used. The galaxy reveals itself to those who move through it.</p>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S7: TERMINAL -->
-
-<div class="section" id="s7">
-  <div class="section-header">
-    <div class="section-num">SECTION 07</div>
-    <div class="section-title">THE TERMINAL INTERFACE</div>
+  <div class="section" id="s6">
+    <div class="section-header">
+      <span class="section-number">SECTION 06</span>
+      <div class="section-title">NAVIGATION AND TRAVERSAL</div>
+    </div>
+    <h3>THE FOLD CORRIDOR MAP — <code>map</code></h3>
+    <p>Displays your current position, all known corridors from your current quadrant with types and cell costs. Corridor symbols: <code>===</code> highway (2 cells), <code>---</code> primary (3 cells), <code>...</code> secondary (4 cells). Consult before every fold decision.</p>
+    <h3>GALAXY OVERVIEW — <code>galaxy</code></h3>
+    <p>Displays all quadrants in your knowledge network. Your current position is marked with a ► indicator. The quadrant index number shown here corresponds to the number used with <code>scan</code>.</p>
+    <h3>QUADRANT SURVEY — <code>scan &lt;1-42&gt;</code></h3>
+    <p>Passive sensor sweep of a numbered quadrant. Returns system names, star classes, beacon presence. Does not consume power. The number corresponds to the quadrant index shown in <code>galaxy</code> and in the <code>where</code> display.</p>
+    <h3>YOUR CURRENT POSITION — <code>where</code></h3>
+    <p>Full survey of your current system — stations, ruins, veydrite, hazard rating, traffic density, field notes, and your current quadrant index number. Running <code>where</code> marks the system as visited, which is required before geological survey operations can proceed.</p>
+    <h3>FOLDING AND TRANSIT</h3>
+    <p><code>fold &lt;quadrant name&gt;</code> — Inter-quadrant transit via charted corridor. Confirms cost and destination before asking for confirmation. Type <code>yes</code> to initiate. The fold sequence countdown runs in real time.</p>
+    <p><code>blindfold &lt;quadrant name&gt;</code> — Overdrive transit to unconnected quadrant. 12 cells. Drive must be NOMINAL. See Section 05 for risk table.</p>
+    <p><code>nav &lt;system name&gt;</code> — Calculated course to any named system. Costs fuel and power. Advances day counter 4–11 days.</p>
+    <p><code>jump &lt;system name&gt;</code> — Blind cluster jump within current quadrant. Faster, cheaper, elevated encounter probability.</p>
   </div>
 
-  <p>The Deep Survey Terminal operates as a command-line interface. All actions are entered as text commands. The terminal does not auto-complete. The terminal does not tolerate ambiguity well. Type <code>help</code> at any time for the current command index.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Terminal Modes</h3>
-
-  <table class="cmd-table">
-    <tr>
-      <td class="cmd">Standard (field)</td>
-      <td class="desc">Normal operation. Navigation, sensors, salvage, and status commands available.</td>
-    </tr>
-    <tr>
-      <td class="cmd">Trade terminal</td>
-      <td class="desc">Entered via <code>trade</code> when docked. Buy, sell, and repair commands. Exit with <code>exit</code>.</td>
-    </tr>
-    <tr>
-      <td class="cmd">Armory terminal</td>
-      <td class="desc">Entered via <code>armory</code> when docked. Weapons, ammo, and repair. Exit with <code>exit</code>.</td>
-    </tr>
-    <tr>
-      <td class="cmd">Encounter mode</td>
-      <td class="desc">Automatically entered on contact. Combat commands only. Resolve encounter to exit.</td>
-    </tr>
-    <tr>
-      <td class="cmd">Fold sequence</td>
-      <td class="desc">Active during fold transit. Input disabled. Countdown runs. Do not power down.</td>
-    </tr>
-  </table>
-
-  <div class="section-divider"></div>
-
-  <h3>The Sidebar</h3>
-
-  <p>The right panel displays persistent ship status. It shows vessel name, captain identity, current day, hull/fuel/power bars, scrip balance, veydrite hold, chart count, fold cell count, emergency reserve level, active contract, and faction standing. It updates after every command. The CELLS and RESERVE rows are your fold resource indicators — monitor them as carefully as hull and fuel.</p>
-
-  <h3>The Auspex Panel</h3>
-
-  <p>The lower-right panel shows local grid data for your current system. It populates on <code>where</code>, <code>nav</code>, <code>fold</code>, and <code>dock</code> commands. It shows system name and type, body list, station presence, signal status, environmental hazard, and traffic contacts. It rebuilds automatically on arrival at a new system via fold transit.</p>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S8: STATION OPS -->
-
-<div class="section" id="s8">
-  <div class="section-header">
-    <div class="section-num">SECTION 08</div>
-    <div class="section-title">STATION OPERATIONS</div>
+  <div class="section" id="s7">
+    <div class="section-header">
+      <span class="section-number">SECTION 07</span>
+      <div class="section-title">THE TERMINAL INTERFACE</div>
+    </div>
+    <p>The Deep Survey Terminal operates as a command-line interface. All actions are entered as text commands. The terminal does not auto-complete. Type <code>help</code> at any time for the current command index.</p>
+    <table>
+      <tr><th>Mode</th><th>Description</th></tr>
+      <tr><td>Standard (field)</td><td>Normal operation. All navigation, sensor, salvage, and extraction commands available.</td></tr>
+      <tr><td>Trade terminal</td><td>Entered via <code>trade</code> when docked. Exit with <code>exit</code>.</td></tr>
+      <tr><td>Armory terminal</td><td>Entered via <code>armory</code> when docked. Weapons, ammo, tools, and repair. Exit with <code>exit</code>.</td></tr>
+      <tr><td>Encounter mode</td><td>Automatically entered on contact. Combat commands only.</td></tr>
+      <tr><td>Fold sequence</td><td>Active during fold transit. Input disabled. Countdown runs.</td></tr>
+    </table>
+    <p>The right sidebar displays persistent ship status including the ORE row — solid ore pod fill against capacity — alongside fold cells, emergency reserve, hull, fuel, and power. The Auspex panel shows local grid data for your current system and rebuilds on <code>where</code>, <code>nav</code>, <code>fold</code>, and <code>dock</code>.</p>
   </div>
 
-  <p>Stations are the primary resupply and service nodes available to registered contractors. Not every system has a station. Not every station will admit you. Check your standing before burning fold cells to reach a quadrant whose only station is run by a faction you have previously antagonized.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Docking — <code>dock</code> / <code>undock</code></h3>
-
-  <p>Docking pays the fee, connects shore power (fully recharging your Power Core), and grants access to station services. Faction standing is checked on arrival — HOSTILE standing results in refusal. Standing increases by 1 point upon each successful docking, once per day per station.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Trade Terminal — <code>trade</code></h3>
-
-  <table class="cmd-table">
-    <tr><td class="cmd">sell veydrite &lt;n|all&gt;</td><td class="desc">Sell veydrite at posted Guild rate.</td></tr>
-    <tr><td class="cmd">sell astrographics</td><td class="desc">View chart portfolio for sale. Guild stations only.</td></tr>
-    <tr><td class="cmd">sell astrographics &lt;#&gt;</td><td class="desc">Sell specific chart by index number.</td></tr>
-    <tr><td class="cmd">sell astrographics all</td><td class="desc">Sell entire portfolio. <em>Permanently deletes all chart data.</em></td></tr>
-    <tr><td class="cmd">buy fuel &lt;n&gt;</td><td class="desc">Purchase fuel units at posted rate.</td></tr>
-    <tr><td class="cmd">buy cells &lt;n&gt;</td><td class="desc">Purchase Veydric Fold Cells. Price varies by faction and standing.</td></tr>
-    <tr><td class="cmd">repair hull full</td><td class="desc">Full hull repair at current station rate.</td></tr>
-    <tr><td class="cmd">repair hull &lt;n&gt;</td><td class="desc">Partial hull repair.</td></tr>
-  </table>
-
-  <div class="section-divider"></div>
-
-  <h3>Armory Terminal — <code>armory</code></h3>
-
-  <table class="cmd-table">
-    <tr><td class="cmd">buy weapon &lt;#&gt; &lt;slot|cargo&gt;</td><td class="desc">Purchase weapon by index number.</td></tr>
-    <tr><td class="cmd">buy ammo &lt;slot&gt; &lt;#&gt; &lt;amount&gt;</td><td class="desc">Purchase ammo for weapon in specified slot.</td></tr>
-    <tr><td class="cmd">sell weapon &lt;slot&gt;</td><td class="desc">Sell installed weapon at market rate.</td></tr>
-    <tr><td class="cmd">install &lt;slot&gt; &lt;cargo#&gt;</td><td class="desc">Install weapon from cargo into slot.</td></tr>
-    <tr><td class="cmd">uninstall &lt;slot&gt;</td><td class="desc">Move installed weapon to cargo.</td></tr>
-    <tr><td class="cmd">repair weapon &lt;slot&gt;</td><td class="desc">Repair weapon condition.</td></tr>
-    <tr><td class="cmd">repair system &lt;name&gt;</td><td class="desc">Repair a named subsystem including Drive.</td></tr>
-  </table>
-
-  <div class="warning">
-    <strong>DRIVE REPAIR NOTE</strong>
-    A damaged Drive subsystem can be repaired at any armory terminal with <code>repair system Drive</code>. If your Drive was destroyed in a blind fold incident, this is not optional — it is the only way to restore fold and nav capability. Budget for it. The repair is not cheap in Collapsed space.
+  <div class="section" id="s8">
+    <div class="section-header">
+      <span class="section-number">SECTION 08</span>
+      <div class="section-title">STATION OPERATIONS</div>
+    </div>
+    <p>Stations are the primary resupply and service nodes available to registered contractors. Not every system has a station. Not every station will admit you. Check your standing before burning fold cells to reach a quadrant whose only station is run by a faction you have previously antagonized.</p>
+    <p>Docking pays the fee, connects shore power (fully recharging your Power Core), and grants access to station services. HOSTILE standing results in refusal. Standing increases by 1 point upon each successful docking, once per day per station.</p>
+    <table>
+      <tr><th>Trade Terminal Command</th><th>Function</th></tr>
+      <tr><td><code>buy fuel &lt;n&gt;</code></td><td>Purchase fuel units at posted rate.</td></tr>
+      <tr><td><code>buy cells &lt;n&gt;</code></td><td>Purchase Veydric Fold Cells. Price varies by faction and standing.</td></tr>
+      <tr><td><code>sell veydrite &lt;n|all&gt;</code></td><td>Sell veydrite at posted Guild rate.</td></tr>
+      <tr><td><code>sell astrographics</code></td><td>View chart portfolio for sale. Guild stations only.</td></tr>
+      <tr><td><code>sell astrographics all</code></td><td>Sell entire portfolio. Permanently deletes all chart data.</td></tr>
+      <tr><td><code>repair hull &lt;n|full&gt;</code></td><td>Repair hull integrity at current station rate.</td></tr>
+    </table>
+    <table>
+      <tr><th>Armory Terminal Command</th><th>Function</th></tr>
+      <tr><td><code>buy weapon &lt;#&gt; &lt;slot|cargo&gt;</code></td><td>Purchase weapon by index number.</td></tr>
+      <tr><td><code>buy ammo &lt;slot&gt; &lt;#&gt; &lt;amount&gt;</code></td><td>Purchase ammo for weapon in specified slot.</td></tr>
+      <tr><td><code>buy tool &lt;#&gt;</code></td><td>Purchase utility tool (Harrow-7 or Auger-1). Replaces current.</td></tr>
+      <tr><td><code>buy tool &lt;#&gt; cargo</code></td><td>Purchase tool and store in cargo hold.</td></tr>
+      <tr><td><code>repair weapon &lt;slot&gt; &lt;n|full&gt;</code></td><td>Repair weapon condition.</td></tr>
+      <tr><td><code>repair system &lt;name&gt;</code></td><td>Repair a named subsystem. Use <code>repair system drive</code> after blind fold damage.</td></tr>
+    </table>
   </div>
 
-</div>
-
-<!-- ═══════════════════════════════════════════ S9: SURVEY OPS -->
-
-<div class="section" id="s9">
-  <div class="section-header">
-    <div class="section-num">SECTION 09</div>
-    <div class="section-title">SURVEY OPERATIONS</div>
+  <div class="section" id="s9">
+    <div class="section-header">
+      <span class="section-number">SECTION 09</span>
+      <div class="section-title">SURVEY OPERATIONS</div>
+    </div>
+    <p>Survey operations are the core of contractor function. The Guild needs accurate, current astrographic data. You generate it. You take the risk, they take the data, you get paid.</p>
+    <p><code>deepscan &lt;system name&gt;</code> — Full astrographic survey of a named system within your current quadrant. 40 power. Generates sellable chart data.</p>
+    <p><code>clusterdeepscan &lt;cluster name&gt;</code> — Sequential deepscan of all systems in a named cluster. 25 power per system. Processes each system individually with targeting and resolution steps.</p>
+    <p><code>charts</code> — List all astrographic records in your memory matrix. <code>charts &lt;system name&gt;</code> shows the full stored profile. Data sells exclusively at Guild stations.</p>
+    <p><code>ping</code> / <code>resolve &lt;n&gt;</code> — Gravimetric sweep and contact identification. Ship-to-ship detection only — not geological survey. 5 power for ping.</p>
   </div>
 
-  <p>Survey operations are the core of contractor function. The Guild needs accurate, current astrographic data. You generate it. The exchange is simple: you take the risk, they take the data, you get paid.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Basic Scan — <code>scan &lt;1-42&gt;</code></h3>
-
-  <p>Passive sensor sweep of a numbered quadrant. Returns system names, star classes, beacon presence, and ◆ markers on previously charted systems. Does not generate astrographic data. Does not consume power.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Deep Survey — <code>deepscan &lt;system name&gt;</code></h3>
-
-  <p>Full astrographic survey of a named system within your current quadrant. Costs 40 Power Core units. The terminal resolves after a variable delay of 3–6 seconds. On completion, full system profile is displayed and data enters the memory matrix. Range is limited to your current quadrant.</p>
-
-  <div class="stat-block">
-    <div class="stat-title">Deepscan Output Fields</div>
-    <div class="stat-row"><span>Star class</span><span>Spectral type of primary star</span></div>
-    <div class="stat-row"><span>Bodies</span><span>Total body count in system</span></div>
-    <div class="stat-row"><span>State</span><span>Quadrant civilization state</span></div>
-    <div class="stat-row"><span>Hazard</span><span>Environmental hazard rating</span></div>
-    <div class="stat-row"><span>Traffic</span><span>Vessel traffic density</span></div>
-    <div class="stat-row"><span>Jump points</span><span>Number of outbound jump connections</span></div>
-    <div class="stat-row"><span>Station</span><span>Station name if present</span></div>
-    <div class="stat-row"><span>Veydrite</span><span>Trace deposit detection [VYD]</span></div>
-    <div class="stat-row"><span>Ruins</span><span>Structural signatures [RUN]</span></div>
-    <div class="stat-row"><span>Beacon</span><span>Active distress beacon [BCN]</span></div>
+  <div class="section" id="s10">
+    <div class="section-header">
+      <span class="section-number">SECTION 10</span>
+      <div class="section-title">SALVAGE OPERATIONS</div>
+    </div>
+    <p>Field salvage is the primary source of Veydrite for contractors without extraction equipment and the primary source of emergency reserve veydrite. Salvage is available in systems containing ruin sites, veydrite deposits, or debris fields. Each system can be salvaged once per visit. Salvage yields automatically fill the emergency reserve to 15 kg first, then the cargo hold.</p>
+    <div class="notice">
+      <strong>SALVAGE DOCTRINE — HARROW-7</strong>
+      Salvage operations require the Harrow-7 Salvage Head in your utility slot. The Harrow-7 cannot perform geological extraction. If you registered with an Auger-1, purchase a Harrow-7 at any station armory. Both tools can be carried in cargo and swapped freely.
+    </div>
+    <p><code>scan log</code> — Scan ruin sites for data logs. Recovered logs are added to your record archive. Some contain navigation data revealing dark corridors. Read your logs.</p>
   </div>
 
-  <div class="section-divider"></div>
-
-  <h3>Cluster Survey — <code>clusterdeepscan &lt;cluster name&gt;</code></h3>
-
-  <p>Sequential deepscan of all systems in a named cluster within your current quadrant. Costs 25 Power Core units per system. Processes each system individually — targeting text, progress messages, and full output appear in sequence. Power drains and the sidebar updates after each system resolves. If power runs low mid-sweep, the operation continues as long as possible while maintaining minimum drive reserve.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Chart Management — <code>charts</code> / <code>charts &lt;system name&gt;</code></h3>
-
-  <p><code>charts</code> displays all astrographic records in your memory matrix. <code>charts &lt;system name&gt;</code> displays the full stored profile for a specific system. Astrographic data sells exclusively at Guild stations via the trade terminal.</p>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S10: SALVAGE -->
-
-<div class="section" id="s10">
-  <div class="section-header">
-    <div class="section-num">SECTION 10</div>
-    <div class="section-title">SALVAGE OPERATIONS</div>
+  <div class="section" id="s11">
+    <div class="section-header">
+      <span class="section-number">SECTION 11</span>
+      <div class="section-title">EXTRACTION OPERATIONS</div>
+    </div>
+    <p>Extraction operations are the deliberate, systematic removal of ore, ice compounds, and exotic materials from planetary bodies. Unlike salvage — opportunistic, fast, dependent on what wreckage left behind — extraction is deliberate, slow, and dependent on what the planet actually contains. The yield is different. The tooling is different. The planning requirement is substantially higher.</p>
+    <p>The ancient civilizations whose ruins you are salvaging were themselves extractors. On a scale that has not been replicated since. The ore you find is the concentrated residue of an industrial operation that was interrupted by whatever ended them. It was already halfway processed before you arrived. The Guild calls these sites Industrial Remnant Sites. Pilots call them veins. The value is not academic.</p>
+    <div class="notice">
+      <strong>EXTRACTION DOCTRINE — AUGER-1</strong>
+      Extraction operations require the Auger-1 Light Mining Head in your utility slot. The Auger-1 cannot perform salvage operations. The Harrow-7 cannot perform geological survey or extraction. Your vessel carries one utility slot. Choose accordingly, or carry the second tool in cargo and swap at stations.
+    </div>
+    <h3>THE EXTRACTION SEQUENCE</h3>
+    <p>Extraction operations follow a mandatory sequential protocol. Each step gates the next. There is no shortcut.</p>
+    <p><strong>Step 1 — <code>where</code></strong>: Mark the system as visited. Required before geological survey. This is not a software limitation — it is standard survey doctrine. The Auger needs positional data before it will commit power to a geological sweep.</p>
+    <p><strong>Step 2 — <code>survey node</code></strong>: Broad-spectrum geological sweep of all bodies in the system. 35 power. 1 day. Returns each body's type, deposit quality (RICH / STANDARD / DEPLETED), ore grade (EXOTIC / RARE / UNCOMMON / COMMON), and estimated yield in units.</p>
+    <p><strong>Step 3 — <code>survey body &lt;n&gt;</code></strong>: Targeted geological sweep of a specific body by index number. 15 power. 1 day. Returns full ore composition — every ore type present, quantity, extraction quality, and the refined metal each ore produces. Required before extraction on that body can begin.</p>
+    <p><strong>Step 4 — <code>mine body &lt;n&gt;</code> or <code>mine body &lt;n&gt; &lt;cycles&gt;</code></strong>: Initiate extraction. 25 power per cycle. 1–2 days per cycle. Multiple cycles can be queued in a single command. Ore transfers to your ore pods. If a pod reaches capacity mid-operation, extraction halts.</p>
+    <h3>ORE TYPES AND BODY AVAILABILITY</h3>
+    <table>
+      <tr><th>Category</th><th>Ores</th><th>Primary Body Types</th></tr>
+      <tr><td>Common</td><td>Ferrite, Copperite, Stannite, Nickeline, Silicate, Cobaltite, Galena</td><td>Barren Rock, Desert World, Rogue Moon</td></tr>
+      <tr><td>Uncommon</td><td>Titanite, Chromite, Wolframite, Uraninite, Malachite</td><td>Rogue Moon, Irradiated Hulk, Desert World</td></tr>
+      <tr><td>Rare</td><td>Platinite, Palladite, Iridite, Osmite</td><td>Irradiated Hulk, Shattered Planet</td></tr>
+      <tr><td>Ice</td><td>Water Ice, Ammonia Ice, Methane Clathrate, Helium-3 Ice</td><td>Ice Giant, Ocean World, Gas Giant</td></tr>
+      <tr><td>Exotic</td><td>Veydritic Silicate, Null Residue, Archaeoferrite</td><td>Dust Belt, Xeno-tainted systems, Shattered Planet</td></tr>
+    </table>
+    <h3>THE ASH — NPCP CONTAMINATION</h3>
+    <p>The Null-Propagating Crystalline Parasite — The Ash — is a self-propagating mineral process first documented in Guild survey records approximately ninety years ago. It is not alive in any conventional sense. It is a crystalline structure that catalyzes the conversion of surrounding ore into a stable, inert compound with no extractable value. Pilots who have extracted from contaminated nodes describe the output as ore-colored powder that compacts on contact.</p>
+    <p>The Ash cannot be detected by standard geological sweep. Body survey may flag a mass anomaly — a reading that is subtly wrong in a way the array cannot fully characterize. This is the only warning you will get before extraction. If you extract from a contaminated node, The Ash may spread to adjacent bodies. The spread probability is low per cycle. It compounds.</p>
+    <p>The Guild pays a significant bounty for confirmed Ash reports filed at any Guild station. More than the ore would have been worth. The Guild does not explain why it is specifically interested in these reports.</p>
+    <div class="notice warn">
+      <strong>NPCP PROTOCOL</strong>
+      If extraction yields Ash Compactate, stop operations immediately. Do not run additional cycles. Dock at the nearest Guild station and file an Ash report. The bounty is substantial. Continued extraction spreading contamination to additional bodies is not recoverable. The Guild has not published data on systems that underwent full NPCP propagation. The absence of data is its own notation.
+    </div>
+    <h3>ORE STORAGE — ORE PODS</h3>
+    <p>Ore goes in Ore Pods — dedicated external storage modules mounted on hardpoints. The Light Surveyor carries two external hardpoints, both fitted with Standard Ore Pods at registration.</p>
+    <div class="stat-table">
+      <div class="stat-row"><span class="stat-key">Standard Ore Pod</span><span class="stat-val">50 units solid ore — Light Surveyor default</span></div>
+      <div class="stat-row"><span class="stat-key">Fluid Pod</span><span class="stat-val">50 units liquid compounds (water, ammonia)</span></div>
+      <div class="stat-row"><span class="stat-key">Cryo Pod</span><span class="stat-val">30 units cryogenic gas (methane, helium-3)</span></div>
+    </div>
   </div>
 
-  <p>Field salvage is the primary source of Veydrite for contractors without pre-established extraction contracts. It is also the primary source of emergency reserve veydrite — which means salvage has direct propulsive value beyond its market price. A full emergency reserve is a fold you can make when there are no stations nearby. Do not treat it as incidental.</p>
-
-  <h3>Initiating Salvage — <code>salvage</code></h3>
-
-  <p>Salvage is available in systems containing ruin sites, veydrite deposits, or debris fields. Each system can be salvaged once per visit. Salvage yields automatically fill the emergency reserve to 15 kg first, then add the remainder to the cargo hold as sellable veydrite.</p>
-
-  <p>Hazard level affects yield variance and incident probability during operations. High-hazard systems yield more — if you survive the operation. Xeno-tainted systems have a chance of anomalous finds.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Ruin Logs — <code>scan log</code></h3>
-
-  <p>Ruin sites can be scanned for data logs. Recovered logs are added to your record archive and viewable with <code>logs</code>. They are flavor artifacts: crew records, manifests, station closure notices, personal accounts. Some contain navigation data that reveals specific dark corridors. These are mechanically significant finds. Read your logs.</p>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S11: CONTRACTS -->
-
-<div class="section" id="s11">
-  <div class="section-header">
-    <div class="section-num">SECTION 11</div>
-    <div class="section-title">CONTRACTS AND THE BULLETIN BOARD</div>
+  <div class="section" id="s12">
+    <div class="section-header">
+      <span class="section-number">SECTION 12</span>
+      <div class="section-title">ORE PROCESSING AND REFINERY OPERATIONS</div>
+    </div>
+    <p>Raw ore must be refined before it has exchange value. Refining is performed at stations with refinery infrastructure. Not every station has one. Not every faction's refinery will process all ore grades.</p>
+    <table>
+      <tr><th>Faction</th><th>Refinery Grade</th><th>Metals Available</th></tr>
+      <tr><td>Assayer's Guild</td><td>Basic</td><td>Common metals only</td></tr>
+      <tr><td>Pelk Logistics</td><td>Standard</td><td>Common and uncommon metals</td></tr>
+      <tr><td>Colonial Colonies Command</td><td>Standard</td><td>Common, uncommon, and military-grade metals</td></tr>
+      <tr><td>Independent</td><td>Basic</td><td>Common metals — reduced efficiency</td></tr>
+      <tr><td>Feral Settlement</td><td>Improvised</td><td>Basic metals only — very poor efficiency</td></tr>
+    </table>
+    <p><code>refine</code> — Opens the refinery terminal. Shows ore hold, yield share rate, and projected output. <code>refine all</code> processes the entire ore hold. <code>refine scrip</code> pays a flat scrip fee instead of yield share.</p>
+    <p>Refinery operators retain a percentage of refined output as payment. The exact share is set at station generation and does not change. Shop around — the difference between 13% at a Pelk station and 30% at a Feral station is meaningful over a long extraction operation.</p>
+    <div class="stat-table">
+      <div class="stat-row"><span class="stat-key">Guild yield share range</span><span class="stat-val">10–16%</span></div>
+      <div class="stat-row"><span class="stat-key">Pelk yield share range</span><span class="stat-val">12–18%</span></div>
+      <div class="stat-row"><span class="stat-key">CCC yield share range</span><span class="stat-val">14–20%</span></div>
+      <div class="stat-row"><span class="stat-key">Independent yield share range</span><span class="stat-val">18–26%</span></div>
+      <div class="stat-row"><span class="stat-key">Feral yield share range</span><span class="stat-val">25–35%</span></div>
+    </div>
+    <table>
+      <tr><th>Metal</th><th>Source Ore</th><th>Base Price</th></tr>
+      <tr><td>Iron</td><td>Ferrite</td><td>12 CR/unit</td></tr>
+      <tr><td>Copper</td><td>Copperite</td><td>18 CR/unit</td></tr>
+      <tr><td>Titanium</td><td>Titanite</td><td>45 CR/unit</td></tr>
+      <tr><td>Tungsten</td><td>Wolframite</td><td>42 CR/unit</td></tr>
+      <tr><td>Platinum</td><td>Platinite</td><td>180 CR/unit</td></tr>
+      <tr><td>Iridium</td><td>Iridite</td><td>220 CR/unit</td></tr>
+      <tr><td>Helium-3</td><td>Helium-3 Ice</td><td>280 CR/unit</td></tr>
+      <tr><td>Fold-Grade Silicon</td><td>Veydritic Silicate</td><td>350 CR/unit</td></tr>
+      <tr><td>Null Alloy</td><td>Null Residue</td><td>500 CR/unit</td></tr>
+      <tr><td>Archaeosteel</td><td>Archaeoferrite</td><td>420 CR/unit</td></tr>
+    </table>
   </div>
 
-  <p>Contracts are posted by factions at their station bulletin boards. Access the bulletin board with <code>bulletin</code> when docked. You may hold one active contract at a time.</p>
-
-  <h3>Contract Types</h3>
-
-  <table class="cmd-table">
-    <tr><td class="cmd">Cartographic Survey</td><td class="desc"><em>Guild.</em> Travel to system. Return. Basic presence data sufficient.</td></tr>
-    <tr><td class="cmd">Deep Survey Contract</td><td class="desc"><em>Guild.</em> Travel to system. Deepscan required.</td></tr>
-    <tr><td class="cmd">Ruin Assessment</td><td class="desc"><em>Guild.</em> System must have ruin sites. Deep scan required.</td></tr>
-    <tr><td class="cmd">Beacon Recovery</td><td class="desc"><em>Guild.</em> System must have active beacon. Investigate and file report.</td></tr>
-    <tr><td class="cmd">Delivery</td><td class="desc"><em>Pelk.</em> Transport cargo to target station.</td></tr>
-    <tr><td class="cmd">Priority Shipment</td><td class="desc"><em>Pelk.</em> Tight deadline. Speed bonus applies.</td></tr>
-    <tr><td class="cmd">Targeted Neutralization</td><td class="desc"><em>Pelk.</em> Destroy a vessel in target system. [GREY]</td></tr>
-    <tr><td class="cmd">Elimination Order</td><td class="desc"><em>CCC.</em> Destroy a hostile vessel at named system.</td></tr>
-    <tr><td class="cmd">Escort Duty</td><td class="desc"><em>CCC.</em> Shepherd a transport to target system.</td></tr>
-    <tr><td class="cmd">Removal</td><td class="desc"><em>Feral.</em> Someone needs to not be in that system anymore.</td></tr>
-    <tr><td class="cmd">Extraction Run</td><td class="desc"><em>Feral.</em> Retrieve a package. No questions asked or answered.</td></tr>
-  </table>
-
-  <div class="section-divider"></div>
-
-  <h3>Deadlines and Speed Bonuses</h3>
-
-  <p>Contract deadlines are generated based on realistic travel time plus a 20% margin. Speed bonuses apply when you complete a contract within 60% of the allotted time — 10% additional payment plus 3 extra reputation points. Complete a contract with <code>complete</code> when in the target system. Abandon with <code>abandon</code> — applies a -15 reputation penalty. Deadline expiry also applies the penalty.</p>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S12: COMBAT -->
-
-<div class="section" id="s12">
-  <div class="section-header">
-    <div class="section-num">SECTION 12</div>
-    <div class="section-title">COMBAT DOCTRINE</div>
+  <div class="section" id="s13">
+    <div class="section-header">
+      <span class="section-number">SECTION 13</span>
+      <div class="section-title">CONTRACTS AND THE BULLETIN BOARD</div>
+    </div>
+    <p>Contracts are posted by factions at their station bulletin boards. Access with <code>bulletin</code> when docked. You may hold one active contract at a time. Speed bonuses apply when you complete within 60% of the allotted time.</p>
+    <table>
+      <tr><th>Contract Type</th><th>Faction</th><th>Requirements</th></tr>
+      <tr><td>Cartographic Survey</td><td>Guild</td><td>Travel to system. Basic presence data sufficient.</td></tr>
+      <tr><td>Deep Survey Contract</td><td>Guild</td><td>Travel to system. Deepscan required.</td></tr>
+      <tr><td>Ruin Assessment</td><td>Guild</td><td>System must have ruin sites. Deep scan required.</td></tr>
+      <tr><td>Beacon Recovery</td><td>Guild</td><td>System must have active beacon.</td></tr>
+      <tr><td>Delivery</td><td>Pelk</td><td>Transport cargo to target station.</td></tr>
+      <tr><td>Priority Shipment</td><td>Pelk</td><td>Tight deadline. Speed bonus applies.</td></tr>
+      <tr><td>Targeted Neutralization</td><td>Pelk</td><td>Destroy a vessel in target system.</td></tr>
+      <tr><td>Elimination Order</td><td>CCC</td><td>Destroy a hostile vessel at named system.</td></tr>
+      <tr><td>Escort Duty</td><td>CCC</td><td>Shepherd a transport to target system.</td></tr>
+      <tr><td>Removal</td><td>Feral</td><td>Someone needs to not be in that system anymore.</td></tr>
+      <tr><td>Extraction Run</td><td>Feral</td><td>Retrieve a package. No questions asked or answered.</td></tr>
+    </table>
   </div>
 
-  <p>The Guild does not endorse violence as a primary operational strategy. The Guild also operates in the same galaxy you do, and is not naive. Combat occurs. This section covers what to do when it does.</p>
-
-  <div class="warning">
-    <strong>DOCTRINE NOTE — NO ENERGY WEAPONS</strong>
-    Guild-registered vessels operate under kinetic/ballistic weapons doctrine only. No energy weapons exist in registered contractor loadouts. No shields are issued. Combat is attrition. Plan accordingly.
+  <div class="section" id="s14">
+    <div class="section-header">
+      <span class="section-number">SECTION 14</span>
+      <div class="section-title">COMBAT DOCTRINE</div>
+    </div>
+    <div class="notice">
+      <strong>DOCTRINE NOTE — NO ENERGY WEAPONS</strong>
+      Guild-registered vessels operate under kinetic/ballistic weapons doctrine only. No energy weapons. No shields. Combat is attrition. Plan accordingly.
+    </div>
+    <table>
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>evade</code></td><td>Burns fuel. Chance to break contact based on threat level.</td></tr>
+      <tr><td><code>negotiate</code></td><td>Attempt to talk or bribe out of engagement. Unknown contacts: 10% success.</td></tr>
+      <tr><td><code>fight</code></td><td>Enter weapons engagement. Requires armed slots with loaded ammo.</td></tr>
+      <tr><td><code>yield</code></td><td>Surrender. Attacker takes cargo or scrip. You keep your hull.</td></tr>
+      <tr><td><code>profile</code></td><td>Hull signature scan. 10 power. Reveals enemy subsystem list.</td></tr>
+      <tr><td><code>sigint</code></td><td>Full subsystem analysis. 25 power. Enemy may detect.</td></tr>
+      <tr><td><code>target &lt;subsystem&gt;</code></td><td>Lock onto specific enemy subsystem. Requires profile first.</td></tr>
+      <tr><td><code>fire &lt;slot&gt;</code></td><td>Fire weapon using active ammo.</td></tr>
+    </table>
+    <p>Hull reaching zero is death. Your save file is deleted. Your pilot record is entered into the graveyard. There is no continue from last checkpoint. There is no reload. The void does not give back.</p>
   </div>
 
-  <div class="section-divider"></div>
-
-  <h3>Encounter Response Options</h3>
-
-  <table class="cmd-table">
-    <tr><td class="cmd">evade</td><td class="desc">Burns fuel. Chance to break contact based on threat level.</td></tr>
-    <tr><td class="cmd">negotiate</td><td class="desc">Attempt to talk or bribe out of engagement. Unknown contacts: 10% success rate.</td></tr>
-    <tr><td class="cmd">fight</td><td class="desc">Enter weapons engagement. Requires armed slots with loaded ammunition.</td></tr>
-    <tr><td class="cmd">yield</td><td class="desc">Surrender. Attacker takes cargo or scrip. You keep your hull.</td></tr>
-  </table>
-
-  <div class="section-divider"></div>
-
-  <h3>Combat Sequence</h3>
-
-  <table class="cmd-table">
-    <tr><td class="cmd">profile</td><td class="desc">Hull signature scan. 10 power. Reveals enemy hull and subsystem list.</td></tr>
-    <tr><td class="cmd">sigint</td><td class="desc">Full emissions analysis. 25 power. Reveals subsystem HP. Enemy may detect.</td></tr>
-    <tr><td class="cmd">target &lt;subsystem&gt;</td><td class="desc">Lock onto specific enemy subsystem. Requires profile.</td></tr>
-    <tr><td class="cmd">fire &lt;slot&gt;</td><td class="desc">Fire weapon in slot using active ammo.</td></tr>
-    <tr><td class="cmd">fire &lt;slot&gt; &lt;ammo&gt;</td><td class="desc">Fire using specific ammo type.</td></tr>
-    <tr><td class="cmd">disengage</td><td class="desc">Attempt to break off combat.</td></tr>
-  </table>
-
-  <div class="section-divider"></div>
-
-  <h3>Weapons Reference</h3>
-
-  <table class="cmd-table">
-    <tr><td class="cmd">PDT-4 Point Defense Turret</td><td class="desc">Starting weapon. Rapid burst, light damage. AP/HE/Frag compatible.</td></tr>
-    <tr><td class="cmd">AC-20 Autocannon</td><td class="desc">High burst rate, moderate damage. Four ammo types.</td></tr>
-    <tr><td class="cmd">LR-12 Light Railgun</td><td class="desc">Single-round, high damage, high armor penetration.</td></tr>
-    <tr><td class="cmd">HR-7 Heavy Railgun</td><td class="desc">Single-round, very high damage. CCC station access required.</td></tr>
-    <tr><td class="cmd">Javelin-4 SRM Launcher</td><td class="desc">Guided missile. 15 power per launch.</td></tr>
-    <tr><td class="cmd">Mk.9 Torpedo Launcher</td><td class="desc">Extreme damage. 20 power per launch.</td></tr>
-    <tr><td class="cmd">DF-6 Dumbfire Rocket Pod</td><td class="desc">Unguided. Variable burst. High damage. No power required.</td></tr>
-  </table>
-
-  <div class="section-divider"></div>
-
-  <h3>Weapon Condition</h3>
-
-  <p>Weapons degrade with use. Condition runs 0–100 through four tiers: NOMINAL (70+), WORN (40–69), DEGRADED (20–39), CRITICAL (below 20). Jam probability increases at each threshold. The terminal notifies you when a weapon crosses a tier boundary during combat. Repair at stations.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Death and Permadeath</h3>
-
-  <p>Hull reaching zero is death. Your save file is deleted. Your pilot record is entered into the graveyard. There is no continue from last checkpoint. There is no reload. The void does not give back.</p>
-
-  <div class="lore">The Guild records the death of every registered contractor. The record includes cause of death, day of death, last known location, and achievement log. This information is retained in the Guild archive indefinitely. The Guild does not consider this morbid. It considers it accurate.</div>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S13: SHIP SYSTEMS -->
-
-<div class="section" id="s13">
-  <div class="section-header">
-    <div class="section-num">SECTION 13</div>
-    <div class="section-title">SHIP SYSTEMS REFERENCE</div>
+  <div class="section" id="s15">
+    <div class="section-header">
+      <span class="section-number">SECTION 15</span>
+      <div class="section-title">SHIP SYSTEMS REFERENCE</div>
+    </div>
+    <h3>STARTING VESSEL — LIGHT SURVEYOR</h3>
+    <div class="stat-table">
+      <div class="stat-row"><span class="stat-key">Hull</span><span class="stat-val">100/100</span></div>
+      <div class="stat-row"><span class="stat-key">Power Core max</span><span class="stat-val">500 units</span></div>
+      <div class="stat-row"><span class="stat-key">Fuel capacity</span><span class="stat-val">100 units</span></div>
+      <div class="stat-row"><span class="stat-key">Fold cell magazine</span><span class="stat-val">20 cells max / 3 cells at registration</span></div>
+      <div class="stat-row"><span class="stat-key">Emergency reserve tank</span><span class="stat-val">15 kg max / 7–11 kg at registration</span></div>
+      <div class="stat-row"><span class="stat-key">Weapon slots</span><span class="stat-val">2 (PDT-4 in slot 1 at registration)</span></div>
+      <div class="stat-row"><span class="stat-key">Utility slot</span><span class="stat-val">1 (Harrow-7 or Auger-1 — see registration)</span></div>
+      <div class="stat-row"><span class="stat-key">External hardpoints</span><span class="stat-val">2 (Standard Ore Pods installed at registration)</span></div>
+      <div class="stat-row"><span class="stat-key">Scanner array</span><span class="stat-val">Above-average — surveyor class bonus</span></div>
+      <div class="stat-row"><span class="stat-key">Fold efficiency</span><span class="stat-val">Above-average — surveyor class bonus</span></div>
+      <div class="stat-row"><span class="stat-key">Crew capacity</span><span class="stat-val">4</span></div>
+    </div>
+    <p>The emergency reserve tank is a Light Surveyor class feature. Larger vessels do not have it. The scanner array and fold efficiency bonuses are also class-specific. Pilots who move to larger vessels gain cargo and ore pod volume. They give up the things that make the Light Surveyor survivable in deep survey conditions. Most pilots notice this immediately. Most do not go back.</p>
+    <h3>STARTING UTILITY CONFIGURATION</h3>
+    <div class="stat-table">
+      <div class="stat-row"><span class="stat-key">Answer A — Inherited</span><span class="stat-val">Harrow-7 Salvage Head. Salvage-optimized.</span></div>
+      <div class="stat-row"><span class="stat-key">Answer B — Card game</span><span class="stat-val">Auger-1 Light Mining Head. Extraction-optimized.</span></div>
+      <div class="stat-row"><span class="stat-key">Answer C — Guild lot</span><span class="stat-val">50/50 random. Guild decommission lots are unpredictable.</span></div>
+      <div class="stat-row"><span class="stat-key">Answer D — Self-built</span><span class="stat-val">50/50 random. Independent builds reflect what was available.</span></div>
+    </div>
+    <h3>POWER CORE MANAGEMENT</h3>
+    <table>
+      <tr><th>Operation</th><th>Power Cost</th></tr>
+      <tr><td>Nav transit computation</td><td>8 units</td></tr>
+      <tr><td>Blind cluster jump</td><td>20 units</td></tr>
+      <tr><td>Gravimetric ping</td><td>5 units</td></tr>
+      <tr><td>Profile scan (combat)</td><td>10 units</td></tr>
+      <tr><td>SIGINT scan (combat)</td><td>25 units</td></tr>
+      <tr><td>Deepscan (single system)</td><td>40 units</td></tr>
+      <tr><td>Cluster deepscan (per system)</td><td>25 units</td></tr>
+      <tr><td>Salvage operation (Harrow-7)</td><td>30 units</td></tr>
+      <tr><td>Geological survey — node</td><td>35 units</td></tr>
+      <tr><td>Geological survey — body</td><td>15 units</td></tr>
+      <tr><td>Extraction cycle (Auger-1)</td><td>25 units per cycle</td></tr>
+    </table>
   </div>
 
-  <h3>Starting Vessel — Light Surveyor</h3>
-
-  <div class="stat-block">
-    <div class="stat-title">Light Surveyor — Base Specifications</div>
-    <div class="stat-row"><span>Hull</span><span>100/100</span></div>
-    <div class="stat-row"><span>Armor base</span><span>10</span></div>
-    <div class="stat-row"><span>Power Core max</span><span>500 units</span></div>
-    <div class="stat-row"><span>Fuel capacity</span><span>100 units</span></div>
-    <div class="stat-row"><span>Fold cell magazine</span><span>20 cells max</span></div>
-    <div class="stat-row"><span>Starting fold cells</span><span>3 cells</span></div>
-    <div class="stat-row"><span>Emergency reserve tank</span><span>15 kg raw veydrite max</span></div>
-    <div class="stat-row"><span>Starting reserve</span><span>7–11 kg (randomized)</span></div>
-    <div class="stat-row"><span>Ammo bay capacity</span><span>200 kg</span></div>
-    <div class="stat-row"><span>Weapon slots</span><span>2</span></div>
-    <div class="stat-row"><span>Utility slots</span><span>1 (Harrow-7 Salvage Head installed)</span></div>
+  <div class="section" id="s16">
+    <div class="section-header">
+      <span class="section-number">SECTION 16</span>
+      <div class="section-title">ASTROGRAPHICS — CHART MANAGEMENT</div>
+    </div>
+    <p>Astrographic data is your primary survey commodity and the only commodity the Assayer's Guild buys directly. Unlike ore, it requires no pods and no refinery. It exists as structured information in your vessel's memory matrix. It loses approximately 1% of market value per 10 days. The <em>[aging]</em> tag appears below 85% of original value. Sell data when fresh.</p>
+    <div class="stat-table">
+      <div class="stat-row"><span class="stat-key">Established</span><span class="stat-val">6 CR/unit (deep scan quality)</span></div>
+      <div class="stat-row"><span class="stat-key">Contested</span><span class="stat-val">9 CR/unit</span></div>
+      <div class="stat-row"><span class="stat-key">Declining</span><span class="stat-val">12 CR/unit</span></div>
+      <div class="stat-row"><span class="stat-key">Collapsed</span><span class="stat-val">18 CR/unit</span></div>
+      <div class="stat-row"><span class="stat-key">Isolated</span><span class="stat-val">14 CR/unit</span></div>
+      <div class="stat-row"><span class="stat-key">Forbidden</span><span class="stat-val">24 CR/unit</span></div>
+    </div>
+    <div class="notice warn">
+      <strong>MEMORY MATRIX — PERMANENT DELETION ON SALE</strong>
+      Sold astrographic data is permanently deleted from your vessel's memory matrix. If you need to survey that system again, you will need to deepscan it again.
+    </div>
   </div>
 
-  <div class="lore">The emergency reserve tank is a feature of the Light Surveyor class specifically. Larger vessels do not have it — their drive systems are too large to safely accept raw veydrite feed without dedicated refinement hardware. This is one of the few genuine advantages of the Light Surveyor over larger platforms: it can, in extremis, drink from its own cargo. Pilots of larger vessels who find themselves out of fold cells in Collapsed space do not have this option. They have other problems.</div>
-
-  <div class="section-divider"></div>
-
-  <h3>Power Core Management</h3>
-
-  <div class="stat-block">
-    <div class="stat-title">Power Costs by Operation</div>
-    <div class="stat-row"><span>Nav transit computation</span><span>8 units</span></div>
-    <div class="stat-row"><span>Blind cluster jump</span><span>20 units</span></div>
-    <div class="stat-row"><span>Gravimetric ping</span><span>5 units</span></div>
-    <div class="stat-row"><span>Profile scan (combat)</span><span>10 units</span></div>
-    <div class="stat-row"><span>SIGINT scan (combat)</span><span>25 units</span></div>
-    <div class="stat-row"><span>Deepscan (single system)</span><span>40 units</span></div>
-    <div class="stat-row"><span>Cluster deepscan (per system)</span><span>25 units</span></div>
-    <div class="stat-row"><span>Salvage operation (Harrow-7)</span><span>30 units</span></div>
-    <div class="stat-row"><span>PDT-4 burst</span><span>5 units</span></div>
-    <div class="stat-row"><span>Javelin-4 launch</span><span>15 units</span></div>
-    <div class="stat-row"><span>Mk.9 torpedo launch</span><span>20 units</span></div>
+  <div class="section" id="s17">
+    <div class="section-header">
+      <span class="section-number">SECTION 17</span>
+      <div class="section-title">THE GUILD RECORD ARCHIVE</div>
+    </div>
+    <p>The Guild Record Archive is the longitudinal operational record of a registered contractor. It logs notable events and retains them indefinitely. The archive does not delete entries. It only adds them. Access in-game with <code>record</code>. Access from the main menu via the Guild Record Archive link.</p>
+    <p>When a contractor dies, their record is finalized and transferred to the permanent archive. Their vessel's last known position, cause of death, day count, and complete achievement log are preserved. Dead pilots are not forgotten. They are filed. There is a distinction, and the Guild considers it important.</p>
   </div>
 
-  <div class="section-divider"></div>
-
-  <h3>Subsystems</h3>
-
-  <table class="cmd-table">
-    <tr><td class="cmd">Hull Core</td><td class="desc">Primary structural integrity. HP reaching zero = death.</td></tr>
-    <tr><td class="cmd">Power Core</td><td class="desc">Energy generation and storage.</td></tr>
-    <tr><td class="cmd">Drive</td><td class="desc">Propulsion, nav, and fold. Destruction = all transit offline.</td></tr>
-    <tr><td class="cmd">Weapons Array</td><td class="desc">Fire control. Destruction = cannot fire.</td></tr>
-    <tr><td class="cmd">Sensor Suite</td><td class="desc">Auspex and targeting. Destruction = Auspex offline.</td></tr>
-    <tr><td class="cmd">Cargo Hold</td><td class="desc">Storage integrity. Destruction = cargo at risk.</td></tr>
-    <tr><td class="cmd">Life Support</td><td class="desc">Crew atmosphere. Destruction = crew at risk.</td></tr>
-    <tr><td class="cmd">Crew Quarters</td><td class="desc">Crew habitation.</td></tr>
-    <tr><td class="cmd">Galley</td><td class="desc">Crew sustenance.</td></tr>
-  </table>
-
-  <p>The Drive subsystem governs all transit functions — nav, jump, fold, and blindfold. A Drive at CRITICAL condition may refuse fold operations. A DESTROYED Drive locks out all transit until repaired. In the context of blind fold incidents, Drive damage is not cosmetic. It is an emergency.</p>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S14: ASTROGRAPHICS -->
-
-<div class="section" id="s14">
-  <div class="section-header">
-    <div class="section-num">SECTION 14</div>
-    <div class="section-title">ASTROGRAPHICS — CHART MANAGEMENT</div>
+  <div class="section" id="s18">
+    <div class="section-header">
+      <span class="section-number">SECTION 18</span>
+      <div class="section-title">SURVIVAL NOTES</div>
+    </div>
+    <p>This section contains operational guidance extracted from contractor debrief records, incident reports, and post-mortem analysis. Most of it is obvious in retrospect.</p>
+    <h4>FOLD CELL DISCIPLINE</h4>
+    <p>You start with 3 fold cells. The magazine holds 20. Three cells gets you one inter-quadrant fold and almost nothing else. Buy cells at every station where your standing allows it. Do not leave Established space without a full magazine if you can avoid it. The cell count in the sidebar is the number of escapes you have left.</p>
+    <h4>EMERGENCY RESERVE MANAGEMENT</h4>
+    <p>The emergency reserve fills automatically during salvage and mining before veydrite goes to the cargo hold. Keep it full. A full 15 kg reserve is one emergency fold regardless of station access. The command is <code>emergency refine &lt;n&gt;</code>. The cost is 10 kg per cell. The drive wear risk is 15%. In the scenario where you need this command, you do not have better options.</p>
+    <h4>THE HIGHWAY</h4>
+    <p>Every galaxy has 3–4 highway corridors — pre-calculated fold geometry, 2 cells instead of 3. Find them early. Build routes through them. A contractor who has identified the highway network will always outlast one who burns primary corridors everywhere.</p>
+    <h4>SURVEY BEFORE MINING</h4>
+    <p>The extraction sequence is mandatory and sequential: <code>where</code>, then <code>survey node</code>, then <code>survey body &lt;n&gt;</code>, then <code>mine body &lt;n&gt;</code>. Each step gates the next. Attempting to shortcut this sequence wastes power and returns errors. There is no shortcut.</p>
+    <h4>WATCH FOR THE ASH</h4>
+    <p>Body surveys flagging mass anomalies should be treated as contamination warnings, not measurement errors. If extraction yields Ash Compactate — ore-colored powder, zero market value — stop immediately. Running additional cycles because you already committed the power is how one contaminated body becomes four. File the Guild report. Take the bounty. Leave.</p>
+    <h4>POWER MANAGEMENT</h4>
+    <p>Dock when your core is low. Shore power is free with the docking fee. Running a deep survey operation on 35 power will not work. A full extraction sequence on an empty core will not complete. Plan before committing.</p>
+    <h4>HULL MONITORING</h4>
+    <p>The hull bar turns orange below 30%. This is a warning, not a safe threshold. At 20% hull, a single missed evade or a bad combat exchange ends your pilot. Repair early. Repair before going into contested space, not after.</p>
+    <h4>THE XENO PRESENCE</h4>
+    <p>Some systems will present readings that do not resolve. Some contacts will not identify. Some logs will describe things that should not be there. Log it. File it. Leave. The Guild has reviewed 847 contractor incident reports involving anomalous sensor returns over the past forty years. Of these, 312 involved the contractor attempting extended engagement with the anomaly. The outcome data for this subset is not published. The Guild considers the aggregate survival rate sufficient guidance.</p>
   </div>
 
-  <p>Astrographic data is your primary survey commodity. Unlike Veydrite Dust, which has physical mass and must be extracted and transported, astrographic data exists as structured information in your vessel's memory matrix — a Guild-specification data storage medium built to survive the conditions of deep space operation.</p>
-
-  <div class="section-divider"></div>
-
-  <h3>Data Decay</h3>
-
-  <p>Astrographic data loses approximately 1% of its market value per 10 days. The floor is 50% of base value. The <em>[aging]</em> tag appears in your chart portfolio when a record has fallen below 85% of original value. Sell data when fresh for maximum return. Hold it if you need to consult it for navigation or contract purposes.</p>
-
-  <h3>Data Value by Quadrant State</h3>
-
-  <div class="stat-block">
-    <div class="stat-title">Base Rate per Unit — Deep Scan Quality</div>
-    <div class="stat-row"><span>Established</span><span>6 CR/unit</span></div>
-    <div class="stat-row"><span>Contested</span><span>9 CR/unit</span></div>
-    <div class="stat-row"><span>Declining</span><span>12 CR/unit</span></div>
-    <div class="stat-row"><span>Collapsed</span><span>18 CR/unit</span></div>
-    <div class="stat-row"><span>Isolated</span><span>14 CR/unit</span></div>
-    <div class="stat-row"><span>Forbidden</span><span>24 CR/unit</span></div>
+  <div class="section" id="s19">
+    <div class="section-header">
+      <span class="section-number">SECTION 19</span>
+      <div class="section-title">QUICK COMMAND REFERENCE</div>
+    </div>
+    <h3>GALAXY AND NAVIGATION</h3>
+    <table>
+      <tr><th>Command</th><th>Function</th></tr>
+      <tr><td><code>galaxy</code></td><td>Known quadrant index.</td></tr>
+      <tr><td><code>map</code></td><td>Fold corridor map from current position.</td></tr>
+      <tr><td><code>scan &lt;1-42&gt;</code></td><td>Survey a quadrant by index number.</td></tr>
+      <tr><td><code>scan log</code></td><td>Search ruin sites in current system for data logs.</td></tr>
+      <tr><td><code>where</code></td><td>Full survey of current system. Marks system as visited.</td></tr>
+      <tr><td><code>fold &lt;quadrant name&gt;</code></td><td>Fold to a connected quadrant. Confirms before executing.</td></tr>
+      <tr><td><code>blindfold &lt;quadrant name&gt;</code></td><td>Overdrive fold to unconnected quadrant. 12 cells. Risk table applies.</td></tr>
+      <tr><td><code>nav &lt;system name&gt;</code></td><td>Calculated transit within quadrant. Costs fuel and power.</td></tr>
+      <tr><td><code>jump &lt;system name&gt;</code></td><td>Blind cluster jump within quadrant.</td></tr>
+    </table>
+    <h3>SENSORS AND SURVEY</h3>
+    <table>
+      <tr><th>Command</th><th>Function</th></tr>
+      <tr><td><code>ping</code></td><td>Gravimetric sweep. Ship-to-ship contact detection. 5 power.</td></tr>
+      <tr><td><code>resolve &lt;n&gt;</code></td><td>Identify a contact by index number.</td></tr>
+      <tr><td><code>resolve all</code></td><td>Identify all contacts.</td></tr>
+      <tr><td><code>deepscan &lt;system&gt;</code></td><td>Full astrographic survey. Current quadrant only. 40 power.</td></tr>
+      <tr><td><code>clusterdeepscan &lt;cluster&gt;</code></td><td>Sequential deepscan of all systems in a cluster. 25 power per system.</td></tr>
+      <tr><td><code>charts</code></td><td>List all astrographic records in memory matrix.</td></tr>
+      <tr><td><code>charts &lt;system name&gt;</code></td><td>View stored profile for a specific system.</td></tr>
+    </table>
+    <h3>EXTRACTION OPERATIONS</h3>
+    <table>
+      <tr><th>Command</th><th>Function</th></tr>
+      <tr><td><code>survey node</code></td><td>Geological sweep of all bodies. 35 power. Requires <code>where</code> first.</td></tr>
+      <tr><td><code>survey body &lt;n&gt;</code></td><td>Targeted ore composition survey. 15 power. Requires <code>survey node</code> first.</td></tr>
+      <tr><td><code>mine body &lt;n&gt;</code></td><td>Single extraction cycle. 25 power. Requires <code>survey body</code> first.</td></tr>
+      <tr><td><code>mine body &lt;n&gt; &lt;cycles&gt;</code></td><td>Queue multiple extraction cycles.</td></tr>
+      <tr><td><code>refine</code></td><td>Open refinery terminal. Shows rates and projected output.</td></tr>
+      <tr><td><code>refine all</code></td><td>Process entire ore hold. Station retains yield share.</td></tr>
+      <tr><td><code>refine scrip</code></td><td>Process entire ore hold. Pay flat scrip fee instead.</td></tr>
+    </table>
+    <h3>STATION AND TRADE</h3>
+    <table>
+      <tr><th>Command</th><th>Function</th></tr>
+      <tr><td><code>dock</code></td><td>Dock at nearest station. Pays fee, recharges core, opens services.</td></tr>
+      <tr><td><code>undock</code></td><td>Return to space.</td></tr>
+      <tr><td><code>trade</code></td><td>Open trade terminal.</td></tr>
+      <tr><td><code>buy fuel &lt;n&gt;</code></td><td>Purchase fuel units.</td></tr>
+      <tr><td><code>buy cells &lt;n&gt;</code></td><td>Purchase Veydric Fold Cells.</td></tr>
+      <tr><td><code>buy tool &lt;#&gt;</code></td><td>Purchase utility tool. See armory for listing.</td></tr>
+      <tr><td><code>sell veydrite &lt;n|all&gt;</code></td><td>Sell veydrite at posted Guild rate.</td></tr>
+      <tr><td><code>sell astrographics all</code></td><td>Sell entire chart portfolio. Permanent deletion.</td></tr>
+      <tr><td><code>repair hull &lt;n|full&gt;</code></td><td>Repair hull integrity.</td></tr>
+      <tr><td><code>armory</code></td><td>Open armory terminal.</td></tr>
+      <tr><td><code>bulletin</code></td><td>View available contracts at current station.</td></tr>
+      <tr><td><code>accept &lt;n&gt;</code></td><td>Accept contract by index number.</td></tr>
+    </table>
+    <h3>FIELD OPERATIONS</h3>
+    <table>
+      <tr><th>Command</th><th>Function</th></tr>
+      <tr><td><code>salvage</code></td><td>Field salvage. Fills emergency reserve first, then cargo hold.</td></tr>
+      <tr><td><code>emergency refine &lt;n&gt;</code></td><td>Convert 10 kg reserve veydrite to 1 fold cell. 15% drive wear risk.</td></tr>
+      <tr><td><code>contract</code></td><td>View active contract status, target, and deadline.</td></tr>
+      <tr><td><code>complete</code></td><td>Complete active contract. Must be in target system.</td></tr>
+      <tr><td><code>abandon</code></td><td>Abandon active contract. Applies reputation penalty.</td></tr>
+    </table>
+    <h3>COMBAT</h3>
+    <table>
+      <tr><th>Command</th><th>Function</th></tr>
+      <tr><td><code>evade</code></td><td>Attempt to break contact. Burns fuel.</td></tr>
+      <tr><td><code>negotiate</code></td><td>Attempt to talk or bribe out of engagement.</td></tr>
+      <tr><td><code>fight</code></td><td>Enter weapons engagement mode.</td></tr>
+      <tr><td><code>yield</code></td><td>Surrender. Attacker takes cargo or scrip.</td></tr>
+      <tr><td><code>profile</code></td><td>Hull signature scan. 10 power.</td></tr>
+      <tr><td><code>sigint</code></td><td>Full subsystem analysis. 25 power. Enemy may detect.</td></tr>
+      <tr><td><code>target &lt;subsystem&gt;</code></td><td>Lock onto specific subsystem. Requires profile.</td></tr>
+      <tr><td><code>fire &lt;slot&gt;</code></td><td>Fire weapon using active ammo.</td></tr>
+      <tr><td><code>fire &lt;slot&gt; &lt;ammo&gt;</code></td><td>Fire using specified ammo type.</td></tr>
+    </table>
+    <h3>SHIP STATUS AND RECORDS</h3>
+    <table>
+      <tr><th>Command</th><th>Function</th></tr>
+      <tr><td><code>status</code></td><td>Full ship status — hull, fuel, power, cells, reserve, scrip, utility slot.</td></tr>
+      <tr><td><code>weapons</code></td><td>Weapon slot status — condition, ammo counts, active ammo type.</td></tr>
+      <tr><td><code>systems</code></td><td>Subsystem HP and stability.</td></tr>
+      <tr><td><code>rep</code></td><td>Faction standing — all factions, current scores and tiers.</td></tr>
+      <tr><td><code>logs</code></td><td>View recovered ruin logs and beacon transcripts.</td></tr>
+      <tr><td><code>record</code></td><td>Guild Record Archive — operational achievement log.</td></tr>
+      <tr><td><code>save</code></td><td>Manual save to current slot.</td></tr>
+      <tr><td><code>menu</code></td><td>Return to main menu. Autosaves first.</td></tr>
+      <tr><td><code>help</code></td><td>In-terminal command index.</td></tr>
+    </table>
   </div>
 
-  <div class="warning">
-    <strong>MEMORY MATRIX — PERMANENT DELETION ON SALE</strong>
-    Sold astrographic data is permanently deleted from your vessel's memory matrix. The ◆ charted marker disappears from scan displays. If you need to survey that system again, you will need to deepscan it again. Price accordingly.
+  <div class="manual-footer">
+    VEYDRITE ASSAYER'S GUILD — CONTRACTOR PUBLICATIONS DIVISION<br>
+    Deep Survey Operator's Field Manual — Revision 6<br>
+    Guild Standard Year 2302 — Solace Reach Office of Contractor Relations<br><br>
+    This document is issued to registered independent contractors upon confirmation of terminal registration.<br>
+    It is not for distribution to non-registered parties. The Guild does not consider this restriction<br>
+    enforceable in Collapsed or Feral space and notes the observation without further comment.
+    <div class="footer-sign">
+      The galaxy is vast. It is decaying. It is slow.<br><br>
+      File your data. Come back alive.<br><br>
+      — THE ASSAYER'S GUILD
+    </div>
   </div>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S15: RECORD ARCHIVE -->
-
-<div class="section" id="s15">
-  <div class="section-header">
-    <div class="section-num">SECTION 15</div>
-    <div class="section-title">THE GUILD RECORD ARCHIVE</div>
-  </div>
-
-  <p>The Guild Record Archive is the longitudinal operational record of a registered contractor. It logs notable events — first operations, standing changes, combat outcomes, survey milestones, economic achievements — and retains them for the duration of the contractor's active registration and beyond. The archive does not delete entries. It only adds them.</p>
-
-  <p>Access the archive in-game with the <code>record</code> command. Access it from the main menu via the Guild Record Archive link. Records are organized by category and expand on click to display full detail including the day the event occurred.</p>
-
-  <div class="lore">The Guild maintains these records not out of sentiment, but because they constitute the most accurate longitudinal dataset of independent contractor operations in known space. Contractors have occasionally asked why the Guild cares how many systems they have charted or whether they survived a combat engagement at 15% hull. The Guild's answer is consistent: accurate data is always useful. The galaxy is large. The Guild wants to know what is in it, and who managed to come back.</div>
-
-  <div class="section-divider"></div>
-
-  <h3>The Graveyard</h3>
-
-  <p>When a contractor dies, their record is finalized and transferred to the permanent archive. Their vessel's last known position, cause of death, day count, and complete achievement log are preserved. Dead pilots are not forgotten. They are filed. There is a distinction, and the Guild considers it important.</p>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S16: SURVIVAL -->
-
-<div class="section" id="s16">
-  <div class="section-header">
-    <div class="section-num">SECTION 16</div>
-    <div class="section-title">SURVIVAL NOTES</div>
-  </div>
-
-  <p>This section contains operational guidance extracted from contractor debrief records, incident reports, and post-mortem analysis. Most of it is obvious in retrospect.</p>
-
-  <div class="section-divider"></div>
-
-  <h4>Fold Cell Discipline</h4>
-  <p>You start with 3 fold cells. The magazine holds 20. Three cells gets you one inter-quadrant fold and almost nothing else. Buy cells at every station where your standing allows it. Do not leave Established space without a full magazine if you can avoid it. Do not enter Collapsed space without planning your exit. The cell count in the sidebar is not decorative — it is the number of escapes you have left.</p>
-
-  <h4>Emergency Reserve Management</h4>
-  <p>The emergency reserve fills automatically during salvage, before veydrite goes to the cargo hold. Keep it full. A full 15 kg reserve is one emergency fold available regardless of station access. In Collapsed space, that one fold may be the difference between finding a Feral settlement and drifting. Do not sell reserve veydrite. The cargo veydrite is for selling. The reserve is for leaving.</p>
-
-  <h4>The Highway</h4>
-  <p>Every galaxy has 3–4 highway corridors — pre-calculated fold geometry, 2 cells instead of 3. Find them early. Build routes through them. A contractor who has identified the highway network and routes through it will always outlast one who burns primary corridors everywhere. Check the fold map for <code>═══</code> markings from every quadrant you visit.</p>
-
-  <h4>Power Management</h4>
-  <p>Dock when your core is low. Shore power is free with the docking fee. Running a deep survey operation on 35 power will not work. Running into an encounter on 10 power will end badly. Plan power usage before committing to operations.</p>
-
-  <h4>Hull Monitoring</h4>
-  <p>The hull bar in the sidebar turns orange below 30%. This is a warning, not a safe threshold. At 20% hull, a single missed evade or a bad combat exchange ends your pilot. Repair early. Repair often. Repair before going into contested space, not after.</p>
-
-  <h4>Don't Blindfold Into Nothing</h4>
-  <p>The blind fold requires 12 cells. It has a 5% chance of destroying your Drive and a 10% chance of landing you in the wrong system with a CRITICAL Drive. Before committing to a blind fold, ask: do I know anything is in that quadrant? Do I have enough hull to survive a bad outcome? Do I have the scrip to repair a destroyed Drive if I somehow reach a station? If the answer to any of these is no, the blind fold is not a navigation decision. It is a gamble. The void does not honor gamblers.</p>
-
-  <h4>Contract Deadlines</h4>
-  <p>Contracts have deadlines generated based on realistic travel time plus a 20% margin. The margin exists, but it is not generous. Do not accept a contract and then spend four days doing salvage runs in the opposite direction. The deadline clock does not care about your detours. It does not care about your fold cell shortage. It does not care.</p>
-
-  <h4>The Xeno Presence</h4>
-  <p>Some systems will present readings that do not resolve. Some contacts will not identify. Some logs will describe things that should not be there. The Guild's advice is consistent: log it, file it, leave. The Guild is specifically interested in this data and pays accordingly. Your curiosity, however understandable, is not worth your pilot.</p>
-
-  <div class="lore">The Guild has reviewed 847 contractor incident reports involving anomalous sensor returns over the past forty years. Of these, 312 involved the contractor attempting extended engagement with the anomaly. The outcome data for this subset is not published. The Guild considers the aggregate survival rate sufficient guidance.</div>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ S17: COMMAND REF -->
-
-<div class="section" id="s17">
-  <div class="section-header">
-    <div class="section-num">SECTION 17</div>
-    <div class="section-title">QUICK COMMAND REFERENCE</div>
-  </div>
-
-  <h3>Galaxy and Navigation</h3>
-  <table class="cmd-table">
-    <tr><td class="cmd">galaxy</td><td class="desc">Known quadrant index — civilization states, control scores, system counts.</td></tr>
-    <tr><td class="cmd">map</td><td class="desc">Fold corridor map — corridors from current position, known quadrant list.</td></tr>
-    <tr><td class="cmd">scan &lt;1-42&gt;</td><td class="desc">Survey a quadrant. System names, star classes, beacons, chart markers.</td></tr>
-    <tr><td class="cmd">scan log</td><td class="desc">Search ruin sites in current system for data logs.</td></tr>
-    <tr><td class="cmd">where</td><td class="desc">Full survey of current system — stations, ruins, veydrite, hazard, traffic.</td></tr>
-    <tr><td class="cmd">fold &lt;quadrant name&gt;</td><td class="desc">Fold to a connected quadrant. Shows cost and destination before confirming.</td></tr>
-    <tr><td class="cmd">blindfold &lt;quadrant name&gt;</td><td class="desc">Overdrive fold to unconnected quadrant. 12 cells. Risk table applies.</td></tr>
-    <tr><td class="cmd">nav &lt;system name&gt;</td><td class="desc">Calculated transit within quadrant. Costs fuel and power.</td></tr>
-    <tr><td class="cmd">jump &lt;system name&gt;</td><td class="desc">Blind cluster jump within quadrant. Faster, cheaper, riskier.</td></tr>
-  </table>
-
-  <h3>Sensors</h3>
-  <table class="cmd-table">
-    <tr><td class="cmd">ping</td><td class="desc">Gravimetric sweep. Contact mass readings. 5 power.</td></tr>
-    <tr><td class="cmd">resolve &lt;n&gt;</td><td class="desc">Identify a contact by index number.</td></tr>
-    <tr><td class="cmd">resolve all</td><td class="desc">Identify all contacts. Higher power cost.</td></tr>
-    <tr><td class="cmd">deepscan &lt;system&gt;</td><td class="desc">Full astrographic survey. Current quadrant only. 40 power.</td></tr>
-    <tr><td class="cmd">clusterdeepscan &lt;cluster&gt;</td><td class="desc">Sequential deepscan of all systems in a cluster. 25 power per system.</td></tr>
-    <tr><td class="cmd">charts</td><td class="desc">List all astrographic records in memory matrix.</td></tr>
-    <tr><td class="cmd">charts &lt;system name&gt;</td><td class="desc">View stored profile for a specific system.</td></tr>
-  </table>
-
-  <h3>Station</h3>
-  <table class="cmd-table">
-    <tr><td class="cmd">dock</td><td class="desc">Dock at nearest station. Pays fee, recharges core, opens services.</td></tr>
-    <tr><td class="cmd">undock</td><td class="desc">Return to space.</td></tr>
-    <tr><td class="cmd">trade</td><td class="desc">Open trade terminal. Exit with <code>exit</code>.</td></tr>
-    <tr><td class="cmd">armory</td><td class="desc">Open armory terminal. Exit with <code>exit</code>.</td></tr>
-    <tr><td class="cmd">bulletin</td><td class="desc">View available contracts at current station.</td></tr>
-    <tr><td class="cmd">accept &lt;n&gt;</td><td class="desc">Accept contract by index number.</td></tr>
-  </table>
-
-  <h3>Trade Terminal</h3>
-  <table class="cmd-table">
-    <tr><td class="cmd">buy fuel &lt;n&gt;</td><td class="desc">Purchase fuel units.</td></tr>
-    <tr><td class="cmd">buy cells &lt;n&gt;</td><td class="desc">Purchase Veydric Fold Cells. Price varies by faction and standing.</td></tr>
-    <tr><td class="cmd">sell veydrite &lt;n|all&gt;</td><td class="desc">Sell veydrite at posted Guild rate.</td></tr>
-    <tr><td class="cmd">sell astrographics</td><td class="desc">View chart portfolio for sale. Guild stations only.</td></tr>
-    <tr><td class="cmd">sell astrographics all</td><td class="desc">Sell entire portfolio. Permanent memory matrix deletion.</td></tr>
-    <tr><td class="cmd">repair hull &lt;n|full&gt;</td><td class="desc">Repair hull integrity.</td></tr>
-  </table>
-
-  <h3>Field Operations</h3>
-  <table class="cmd-table">
-    <tr><td class="cmd">salvage</td><td class="desc">Field salvage. Fills emergency reserve first, then cargo hold.</td></tr>
-    <tr><td class="cmd">contract</td><td class="desc">View active contract status, target, and deadline.</td></tr>
-    <tr><td class="cmd">complete</td><td class="desc">Complete active contract. Must be in target system.</td></tr>
-    <tr><td class="cmd">abandon</td><td class="desc">Abandon active contract. Applies reputation penalty.</td></tr>
-  </table>
-
-  <h3>Combat</h3>
-  <table class="cmd-table">
-    <tr><td class="cmd">evade</td><td class="desc">Attempt to break contact. Burns fuel.</td></tr>
-    <tr><td class="cmd">negotiate</td><td class="desc">Attempt to talk or bribe out of engagement.</td></tr>
-    <tr><td class="cmd">fight</td><td class="desc">Enter weapons engagement mode.</td></tr>
-    <tr><td class="cmd">yield</td><td class="desc">Surrender. Attacker takes cargo or scrip.</td></tr>
-    <tr><td class="cmd">profile</td><td class="desc">Hull signature scan. 10 power.</td></tr>
-    <tr><td class="cmd">sigint</td><td class="desc">Full subsystem analysis. 25 power. Enemy may detect.</td></tr>
-    <tr><td class="cmd">target &lt;subsystem&gt;</td><td class="desc">Lock onto specific subsystem. Requires profile.</td></tr>
-    <tr><td class="cmd">fire &lt;slot&gt;</td><td class="desc">Fire weapon using active ammo.</td></tr>
-    <tr><td class="cmd">fire &lt;slot&gt; &lt;ammo&gt;</td><td class="desc">Fire using specified ammo type.</td></tr>
-    <tr><td class="cmd">disengage</td><td class="desc">Attempt to break off combat.</td></tr>
-  </table>
-
-  <h3>Ship Status</h3>
-  <table class="cmd-table">
-    <tr><td class="cmd">status</td><td class="desc">Full ship status — hull, fuel, power, cells, reserve, scrip.</td></tr>
-    <tr><td class="cmd">weapons</td><td class="desc">Weapon slot status — condition, ammo counts, active ammo type.</td></tr>
-    <tr><td class="cmd">systems</td><td class="desc">Subsystem HP and stability for all nine ship subsystems.</td></tr>
-  </table>
-
-  <h3>Records and General</h3>
-  <table class="cmd-table">
-    <tr><td class="cmd">rep</td><td class="desc">Faction standing — all factions, current scores and tiers.</td></tr>
-    <tr><td class="cmd">logs</td><td class="desc">View recovered ruin logs and beacon transcripts.</td></tr>
-    <tr><td class="cmd">record</td><td class="desc">Guild Record Archive — operational achievement log.</td></tr>
-    <tr><td class="cmd">save</td><td class="desc">Manual save to current slot.</td></tr>
-    <tr><td class="cmd">newsave</td><td class="desc">Delete current pilot record. Permanent. No recovery.</td></tr>
-    <tr><td class="cmd">menu</td><td class="desc">Return to main menu. Autosaves first.</td></tr>
-    <tr><td class="cmd">help</td><td class="desc">In-terminal command index.</td></tr>
-  </table>
-
-</div>
-
-<!-- ═══════════════════════════════════════════ FOOTER -->
-
-<div class="manual-footer">
-  <p>VEYDRITE ASSAYER'S GUILD — CONTRACTOR PUBLICATIONS DIVISION</p>
-  <p>Deep Survey Operator's Field Manual — Revision 5</p>
-  <p>Guild Standard Year 2301 — Solace Reach Office of Contractor Relations</p>
-  <p>&nbsp;</p>
-  <p>This document is issued to registered independent contractors upon confirmation of terminal registration. It is not for distribution to non-registered parties. The Guild does not consider this restriction enforceable in Collapsed or Feral space and notes the observation without further comment.</p>
-  <p>&nbsp;</p>
-  <p>The galaxy is vast. It is decaying. It is slow.</p>
-  <p>File your data. Come back alive.</p>
-  <p>&nbsp;</p>
-  <p>— THE ASSAYER'S GUILD</p>
-</div>
 
 </body>
 </html>
