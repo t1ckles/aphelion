@@ -10,12 +10,16 @@ let activeSlot      = null;
 
 // ── Terminal output ───────────────────────────
 
-function print(text, style = '') {
+function print(text, style = '', allowHtml = false) {
   const output = document.getElementById('output');
   const line   = document.createElement('span');
   line.classList.add('output-line');
   if (style) line.classList.add(style);
-  line.textContent = text;
+  if (allowHtml) {
+    line.innerHTML = text;
+  } else {
+    line.textContent = text;
+  }
   output.appendChild(line);
   output.scrollTop = output.scrollHeight;
 }
@@ -26,8 +30,8 @@ const printQueue = [];
 let isPrinting = false;
 
 
-function queue(text, style = '', delay = 38) {
-  printQueue.push({ text, style, delay });
+function queue(text, style = '', delay = 38, allowHtml = false) {
+  printQueue.push({ text, style, delay, allowHtml });
   if (!isPrinting) processQueue();
 }
 
@@ -36,14 +40,18 @@ function queueDivider(delay = 38) {
   queue('─'.repeat(58), 'output-dim', delay);
 }
 
+function queueHtml(text, style = '', delay = 38) {
+  queue(text, style, delay, true);
+}
+
 function processQueue() {
   if (printQueue.length === 0) {
     isPrinting = false;
     return;
   }
   isPrinting = true;
-  const { text, style, delay } = printQueue.shift();
-  print(text, style);
+  const { text, style, delay, allowHtml } = printQueue.shift();
+  print(text, style, allowHtml);
   setTimeout(processQueue, delay);
 }
 
