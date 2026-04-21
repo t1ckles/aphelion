@@ -2040,21 +2040,26 @@ function executeTrade(tx) {
     const veyAch = triggerAchievements({ type: 'veydrite_sale' });
     return ['', '  [SELL] Transaction complete.', '  Sold: ' + tx.amount + ' kg  |  Earned: ' + tx.earned + ' CR', '  Scrip: ' + playerState.credits + ' CR', veyAch, ''].join('\n');
   }
+  if (tx.type === 'buy' && tx.commodity === 'cells') {
+      playerState.credits   -= tx.cost;
+      playerState.foldCells += tx.amount;
+      autosave();
+      updateSidebar();
+      return [
+        '',
+        '  [BUY] Fold cells loaded.',
+        '  Purchased : ' + tx.amount + ' cells at ' + tx.priceEach + ' CR each',
+        '  Total     : ' + tx.cost + ' CR',
+        '  Magazine  : ' + playerState.foldCells + ' / 20',
+        '  Scrip     : ' + playerState.credits + ' CR',
+        '',
+      ].join('\n');
+    }
+  
   if (tx.type === 'buy' && tx.commodity === 'fuel') {
-    if (tx.type === 'buy' && tx.commodity === 'cells') {
-    playerState.credits   -= tx.cost;
-    playerState.foldCells += tx.amount;
-    autosave();
-    updateSidebar();
-    return [
-      '',
-      '  [BUY] Fold cells loaded.',
-      '  Purchased : ' + tx.amount + ' cells at ' + tx.priceEach + ' CR each',
-      '  Total     : ' + tx.cost + ' CR',
-      '  Magazine  : ' + playerState.foldCells + ' / 20',
-      '  Scrip     : ' + playerState.credits + ' CR',
-      '',
-    ].join('\n');
+    playerState.credits -= tx.cost;
+    ship.fuel = Math.min(ship.fuelMax, ship.fuel + tx.amount);
+    return ['', '  [BUY] Fuel transfer complete.', '  Purchased: ' + tx.amount + ' units  |  Cost: ' + tx.cost + ' CR', '  Fuel: ' + ship.fuel + '/' + ship.fuelMax + '  |  Scrip: ' + playerState.credits + ' CR', ''].join('\n');
   }
     playerState.credits -= tx.cost;
     ship.fuel = Math.min(ship.fuelMax, ship.fuel + tx.amount);
