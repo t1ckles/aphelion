@@ -249,6 +249,79 @@ function createStartingShip(shipName) {
   return ship;
 }
 
+
+function normalizeSystemBodies(sys) {
+  if (!sys) return [];
+  if (typeof getSystemBodyIndex === 'function') return getSystemBodyIndex(sys);
+  if (sys.bodyIndex) return sys.bodyIndex;
+  if (sys.bodyTree) {
+    const flat = [];
+    sys.bodyTree.forEach(body => {
+      flat.push(body);
+      (body.children || []).forEach(child => flat.push(child));
+    });
+    sys.bodyIndex = flat;
+    sys.bodies = flat;
+    return flat;
+  }
+  return sys.bodies || [];
+}
+
+function findBodyByName(sys, query) {
+  const q = String(query || '').toLowerCase().trim();
+  if (!q) return null;
+  const bodies = normalizeSystemBodies(sys);
+  return bodies.find(b => String(b.name || b.shortName || b.type || '').toLowerCase() === q)
+    || bodies.find(b => String(b.name || '').toLowerCase().includes(q))
+    || bodies.find(b => String(b.shortName || b.type || '').toLowerCase().includes(q));
+}
+
+function getCurrentBody(sys) {
+  const bodies = normalizeSystemBodies(sys);
+  if (!playerState.location) return bodies[0] || null;
+  if (playerState.location.bodyId) {
+    const match = bodies.find(b => b.id === playerState.location.bodyId);
+    if (match) return match;
+  }
+  return bodies[0] || null;
+}
+
+function formatBodyLine(body) {
+  const indent = body.depth === 0 ? '' : '    ';
+  const label = body.kind === 'planet' ? 'BODY' : body.kind.toUpperCase();
+  const tags = [];
+  if (body.hasStation) tags.push('station');
+  if (body.hasRuin) tags.push('ruin');
+  if (body.veydrite) tags.push('veydrite');
+  return indent + '[' + body.index + '] ' + (body.name || body.type) + '  —  ' + label + (tags.length ? '  [' + tags.join(' | ') + ']' : '');
+}
+
+function updateLocationBody(sys, body) {
+  playerState.location.bodyId = body ? body.id : null;
+  playerState.location.bodyName = body ? (body.name || body.type) : null;
+  playerState.location.bodyKind = body ? body.kind : null;
+  playerState.location.locationType = body ? body.kind : 'system';
+  return playerState.location;
+}
+
+function bodyTravelHours(fromBody, toBody) {
+  if (!fromBody || !toBody || fromBody.id === toBody.id) return 0;
+  const pair = [fromBody.kind, toBody.kind].sort().join(':');
+  const table = {
+    'lagrange:planet': 5,
+    'moon:planet': 4,
+    'field:planet': 7,
+    'field:moon': 6,
+    'lagrange:moon': 3,
+    'lagrange:field': 4,
+    'moon:moon': 5,
+    'planet:planet': 8,
+    'field:field': 6,
+    'lagrange:lagrange': 2,
+  };
+  return table[pair] || 6;
+}
+
 // ── Player State ──────────────────────────────
 let playerState = {
   location:         null,
@@ -518,7 +591,7 @@ function cmdScan(args) {
 function cmdScanLog() {
   const sys = getCurrentSystem();
   if (!sys) return '  [ERROR] Location data corrupted.';
-  const hasRuin = sys.bodies.some(b => b.hasRuin);
+  const hasRuin = bodies.some(b => b.hasRuin);
   if (!hasRuin) {
     return ['', '  [SCAN] No ruin sites in this system.', '  Nothing to read.', ''].join('\n');
   }
@@ -539,7 +612,7 @@ function cmdScanLog() {
 
 function cmdNav(args) {
   if (!galaxy) return '  [ERROR] Galaxy not initialized.';
-  if (args.length === 0) return '  [USAGE] nav <system name>';
+  if (args.length === 0) return '  [USAGE] nav <system or body name>';
   if (playerState.docked) return '  [NAV] You are docked. Type "undock" first.';
 
   const ship  = getShip();
@@ -606,7 +679,7 @@ function cmdNav(args) {
             '  Day      : ' + playerState.currentDay,
             '',
             '  Drive nominal. Arrived.',
-            '  Type "where" to survey this system.',
+            '  Type "where" to survey this body stack.',
             '',
           ];
 
@@ -1027,7 +1100,7 @@ function cmdJump(args) {
     '  Day      : ' + playerState.currentDay,
     '',
     '  Arrived dark. Sensors offline.',
-    '  Type "where" to survey this system.',
+    '  Type "where" to survey this body stack.',
     '',
   ];
 
@@ -1128,7 +1201,8 @@ function cmdSurvey(args) {
     ];
 
     let miningBodies = 0;
-    sys.bodies.forEach((body, i) => {
+    const bodies = normalizeSystemBodies(sys);
+    bodies.forEach((body, i) => {
       if (!body.mining || !body.mining.ores) {
         lines.push('  [' + (i + 1) + '] ' + body.type.padEnd(20) + ' — no extractable deposits detected');
         return;
@@ -1168,16 +1242,17 @@ function cmdSurvey(args) {
   // survey body <n> — detailed geological sweep of specific body
   if (args[0] === 'body') {
     const bodyIndex = parseInt(args[1]) - 1;
-    if (isNaN(bodyIndex) || bodyIndex < 0 || bodyIndex >= sys.bodies.length) {
+    const bodies = normalizeSystemBodies(sys);
+    if (isNaN(bodyIndex) || bodyIndex < 0 || bodyIndex >= bodies.length) {
       return [
         '',
-        '  [SURVEY] Usage: survey body <1-' + sys.bodies.length + '>',
+        '  [SURVEY] Usage: survey body <1-' + bodies.length + '>',
         '  Run "survey node" first to identify mining targets.',
         '',
       ].join('\n');
     }
 
-    const body = sys.bodies[bodyIndex];
+    const body = bodies[bodyIndex];
 
     if (!body.mining || !body.mining.ores) {
       return [
@@ -1310,11 +1385,12 @@ function cmdMine(args) {
   }
 
   const bodyIndex = parseInt(args[1]) - 1;
-  if (isNaN(bodyIndex) || bodyIndex < 0 || bodyIndex >= sys.bodies.length) {
+  const bodies = normalizeSystemBodies(sys);
+    if (isNaN(bodyIndex) || bodyIndex < 0 || bodyIndex >= bodies.length) {
     return '  [MINE] Invalid body index. Use survey node to list bodies.';
   }
 
-  const body = sys.bodies[bodyIndex];
+  const body = bodies[bodyIndex];
 
   if (!body.mining || !body.mining.ores || body.mining.ores.length === 0) {
     return [
@@ -1387,7 +1463,7 @@ function cmdMine(args) {
     if (m.ashFlag) {
       if (Math.random() < 0.05) {
         // Ash spreads to adjacent body
-        const adjacentBodies = sys.bodies.filter((b, i) =>
+        const adjacentBodies = bodies.filter((b, i) =>
           i !== bodyIndex && b.mining && b.mining.ores && !b.mining.ashFlag
         );
         if (adjacentBodies.length > 0) {
@@ -1487,7 +1563,7 @@ function cmdRefine(args) {
   const sys  = cluster && cluster.systems.find(s => s.name === loc.systemName);
   if (!sys) return '  [ERROR] Location data corrupted.';
 
-  const stationBody = sys.bodies.find(b => b.hasStation && b.stationName === playerState.dockedAt);
+  const stationBody = normalizeSystemBodies(sys).find(b => b.hasStation && b.stationName === playerState.dockedAt);
   if (!stationBody || !stationBody.hasRefinery) {
     return [
       '',
@@ -1664,9 +1740,9 @@ function cmdSalvage() {
   }
   
   const hasRuin   = sys.bodies.some(b => b.hasRuin);
-  const hasVeyd   = sys.bodies.some(b => b.veydrite);
+  const hasVeyd   = bodies.some(b => b.veydrite);
   const hasDebris = ['Debris Field', 'Shattered Planet', 'Dust Belt']
-    .some(t => sys.bodies.some(b => b.type === t));
+    .some(t => bodies.some(b => b.type === t));
 
   if (!hasRuin && !hasVeyd && !hasDebris) {
     return ['', '  [SALVAGE] Nothing to salvage in ' + sys.name + '.', ''].join('\n');
@@ -1704,7 +1780,7 @@ function cmdDock() {
   const sys     = cluster && cluster.systems.find(s => s.name === loc.systemName);
   if (!sys) return '  [ERROR] Location data corrupted.';
 
-  const stationBodies = sys.bodies.filter(b => b.hasStation);
+  const stationBodies = bodies.filter(b => b.hasStation);
   if (stationBodies.length === 0) {
     return ['', '  [DOCK] No station in ' + sys.name + '.', ''].join('\n');
   }
