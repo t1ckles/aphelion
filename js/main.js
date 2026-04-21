@@ -512,53 +512,54 @@ const contBtn  = document.getElementById('menu-continue');
   document.getElementById('menu-archive').addEventListener('click', openAchievementsModal);
   document.addEventListener('keydown', menuKeyHandler);
 
-  // ── Mobile input bridge ───────────────────────
-const mobileInput = document.getElementById('mobile-input');
-if (mobileInput) {
-  // Focus mobile input when terminal area is tapped
-  document.getElementById('input-line').addEventListener('touchend', function(e) {
-    e.preventDefault();
-    mobileInput.focus();
-  });
+// ── Mobile input bridge ───────────────────────
+  const mobileInputEl  = document.getElementById('mobile-input');
+  const mobileSendBtn  = document.getElementById('mobile-send');
 
-  // Also focus when tapping anywhere in the terminal body
-  document.getElementById('terminal-body').addEventListener('touchend', function(e) {
-    mobileInput.focus();
-  });
+  if (mobileInputEl) {
+    // Submit on Enter key
+    mobileInputEl.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const val = mobileInputEl.value;
+        mobileInputEl.value = '';
+        if (val.trim() !== '') {
+          // Simulate typing the value then Enter
+          val.split('').forEach(char => {
+            document.dispatchEvent(new KeyboardEvent('keydown', { key: char, bubbles: true }));
+          });
+        }
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        return;
+      }
+      if (e.key === 'Backspace') {
+        e.stopPropagation();
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true }));
+        return;
+      }
+    });
 
-  mobileInput.addEventListener('keydown', function(e) {
-    // Forward all keydown events to the main handler
-    document.dispatchEvent(new KeyboardEvent('keydown', {
-      key:      e.key,
-      keyCode:  e.keyCode,
-      which:    e.which,
-      shiftKey: e.shiftKey,
-      ctrlKey:  e.ctrlKey,
-      metaKey:  e.metaKey,
-      bubbles:  true,
-    }));
-    // Prevent the input from actually storing characters
-    e.preventDefault();
-  });
-
-  mobileInput.addEventListener('input', function(e) {
-    // Handle autocorrect/paste on mobile which fires input not keydown
-    const val = mobileInput.value;
-    if (val.length > 0) {
-      val.split('').forEach(char => {
-        document.dispatchEvent(new KeyboardEvent('keydown', {
-          key: char,
-          bubbles: true,
-        }));
+    // Submit on SEND button tap
+    if (mobileSendBtn) {
+      mobileSendBtn.addEventListener('click', function() {
+        const val = mobileInputEl.value;
+        mobileInputEl.value = '';
+        if (val.trim() !== '') {
+          val.split('').forEach(char => {
+            document.dispatchEvent(new KeyboardEvent('keydown', { key: char, bubbles: true }));
+          });
+        }
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        mobileInputEl.focus();
       });
-      mobileInput.value = '';
     }
-  });
-}
-  
-}
 
-
+    // Sync mobile input display to the typed span
+    mobileInputEl.addEventListener('input', function() {
+      // Let the game's own typed display handle display
+      // Just keep input clean for submission
+    });
+  }
 
 function menuKeyHandler(e) {
   if (menuDismissed) {
@@ -1040,10 +1041,9 @@ function enableInput(mode = 'command') {
   inputMode    = mode;
   const inputLine = document.getElementById('input-line');
   if (inputLine) inputLine.style.display = '';
-  // Ensure mobile input is focused on mobile devices
-  const mobileInput = document.getElementById('mobile-input');
-  if (mobileInput && 'ontouchstart' in window) {
-    setTimeout(() => mobileInput.focus(), 100);
+  if ('ontouchstart' in window) {
+    const mobileInput = document.getElementById('mobile-input');
+    if (mobileInput) setTimeout(() => mobileInput.focus(), 150);
   }
 }
 
