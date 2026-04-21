@@ -1040,6 +1040,11 @@ function enableInput(mode = 'command') {
   inputMode    = mode;
   const inputLine = document.getElementById('input-line');
   if (inputLine) inputLine.style.display = '';
+  // Ensure mobile input is focused on mobile devices
+  const mobileInput = document.getElementById('mobile-input');
+  if (mobileInput && 'ontouchstart' in window) {
+    setTimeout(() => mobileInput.focus(), 100);
+  }
 }
 
 function disableInput() {
