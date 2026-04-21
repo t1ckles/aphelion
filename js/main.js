@@ -965,33 +965,10 @@ function startNewGame(slot) {
                   const waitForQueue = setInterval(() => {
                     if (!isPrinting && printQueue.length === 0) {
                       clearInterval(waitForQueue);
-                      queue('', '', 40);
-                      queueDivider(60);
-                      queue('', '', 40);
-                      queue('  ── SUGGESTED ACTIONS ────────────────────────────────────────', 'output-dim', 40);
-                      queue('', '', 40);
-                      queue('  where          — survey your current system', 'output-dim', 40);
-                      queue('  ping           — sweep for local contacts', 'output-dim', 40);
-                      queue('  galaxy         — view the full quadrant map', 'output-dim', 40);
-                      queue('  nav <s>        — plot a course', 'output-dim', 40);
-                      if (playerState.ship && playerState.ship.utilitySlots[0].type === 'mining_auger') {
-                        queue('  survey node    — geological sweep of current system', 'output-dim', 40);
-                      } else {
-                        queue('  salvage        — begin salvage operation', 'output-dim', 40);
-                        queue('  scan log       — search ruins for data', 'output-dim', 40);
-                      }
-                      queue('', '', 40);
-                      queueDivider(60);
-                      queue('', '', 80);
-                      const waitForSuggested = setInterval(() => {
-                        if (!isPrinting && printQueue.length === 0) {
-                          clearInterval(waitForSuggested);
-                          enableInput('command');
-                          updateSidebar();
-                          autosave(slot);
-                          bootAuspex(() => {});
-                        }
-                      }, 100);
+                      enableInput('command');
+                      updateSidebar();
+                      autosave(slot);
+                      bootAuspex(() => {});
                     }
                   }, 100);
                 });
