@@ -712,3 +712,64 @@ body::after {
     height: calc(-webkit-fill-available - 40px);
   }
 }
+
+/* ── Mobile input row ────────────────────────── */
+
+#mobile-input-row {
+  display: none;
+  align-items: center;
+  border-top: 1px solid #006618;
+  padding-top: 10px;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+#mobile-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #00e5ff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 14px;
+  caret-color: #00e5ff;
+  padding: 0;
+  min-width: 0;
+}
+
+#mobile-input::placeholder {
+  color: #003310;
+}
+
+#mobile-send {
+  background: transparent;
+  border: 1px solid #006618;
+  color: #00aa2a;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  flex-shrink: 0;
+  transition: color 0.2s, border-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#mobile-send:active {
+  color: #00ff41;
+  border-color: #00ff41;
+}
+
+/* Show mobile row and hide desktop cursor on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  #mobile-input-row {
+    display: flex;
+  }
+  #input-line {
+    display: none;
+  }
+  #status-toggle {
+    display: block;
+  }
+}
