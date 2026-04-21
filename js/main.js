@@ -1467,10 +1467,12 @@ if (response && response.trim().startsWith('__CLUSTERDEEPSCAN__')) {
     }
 
   } else if (e.key === 'Backspace') {
+    if (document.activeElement && document.activeElement.id === 'mobile-input') return;
     currentInputValue = currentInputValue.slice(0, -1);
     updateTyped(currentInputValue);
 
-  } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+} else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+    if (document.activeElement && document.activeElement.id === 'mobile-input') return;
     currentInputValue += e.key;
     updateTyped(currentInputValue);
   }
