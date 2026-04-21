@@ -214,24 +214,24 @@
   <script src="js/commands.js"></script>
   <script src="js/main.js"></script>
 
-  <script>
-    // Status panel toggle
-    document.getElementById('status-toggle').addEventListener('click', function() {
-      const col = document.getElementById('right-column');
-      col.classList.toggle('panel-open');
-      this.textContent = col.classList.contains('panel-open') ? '[ESC] STATUS' : '[STA] STATUS';
-    });
 
-    // Close status panel when clicking outside it
-    document.addEventListener('click', function(e) {
-      const col = document.getElementById('right-column');
-      const btn = document.getElementById('status-toggle');
-      if (col && col.classList.contains('panel-open') && !col.contains(e.target) && e.target !== btn) {
-        col.classList.remove('panel-open');
-        btn.textContent = '[STA] STATUS';
-      }
-    });
-  </script>
+    // Status panel toggle
+    <script>
+        document.getElementById('status-toggle').addEventListener('click', function() {
+          var col = document.getElementById('right-column');
+          col.classList.toggle('panel-open');
+          this.textContent = col.classList.contains('panel-open') ? '[ESC] STATUS' : '[STA] STATUS';
+        });
+    
+        document.addEventListener('click', function(e) {
+          var col = document.getElementById('right-column');
+          var btn = document.getElementById('status-toggle');
+          if (col && col.classList.contains('panel-open') && !col.contains(e.target) && e.target !== btn) {
+            col.classList.remove('panel-open');
+            btn.textContent = '[STA] STATUS';
+          }
+        });
+    </script>
 
 </body>
 </html>
