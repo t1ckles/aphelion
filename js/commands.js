@@ -686,7 +686,19 @@ function cmdNav(args) {
   const currentSys = getCurrentSystem();
   const fromBody = currentSys ? getCurrentBody(currentSys) : null;
   const localHours = targetBody ? bodyTravelHours(fromBody, targetBody) : 0;
-  const travelDays = 4 + Math.floor(Math.random() * 7);
+  // Determine if intra-system or inter-system travel
+  const isSameSystem = currentSys && targetSys && (currentSys.name === targetSys.name);
+  let travelDays = 0;
+  let travelHours = 0;
+  
+  if (isSameSystem) {
+    // Intra-system: use hours (local body-to-body transit)
+    travelHours = localHours || 8; // Default 8h if not calculated
+    travelDays = travelHours / 24; // Convert to fractional days for time advancement
+  } else {
+    // Inter-system: use days (fold jump)
+    travelDays = 4 + Math.floor(Math.random() * 7);
+  }
 
   ship.fuel -= fuelCost;
   drainPower(ship, powerCost);
@@ -717,7 +729,7 @@ function cmdNav(args) {
     '  Hazard   : ' + '▲'.repeat(targetSys.hazard) + '△'.repeat(5 - targetSys.hazard),
     '  Fuel used: ' + fuelCost + ' units  |  Remaining: ' + ship.fuel + ' units',
     '  Power used: ' + powerCost + ' — Core: ' + ship.powerCore.current + '/' + ship.powerCore.max,
-    '  Transit  : ' + travelDays + ' standard days' + (targetBody ? ('  |  Local approach: ' + localHours + 'h') : ''),
+  ' Transit  : ' + (isSameSystem ? (travelHours + 'h') : (travelDays + ' standard days' + (targetBody ? (' | Local approach: ' + localHours + 'h') : ''))),
     '  Day      : ' + playerState.currentDay,
     '',
     '  Drive nominal. Arrived.',
