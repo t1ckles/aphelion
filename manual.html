@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>APHELION — Deep Survey Operator's Field Manual</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="icon" type="image/png" href="https://t1ckles.github.io/aphelion/flavicon.png">
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Share+Tech&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -479,42 +478,7 @@
     }
 
     [id] { scroll-margin-top: 40px; }
-  
-.archive-fragment {
-  margin: 22px 0;
-  padding: 14px 16px;
-  border: 1px solid var(--green-dark);
-  background: rgba(0, 20, 0, 0.18);
-  color: var(--green-dim);
-  font-size: 12px;
-  line-height: 1.8;
-  max-width: 680px;
-}
-.archive-fragment strong {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--green-mid);
-  letter-spacing: 1px;
-  font-size: 11px;
-}
-.field-note {
-  margin: 18px 0;
-  padding-left: 14px;
-  border-left: 1px solid var(--green-dark);
-  color: var(--green-dim);
-  font-size: 12px;
-  line-height: 1.8;
-  max-width: 640px;
-}
-.operator-note {
-  margin: 10px 0 16px 0;
-  color: var(--green-dark);
-  font-size: 11px;
-  letter-spacing: 0.5px;
-  max-width: 640px;
-}
-
-</style>
+  </style>
 </head>
 <body>
 
@@ -526,13 +490,13 @@
   <div class="cover-subtitle">DEEP SURVEY TERMINAL — OPERATOR'S FIELD MANUAL</div>
   <div class="cover-meta">
     <p>Document Class: <span>Contractor Reference — Unrestricted Distribution</span></p>
-    <p>Revision: <span>7 — Current as of Guild Standard Year 2301</span></p>
+    <p>Revision: <span>6 — Current as of Guild Standard Year 2302</span></p>
     <p>Issuing Authority: <span>Assayer's Guild, Contractor Relations Office, Solace Reach</span></p>
-    <p>Terminal Version: <span>v0.3.0-dev — Veydric Fold Drive Build</span></p>
+    <p>Terminal Version: <span>v0.2.0-dev — Extraction Operations Build</span></p>
   </div>
   <div class="cover-warning">
     <strong>NOTICE TO INDEPENDENT CONTRACTORS</strong>
-    This document is issued upon registration confirmation and constitutes the complete operational reference for Guild-networked deep survey terminals. Revision 7 incorporates updated guidance on the Veydric Fold Drive, extraction operations, ore processing, geological survey doctrine, and the Null-Propagating Crystalline Parasite (NPCP). Contractors registered prior to Guild Standard Year 2302 are advised to read Sections 11 and 12 in full. Prior operational doctrine does not cover extraction operations. Contractors are presumed to have read and understood all sections prior to field operations. The Guild accepts no liability for losses arising from operational unfamiliarity. The galaxy is not forgiving of ignorance. Neither is the Guild.
+    Revision 6 incorporates updated guidance on extraction operations, geological survey doctrine, ore processing, refinery operations, and the Null-Propagating Crystalline Parasite (NPCP). Contractors registered prior to Guild Standard Year 2302 are advised to read Sections 11 and 12 in full. Prior operational doctrine does not cover extraction operations. The Guild accepts no liability for losses arising from operational unfamiliarity. The galaxy is not forgiving of ignorance. Neither is the Guild.
   </div>
 </div>
 
@@ -551,13 +515,15 @@
     <li><a href="#s8"><span class="toc-num">08.</span> Station Operations</a></li>
     <li><a href="#s9"><span class="toc-num">09.</span> Survey Operations</a></li>
     <li><a href="#s10"><span class="toc-num">10.</span> Salvage Operations</a></li>
-    <li><a href="#s11"><span class="toc-num">11.</span> Contracts and the Bulletin Board</a></li>
-    <li><a href="#s12"><span class="toc-num">12.</span> Combat Doctrine</a></li>
-    <li><a href="#s13"><span class="toc-num">13.</span> Ship Systems Reference</a></li>
-    <li><a href="#s14"><span class="toc-num">14.</span> Astrographics — Chart Management</a></li>
-    <li><a href="#s15"><span class="toc-num">15.</span> The Guild Record Archive</a></li>
-    <li><a href="#s16"><span class="toc-num">16.</span> Survival Notes</a></li>
-    <li><a href="#s17"><span class="toc-num">17.</span> Quick Command Reference</a></li>
+    <li><a href="#s11"><span class="toc-num">11.</span> Extraction Operations</a></li>
+    <li><a href="#s12"><span class="toc-num">12.</span> Ore Processing and Refinery Operations</a></li>
+    <li><a href="#s13"><span class="toc-num">13.</span> Contracts and the Bulletin Board</a></li>
+    <li><a href="#s14"><span class="toc-num">14.</span> Combat Doctrine</a></li>
+    <li><a href="#s15"><span class="toc-num">15.</span> Ship Systems Reference</a></li>
+    <li><a href="#s16"><span class="toc-num">16.</span> Astrographics — Chart Management</a></li>
+    <li><a href="#s17"><span class="toc-num">17.</span> The Guild Record Archive</a></li>
+    <li><a href="#s18"><span class="toc-num">18.</span> Survival Notes</a></li>
+    <li><a href="#s19"><span class="toc-num">19.</span> Quick Command Reference</a></li>
   </ul>
 </div>
 
@@ -1052,7 +1018,7 @@
 
   <h3>The Sidebar</h3>
 
-  <p>The right panel displays persistent ship status. It shows vessel name, captain identity, current day, hull/fuel/power bars, scrip balance, veydrite hold, chart count, fold cell count, emergency reserve level, active contract, and faction standing. It updates after every command. The CELLS and RESERVE rows are your fold resource indicators — monitor them as carefully as hull and fuel.</p>
+  <p>The right panel displays persistent ship status. It shows vessel name, captain identity, current day, hull/fuel/power bars, scrip balance, veydrite hold, chart count, fold cell count, emergency reserve level, ore pod fill level, active contract, and faction standing. It updates after every command. The CELLS, RESERVE, and ORE rows are your resource indicators — monitor them as carefully as hull and fuel.</p>
 
   <h3>The Auspex Panel</h3>
 
@@ -1098,10 +1064,12 @@
   <table class="cmd-table">
     <tr><td class="cmd">buy weapon &lt;#&gt; &lt;slot|cargo&gt;</td><td class="desc">Purchase weapon by index number.</td></tr>
     <tr><td class="cmd">buy ammo &lt;slot&gt; &lt;#&gt; &lt;amount&gt;</td><td class="desc">Purchase ammo for weapon in specified slot.</td></tr>
+    <tr><td class="cmd">buy tool &lt;#&gt;</td><td class="desc">Purchase utility tool (Harrow-7 or Auger-1). Replaces current tool. Type <code>buy tool</code> to see listing.</td></tr>
+    <tr><td class="cmd">buy tool &lt;#&gt; cargo</td><td class="desc">Purchase tool and store in cargo hold for later swap.</td></tr>
     <tr><td class="cmd">sell weapon &lt;slot&gt;</td><td class="desc">Sell installed weapon at market rate.</td></tr>
     <tr><td class="cmd">install &lt;slot&gt; &lt;cargo#&gt;</td><td class="desc">Install weapon from cargo into slot.</td></tr>
     <tr><td class="cmd">uninstall &lt;slot&gt;</td><td class="desc">Move installed weapon to cargo.</td></tr>
-    <tr><td class="cmd">repair weapon &lt;slot&gt;</td><td class="desc">Repair weapon condition.</td></tr>
+    <tr><td class="cmd">repair weapon &lt;slot&gt; &lt;full|n&gt;</td><td class="desc">Repair weapon condition by amount or to full.</td></tr>
     <tr><td class="cmd">repair system &lt;name&gt;</td><td class="desc">Repair a named subsystem including Drive.</td></tr>
   </table>
 
@@ -1186,11 +1154,162 @@
 
 </div>
 
-<!-- ═══════════════════════════════════════════ S11: CONTRACTS -->
+<!-- ═══════════════════════════════════════════ S11: EXTRACTION -->
 
 <div class="section" id="s11">
   <div class="section-header">
     <div class="section-num">SECTION 11</div>
+    <div class="section-title">EXTRACTION OPERATIONS</div>
+  </div>
+
+  <p>Extraction operations are the deliberate, systematic removal of ore, ice compounds, and exotic materials from planetary bodies. Unlike salvage — which is opportunistic, fast, and dependent on what wreckage left behind — extraction is deliberate, slow, and dependent on what the planet actually contains. The yield is different. The tooling is different. The planning requirement is substantially higher.</p>
+
+  <p>The ancient civilizations whose ruins you are salvaging were themselves extractors. On a scale that has not been replicated since. What you find in the ground is the concentrated residue of an industrial operation that was interrupted by whatever ended them. The ore was already halfway processed before you arrived. The Guild calls these sites Industrial Remnant Sites. Pilots call them veins. The value is not academic.</p>
+
+  <div class="warning">
+    <strong>EXTRACTION DOCTRINE — AUGER-1</strong>
+    Extraction operations require the Auger-1 Light Mining Head installed in your utility slot. The Auger-1 cannot perform salvage operations. The Harrow-7 cannot perform geological survey or extraction. Your vessel carries one utility slot. Choose accordingly, or carry the second tool in cargo and swap at stations.
+  </div>
+
+  <div class="section-divider"></div>
+
+  <h3>The Extraction Sequence</h3>
+
+  <p>Extraction operations follow a mandatory sequential protocol. Each step gates the next. There is no shortcut.</p>
+
+  <p><strong>Step 1 — <code>where</code></strong>: Mark the system as visited. Required before geological survey. The Auger-1 needs positional and astrographic context before it will commit power to a geological sweep. This is standard survey doctrine, not a software limitation.</p>
+
+  <p><strong>Step 2 — <code>survey node</code></strong>: Broad-spectrum geological sweep of all bodies in the system. Costs 35 Power Core units. Advances the day counter by 1. Returns each body's type, deposit quality (RICH / STANDARD / DEPLETED), ore grade category (EXOTIC / RARE / UNCOMMON / COMMON), and estimated yield in units.</p>
+
+  <div class="warning">
+    <strong>MASS ANOMALY NOTATION</strong>
+    Occasionally, <code>survey node</code> will flag a body with the notation: <em>Anomalous mass reading. Verify on body survey.</em> This notation indicates a potential NPCP contamination event. See The Ash section below. Do not ignore this notation.
+  </div>
+
+  <p><strong>Step 3 — <code>survey body &lt;n&gt;</code></strong>: Targeted geological sweep of a specific body by index number. Costs 15 Power Core units. Advances the day counter by 1. Returns full ore composition — every ore type present, quantity in units, extraction quality, and the refined metal each ore produces. Required before extraction can begin on that body.</p>
+
+  <p><strong>Step 4 — <code>mine body &lt;n&gt;</code> or <code>mine body &lt;n&gt; &lt;cycles&gt;</code></strong>: Initiate extraction. Costs 25 Power Core units per cycle. Advances the day counter by 1–2 days per cycle. Multiple cycles can be queued in a single command. Extracted ore transfers to your ore pods. If a pod reaches capacity mid-operation, extraction halts and the terminal notifies you.</p>
+
+  <div class="section-divider"></div>
+
+  <h3>Ore Types and Body Availability</h3>
+
+  <table class="ammo-table">
+    <tr><th>Category</th><th>Ores</th><th>Primary Body Types</th></tr>
+    <tr><td>Common</td><td>Ferrite, Copperite, Stannite, Nickeline, Silicate, Cobaltite, Galena</td><td>Barren Rock, Desert World, Rogue Moon</td></tr>
+    <tr><td>Uncommon</td><td>Titanite, Chromite, Wolframite, Uraninite, Malachite</td><td>Rogue Moon, Irradiated Hulk, Desert World</td></tr>
+    <tr><td>Rare</td><td>Platinite, Palladite, Iridite, Osmite</td><td>Irradiated Hulk, Shattered Planet</td></tr>
+    <tr><td>Ice</td><td>Water Ice, Ammonia Ice, Methane Clathrate, Helium-3 Ice</td><td>Ice Giant, Ocean World, Gas Giant</td></tr>
+    <tr><td>Exotic</td><td>Veydritic Silicate, Null Residue, Archaeoferrite</td><td>Dust Belt, Xeno-tainted systems, Shattered Planet</td></tr>
+  </table>
+
+  <div class="section-divider"></div>
+
+  <h3>The Ash — NPCP Contamination</h3>
+
+  <p>The Null-Propagating Crystalline Parasite — The Ash — is a self-propagating mineral process first documented in Guild survey records approximately ninety years ago. It is not alive in any conventional sense. It is a crystalline structure that catalyzes the conversion of surrounding ore into a stable, inert compound with no extractable value. Pilots who have extracted from contaminated nodes describe the output as ore-colored powder that compacts on contact.</p>
+
+  <p>The Ash cannot be detected by standard geological sweep. Body survey may flag a mass anomaly — a reading that is subtly wrong in a way the array cannot fully characterize. This is the only warning you will get. If you extract from a contaminated node, The Ash may spread to adjacent bodies in the system. The spread probability is low per cycle. It compounds.</p>
+
+  <p>The Guild pays a significant bounty for confirmed Ash reports filed at any Guild station. More than the ore would have been worth. The Guild does not explain why it is specifically interested in these reports. The Guild's behavior in response to confirmed contamination events suggests the interest is not academic.</p>
+
+  <div class="warning">
+    <strong>NPCP PROTOCOL</strong>
+    If extraction yields Ash Compactate, stop operations immediately. Do not run additional cycles. Dock at the nearest Guild station and file an Ash report. The bounty is substantial. Continued extraction spreading contamination to additional bodies is not recoverable. The Guild has not published data on systems that underwent full NPCP propagation. The absence of data is its own notation.
+  </div>
+
+  <div class="section-divider"></div>
+
+  <h3>Ore Storage — Ore Pods</h3>
+
+  <p>Ore does not go in the standard cargo hold. It goes in Ore Pods — dedicated external storage modules mounted on hardpoints. The Light Surveyor carries two external hardpoints, both fitted with Standard Ore Pods at registration.</p>
+
+  <div class="stat-block">
+    <div class="stat-title">Ore Pod Types</div>
+    <div class="stat-row"><span>Standard Ore Pod</span><span>50 units solid ore — Light Surveyor default</span></div>
+    <div class="stat-row"><span>Fluid Pod</span><span>50 units liquid compounds (water, ammonia)</span></div>
+    <div class="stat-row"><span>Cryo Pod</span><span>30 units cryogenic gas (methane, helium-3)</span></div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ S12: REFINERY -->
+
+<div class="section" id="s12">
+  <div class="section-header">
+    <div class="section-num">SECTION 12</div>
+    <div class="section-title">ORE PROCESSING AND REFINERY OPERATIONS</div>
+  </div>
+
+  <p>Raw ore is not directly sellable on Guild markets. It must be refined — smelted, processed, or chemically treated depending on ore type — before it has exchange value. Refining is performed at stations with refinery infrastructure. Not every station has one. Not every faction's refinery can process all ore grades.</p>
+
+  <table class="ammo-table">
+    <tr><th>Faction</th><th>Grade</th><th>Metals Available</th></tr>
+    <tr><td>Assayer's Guild</td><td>Basic</td><td>Common metals only</td></tr>
+    <tr><td>Pelk Logistics</td><td>Standard</td><td>Common and uncommon metals</td></tr>
+    <tr><td>Colonial Colonies Command</td><td>Standard</td><td>Common, uncommon, and military-grade metals</td></tr>
+    <tr><td>Independent</td><td>Basic</td><td>Common metals — reduced efficiency</td></tr>
+    <tr><td>Feral Settlement</td><td>Improvised</td><td>Basic metals only — very poor efficiency</td></tr>
+  </table>
+
+  <div class="section-divider"></div>
+
+  <h3>Refinery Commands</h3>
+
+  <table class="cmd-table">
+    <tr><td class="cmd">refine</td><td class="desc">Open refinery terminal when docked. Shows ore hold, yield share rate, and projected output.</td></tr>
+    <tr><td class="cmd">refine all</td><td class="desc">Process entire ore hold. Station retains yield share.</td></tr>
+    <tr><td class="cmd">refine scrip</td><td class="desc">Process entire ore hold. Pay flat scrip fee instead of yield share.</td></tr>
+  </table>
+
+  <div class="section-divider"></div>
+
+  <h3>Refinery Fees</h3>
+
+  <p>Refinery operators retain a percentage of refined output as payment. The exact share is set at station generation and does not change. It varies by faction band and your standing with that faction. Shop around — the difference between 13% at a Pelk station and 30% at a Feral station is meaningful over a long extraction operation. TRUSTED standing reduces yield share by 3%.</p>
+
+  <div class="stat-block">
+    <div class="stat-title">Yield Share Ranges by Faction</div>
+    <div class="stat-row"><span>Assayer's Guild</span><span>10–16%</span></div>
+    <div class="stat-row"><span>Pelk Logistics</span><span>12–18%</span></div>
+    <div class="stat-row"><span>Colonial Colonies Command</span><span>14–20%</span></div>
+    <div class="stat-row"><span>Independent</span><span>18–26%</span></div>
+    <div class="stat-row"><span>Feral Settlement</span><span>25–35%</span></div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <h3>Refined Metals — Market Value</h3>
+
+  <table class="ammo-table">
+    <tr><th>Metal</th><th>Source Ore</th><th>Base Price</th></tr>
+    <tr><td>Iron</td><td>Ferrite</td><td>12 CR/unit</td></tr>
+    <tr><td>Copper</td><td>Copperite</td><td>18 CR/unit</td></tr>
+    <tr><td>Tin</td><td>Stannite</td><td>15 CR/unit</td></tr>
+    <tr><td>Nickel</td><td>Nickeline</td><td>14 CR/unit</td></tr>
+    <tr><td>Titanium</td><td>Titanite</td><td>45 CR/unit</td></tr>
+    <tr><td>Chromium</td><td>Chromite</td><td>38 CR/unit</td></tr>
+    <tr><td>Tungsten</td><td>Wolframite</td><td>42 CR/unit</td></tr>
+    <tr><td>Enriched Uranium</td><td>Uraninite</td><td>120 CR/unit</td></tr>
+    <tr><td>Platinum</td><td>Platinite</td><td>180 CR/unit</td></tr>
+    <tr><td>Palladium</td><td>Palladite</td><td>160 CR/unit</td></tr>
+    <tr><td>Iridium</td><td>Iridite</td><td>220 CR/unit</td></tr>
+    <tr><td>Osmium</td><td>Osmite</td><td>200 CR/unit</td></tr>
+    <tr><td>Helium-3</td><td>Helium-3 Ice</td><td>280 CR/unit</td></tr>
+    <tr><td>Fold-Grade Silicon</td><td>Veydritic Silicate</td><td>350 CR/unit</td></tr>
+    <tr><td>Null Alloy</td><td>Null Residue</td><td>500 CR/unit</td></tr>
+    <tr><td>Archaeosteel</td><td>Archaeoferrite</td><td>420 CR/unit</td></tr>
+  </table>
+
+  <div class="lore">Market prices vary by quadrant state. A unit of titanium worth 45 CR in Established space may fetch significantly more in Declining or Collapsed space where local production has ceased. Plan your refinery and sale locations accordingly.</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ S13: CONTRACTS -->
+
+<div class="section" id="s13">
+  <div class="section-header">
+    <div class="section-num">SECTION 13</div>
     <div class="section-title">CONTRACTS AND THE BULLETIN BOARD</div>
   </div>
 
@@ -1222,9 +1341,9 @@
 
 <!-- ═══════════════════════════════════════════ S12: COMBAT -->
 
-<div class="section" id="s12">
+<div class="section" id="s14">
   <div class="section-header">
-    <div class="section-num">SECTION 12</div>
+    <div class="section-num">SECTION 14</div>
     <div class="section-title">COMBAT DOCTRINE</div>
   </div>
 
@@ -1291,9 +1410,9 @@
 
 <!-- ═══════════════════════════════════════════ S13: SHIP SYSTEMS -->
 
-<div class="section" id="s13">
+<div class="section" id="s15">
   <div class="section-header">
-    <div class="section-num">SECTION 13</div>
+    <div class="section-num">SECTION 15</div>
     <div class="section-title">SHIP SYSTEMS REFERENCE</div>
   </div>
 
@@ -1311,10 +1430,27 @@
     <div class="stat-row"><span>Starting reserve</span><span>7–11 kg (randomized)</span></div>
     <div class="stat-row"><span>Ammo bay capacity</span><span>200 kg</span></div>
     <div class="stat-row"><span>Weapon slots</span><span>2</span></div>
-    <div class="stat-row"><span>Utility slots</span><span>1 (Harrow-7 Salvage Head installed)</span></div>
+    <div class="stat-row"><span>Utility slot</span><span>1 (Harrow-7 or Auger-1 — determined at registration)</span></div>
+    <div class="stat-row"><span>External hardpoints</span><span>2 (Standard Ore Pods installed at registration)</span></div>
   </div>
 
-  <div class="lore">The emergency reserve tank is a feature of the Light Surveyor class specifically. Larger vessels do not have it — their drive systems are too large to safely accept raw veydrite feed without dedicated refinement hardware. This is one of the few genuine advantages of the Light Surveyor over larger platforms: it can, in extremis, drink from its own cargo. Pilots of larger vessels who find themselves out of fold cells in Collapsed space do not have this option. They have other problems.</div>
+  <div class="lore">The emergency reserve tank is a feature of the Light Surveyor class specifically. Larger vessels do not have it. The scanner array and fold efficiency bonuses are also class-specific — they do not carry forward to larger hulls. Pilots who move to larger vessels gain cargo capacity and ore pod volume. They give up the things that make the Light Surveyor survivable in deep survey conditions. Most pilots notice this immediately. Most do not go back.</div>
+
+  <div class="section-divider"></div>
+
+  <h3>Starting Utility Configuration</h3>
+
+  <p>At registration, your vessel's utility slot is configured based on your answer to the question: <em>How did you come by her?</em></p>
+
+  <div class="stat-block">
+    <div class="stat-title">Registration Answer — Starting Tool</div>
+    <div class="stat-row"><span>Answer A — Inherited</span><span>Harrow-7 Salvage Head. Salvage-optimized.</span></div>
+    <div class="stat-row"><span>Answer B — Card game</span><span>Auger-1 Light Mining Head. Extraction-optimized.</span></div>
+    <div class="stat-row"><span>Answer C — Guild lot</span><span>50/50 random. Guild decommission lots are unpredictable.</span></div>
+    <div class="stat-row"><span>Answer D — Self-built</span><span>50/50 random. Independent builds reflect what was available.</span></div>
+  </div>
+
+  <p>Both tools can be purchased at station armories and swapped freely. The starting configuration determines your early-game operational focus, not your long-term identity.</p>
 
   <div class="section-divider"></div>
 
@@ -1330,6 +1466,9 @@
     <div class="stat-row"><span>Deepscan (single system)</span><span>40 units</span></div>
     <div class="stat-row"><span>Cluster deepscan (per system)</span><span>25 units</span></div>
     <div class="stat-row"><span>Salvage operation (Harrow-7)</span><span>30 units</span></div>
+    <div class="stat-row"><span>Geological survey — node</span><span>35 units</span></div>
+    <div class="stat-row"><span>Geological survey — body</span><span>15 units</span></div>
+    <div class="stat-row"><span>Extraction cycle (Auger-1)</span><span>25 units per cycle</span></div>
     <div class="stat-row"><span>PDT-4 burst</span><span>5 units</span></div>
     <div class="stat-row"><span>Javelin-4 launch</span><span>15 units</span></div>
     <div class="stat-row"><span>Mk.9 torpedo launch</span><span>20 units</span></div>
@@ -1357,9 +1496,9 @@
 
 <!-- ═══════════════════════════════════════════ S14: ASTROGRAPHICS -->
 
-<div class="section" id="s14">
+<div class="section" id="s16">
   <div class="section-header">
-    <div class="section-num">SECTION 14</div>
+    <div class="section-num">SECTION 16</div>
     <div class="section-title">ASTROGRAPHICS — CHART MANAGEMENT</div>
   </div>
 
@@ -1392,9 +1531,9 @@
 
 <!-- ═══════════════════════════════════════════ S15: RECORD ARCHIVE -->
 
-<div class="section" id="s15">
+<div class="section" id="s17">
   <div class="section-header">
-    <div class="section-num">SECTION 15</div>
+    <div class="section-num">SECTION 17</div>
     <div class="section-title">THE GUILD RECORD ARCHIVE</div>
   </div>
 
@@ -1414,9 +1553,9 @@
 
 <!-- ═══════════════════════════════════════════ S16: SURVIVAL -->
 
-<div class="section" id="s16">
+<div class="section" id="s18">
   <div class="section-header">
-    <div class="section-num">SECTION 16</div>
+    <div class="section-num">SECTION 18</div>
     <div class="section-title">SURVIVAL NOTES</div>
   </div>
 
@@ -1428,7 +1567,13 @@
   <p>You start with 3 fold cells. The magazine holds 20. Three cells gets you one inter-quadrant fold and almost nothing else. Buy cells at every station where your standing allows it. Do not leave Established space without a full magazine if you can avoid it. Do not enter Collapsed space without planning your exit. The cell count in the sidebar is not decorative — it is the number of escapes you have left.</p>
 
   <h4>Emergency Reserve Management</h4>
-  <p>The emergency reserve fills automatically during salvage, before veydrite goes to the cargo hold. Keep it full. A full 15 kg reserve is one emergency fold available regardless of station access. In Collapsed space, that one fold may be the difference between finding a Feral settlement and drifting. Do not sell reserve veydrite. The cargo veydrite is for selling. The reserve is for leaving.</p>
+  <p>The emergency reserve fills automatically during salvage and mining, before veydrite goes to the cargo hold. Keep it full. A full 15 kg reserve is one emergency fold available regardless of station access. In Collapsed space, that one fold may be the difference between finding a Feral settlement and drifting. The command is <code>emergency refine &lt;n&gt;</code> — 10 kg per cell, 15% drive wear risk. In the scenario where you need it, you do not have better options.</p>
+
+  <h4>Survey Before Mining</h4>
+  <p>The extraction sequence is mandatory and sequential: <code>where</code>, then <code>survey node</code>, then <code>survey body &lt;n&gt;</code>, then <code>mine body &lt;n&gt;</code>. Each step gates the next. Attempting to shortcut this sequence wastes power and returns errors. There is no shortcut. The Auger-1 needs to know what it is drilling into before it drills.</p>
+
+  <h4>Watch for The Ash</h4>
+  <p>Body surveys that flag mass anomalies should be treated as contamination warnings, not measurement errors. If extraction yields Ash Compactate — ore-colored powder, zero market value — stop immediately. Running additional cycles because you already committed the power is how one contaminated body becomes four. File the Guild report. Take the bounty. Leave.</p>
 
   <h4>The Highway</h4>
   <p>Every galaxy has 3–4 highway corridors — pre-calculated fold geometry, 2 cells instead of 3. Find them early. Build routes through them. A contractor who has identified the highway network and routes through it will always outlast one who burns primary corridors everywhere. Check the fold map for <code>═══</code> markings from every quadrant you visit.</p>
@@ -1454,9 +1599,9 @@
 
 <!-- ═══════════════════════════════════════════ S17: COMMAND REF -->
 
-<div class="section" id="s17">
+<div class="section" id="s19">
   <div class="section-header">
-    <div class="section-num">SECTION 17</div>
+    <div class="section-num">SECTION 19</div>
     <div class="section-title">QUICK COMMAND REFERENCE</div>
   </div>
 
@@ -1466,7 +1611,7 @@
     <tr><td class="cmd">map</td><td class="desc">Fold corridor map — corridors from current position, known quadrant list.</td></tr>
     <tr><td class="cmd">scan &lt;1-42&gt;</td><td class="desc">Survey a quadrant. System names, star classes, beacons, chart markers.</td></tr>
     <tr><td class="cmd">scan log</td><td class="desc">Search ruin sites in current system for data logs.</td></tr>
-    <tr><td class="cmd">where</td><td class="desc">Full survey of current system — stations, ruins, veydrite, hazard, traffic.</td></tr>
+    <tr><td class="cmd">where</td><td class="desc">Full survey of current system — stations, ruins, veydrite, hazard, traffic. Also marks system as visited for geological survey.</td></tr>
     <tr><td class="cmd">fold &lt;quadrant name&gt;</td><td class="desc">Fold to a connected quadrant. Shows cost and destination before confirming.</td></tr>
     <tr><td class="cmd">blindfold &lt;quadrant name&gt;</td><td class="desc">Overdrive fold to unconnected quadrant. 12 cells. Risk table applies.</td></tr>
     <tr><td class="cmd">nav &lt;system name&gt;</td><td class="desc">Calculated transit within quadrant. Costs fuel and power.</td></tr>
@@ -1498,15 +1643,28 @@
   <table class="cmd-table">
     <tr><td class="cmd">buy fuel &lt;n&gt;</td><td class="desc">Purchase fuel units.</td></tr>
     <tr><td class="cmd">buy cells &lt;n&gt;</td><td class="desc">Purchase Veydric Fold Cells. Price varies by faction and standing.</td></tr>
+    <tr><td class="cmd">buy tool &lt;#&gt;</td><td class="desc">Purchase utility tool (Harrow-7 or Auger-1). See armory for listing.</td></tr>
     <tr><td class="cmd">sell veydrite &lt;n|all&gt;</td><td class="desc">Sell veydrite at posted Guild rate.</td></tr>
     <tr><td class="cmd">sell astrographics</td><td class="desc">View chart portfolio for sale. Guild stations only.</td></tr>
     <tr><td class="cmd">sell astrographics all</td><td class="desc">Sell entire portfolio. Permanent memory matrix deletion.</td></tr>
     <tr><td class="cmd">repair hull &lt;n|full&gt;</td><td class="desc">Repair hull integrity.</td></tr>
   </table>
 
+  <h3>Extraction Operations</h3>
+  <table class="cmd-table">
+    <tr><td class="cmd">survey node</td><td class="desc">Geological sweep of all bodies in current system. 35 power. Requires <code>where</code> first.</td></tr>
+    <tr><td class="cmd">survey body &lt;n&gt;</td><td class="desc">Targeted ore composition survey of specific body. 15 power. Requires <code>survey node</code> first.</td></tr>
+    <tr><td class="cmd">mine body &lt;n&gt;</td><td class="desc">Single extraction cycle. 25 power. Requires <code>survey body</code> first.</td></tr>
+    <tr><td class="cmd">mine body &lt;n&gt; &lt;cycles&gt;</td><td class="desc">Queue multiple extraction cycles in one operation.</td></tr>
+    <tr><td class="cmd">refine</td><td class="desc">Open refinery terminal when docked. Shows rates and projected output.</td></tr>
+    <tr><td class="cmd">refine all</td><td class="desc">Process entire ore hold. Station retains yield share.</td></tr>
+    <tr><td class="cmd">refine scrip</td><td class="desc">Process entire ore hold. Pay flat scrip fee instead of yield share.</td></tr>
+  </table>
+
   <h3>Field Operations</h3>
   <table class="cmd-table">
     <tr><td class="cmd">salvage</td><td class="desc">Field salvage. Fills emergency reserve first, then cargo hold.</td></tr>
+    <tr><td class="cmd">emergency refine &lt;n&gt;</td><td class="desc">Convert 10 kg reserve veydrite to 1 fold cell. 15% drive wear risk per cell.</td></tr>
     <tr><td class="cmd">contract</td><td class="desc">View active contract status, target, and deadline.</td></tr>
     <tr><td class="cmd">complete</td><td class="desc">Complete active contract. Must be in target system.</td></tr>
     <tr><td class="cmd">abandon</td><td class="desc">Abandon active contract. Applies reputation penalty.</td></tr>
@@ -1550,8 +1708,8 @@
 
 <div class="manual-footer">
   <p>VEYDRITE ASSAYER'S GUILD — CONTRACTOR PUBLICATIONS DIVISION</p>
-  <p>Deep Survey Operator's Field Manual — Revision 7</p>
-  <p>Guild Standard Year 2301 — Solace Reach Office of Contractor Relations</p>
+  <p>Deep Survey Operator's Field Manual — Revision 6</p>
+  <p>Guild Standard Year 2302 — Solace Reach Office of Contractor Relations</p>
   <p>&nbsp;</p>
   <p>This document is issued to registered independent contractors upon confirmation of terminal registration. It is not for distribution to non-registered parties. The Guild does not consider this restriction enforceable in Collapsed or Feral space and notes the observation without further comment.</p>
   <p>&nbsp;</p>
