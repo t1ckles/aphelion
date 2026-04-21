@@ -842,7 +842,128 @@
       <div class="section-title">QUICK COMMAND REFERENCE</div>
     </div>
     <!-- existing quick-reference tables unchanged -->
-    <!-- ... keep your current Section 19 content as-is ... -->
+<div class="section" id="s19">
+  <div class="section-header">
+    <div class="section-num">SECTION 19</div>
+    <div class="section-title">QUICK COMMAND REFERENCE</div>
+  </div>
+
+  <p>The terminal is unforgiving in the way all useful tools eventually become. Learn the command set until it feels less like vocabulary and more like procedure. In a live incident you will not have time to remember what you meant to type.</p>
+
+  <div class="archive-fragment">
+    <strong>ARCHIVE EXTRACT // CONTRACTOR RELATIONS CIRCULAR 19-A</strong>
+    The Publications Division continues to receive requests for abbreviated command cards with reduced procedural notation. These requests remain denied. A contractor who cannot remember how to leave a system should not be in one.
+  </div>
+
+  <div class="section-divider"></div>
+  <h3>Galaxy and Navigation</h3>
+  <table class="cmd-table">
+    <tr><td class="cmd"><code>galaxy</code></td><td class="desc">Known quadrant index — civilization states, control scores, system counts.</td></tr>
+    <tr><td class="cmd"><code>map</code></td><td class="desc">Fold corridor map — corridors from current position, known quadrant list.</td></tr>
+    <tr><td class="cmd"><code>scan &lt;1-42&gt;</code></td><td class="desc">Survey a quadrant. System names, star classes, beacons, chart markers.</td></tr>
+    <tr><td class="cmd"><code>scan log</code></td><td class="desc">Search ruin sites in current system for data logs.</td></tr>
+    <tr><td class="cmd"><code>where</code></td><td class="desc">Full survey of current system — stations, ruins, veydrite, hazard, traffic.</td></tr>
+    <tr><td class="cmd"><code>fold &lt;quadrant name&gt;</code></td><td class="desc">Fold to a connected quadrant. Shows cost and destination before confirming.</td></tr>
+    <tr><td class="cmd"><code>blindfold &lt;quadrant name&gt;</code></td><td class="desc">Overdrive fold to unconnected quadrant. 12 cells. Risk table applies.</td></tr>
+    <tr><td class="cmd"><code>nav &lt;system name&gt;</code></td><td class="desc">Calculated transit within quadrant. Costs fuel and power.</td></tr>
+    <tr><td class="cmd"><code>jump &lt;system name&gt;</code></td><td class="desc">Blind cluster jump within quadrant. Faster, cheaper, riskier.</td></tr>
+  </table>
+
+  <div class="operator-note">Operator note: use <code>map</code> before every fold and <code>where</code> after every arrival. Most preventable losses begin with omission, not catastrophe.</div>
+
+  <div class="section-divider"></div>
+  <h3>Sensors and Survey</h3>
+  <table class="cmd-table">
+    <tr><td class="cmd"><code>ping</code></td><td class="desc">Gravimetric sweep. Contact mass readings. 5 power.</td></tr>
+    <tr><td class="cmd"><code>resolve &lt;n&gt;</code></td><td class="desc">Identify a contact by index number.</td></tr>
+    <tr><td class="cmd"><code>resolve all</code></td><td class="desc">Identify all contacts. Higher power cost.</td></tr>
+    <tr><td class="cmd"><code>deepscan &lt;system&gt;</code></td><td class="desc">Full astrographic survey. Current quadrant only. 40 power.</td></tr>
+    <tr><td class="cmd"><code>clusterdeepscan &lt;cluster&gt;</code></td><td class="desc">Sequential deepscan of all systems in a cluster. 25 power per system.</td></tr>
+    <tr><td class="cmd"><code>charts</code></td><td class="desc">List all astrographic records in memory matrix.</td></tr>
+    <tr><td class="cmd"><code>charts &lt;system name&gt;</code></td><td class="desc">View stored profile for a specific system.</td></tr>
+  </table>
+
+  <div class="field-note">Field note: <code>deepscan</code> makes money, but only if you survive long enough to sell what it records. Fresh charts decay in value slower than a dead pilot’s memory matrix.</div>
+
+  <div class="section-divider"></div>
+  <h3>Extraction Operations</h3>
+  <table class="cmd-table">
+    <tr><td class="cmd"><code>survey node</code></td><td class="desc">Geological sweep of all bodies. 35 power. Requires <code>where</code> first.</td></tr>
+    <tr><td class="cmd"><code>survey body &lt;n&gt;</code></td><td class="desc">Targeted ore composition survey. 15 power. Requires <code>survey node</code> first.</td></tr>
+    <tr><td class="cmd"><code>mine body &lt;n&gt;</code></td><td class="desc">Single extraction cycle. 25 power. Requires <code>survey body</code> first.</td></tr>
+    <tr><td class="cmd"><code>mine body &lt;n&gt; &lt;cycles&gt;</code></td><td class="desc">Queue multiple extraction cycles.</td></tr>
+    <tr><td class="cmd"><code>refine</code></td><td class="desc">Open refinery terminal. Shows rates and projected output.</td></tr>
+    <tr><td class="cmd"><code>refine all</code></td><td class="desc">Process entire ore hold. Station retains yield share.</td></tr>
+    <tr><td class="cmd"><code>refine scrip</code></td><td class="desc">Process entire ore hold. Pay flat scrip fee instead.</td></tr>
+  </table>
+
+  <div class="archive-fragment">
+    <strong>GEOLOGICAL DOCTRINE // AUGER SUPPLEMENT</strong>
+    The correct extraction sequence is <code>where</code>, then <code>survey node</code>, then <code>survey body &lt;n&gt;</code>, then <code>mine body &lt;n&gt;</code>. Contractors who attempt to improvise around sequence gates are reminded that geology is older than they are and less interested in compromise.
+  </div>
+
+  <div class="section-divider"></div>
+  <h3>Station and Trade</h3>
+  <table class="cmd-table">
+    <tr><td class="cmd"><code>dock</code></td><td class="desc">Dock at nearest station. Pays fee, recharges core, opens services.</td></tr>
+    <tr><td class="cmd"><code>undock</code></td><td class="desc">Return to space.</td></tr>
+    <tr><td class="cmd"><code>trade</code></td><td class="desc">Open trade terminal. Exit with <code>exit</code>.</td></tr>
+    <tr><td class="cmd"><code>buy fuel &lt;n&gt;</code></td><td class="desc">Purchase fuel units.</td></tr>
+    <tr><td class="cmd"><code>buy cells &lt;n&gt;</code></td><td class="desc">Purchase Veydric Fold Cells. Price varies by faction and standing.</td></tr>
+    <tr><td class="cmd"><code>buy tool &lt;#&gt;</code></td><td class="desc">Purchase utility tool. See armory for listing.</td></tr>
+    <tr><td class="cmd"><code>sell veydrite &lt;n|all&gt;</code></td><td class="desc">Sell veydrite at posted Guild rate.</td></tr>
+    <tr><td class="cmd"><code>sell astrographics</code></td><td class="desc">View chart portfolio for sale. Guild stations only.</td></tr>
+    <tr><td class="cmd"><code>sell astrographics all</code></td><td class="desc">Sell entire chart portfolio. Permanent deletion.</td></tr>
+    <tr><td class="cmd"><code>repair hull &lt;n|full&gt;</code></td><td class="desc">Repair hull integrity.</td></tr>
+    <tr><td class="cmd"><code>armory</code></td><td class="desc">Open armory terminal. Exit with <code>exit</code>.</td></tr>
+    <tr><td class="cmd"><code>bulletin</code></td><td class="desc">View available contracts at current station.</td></tr>
+    <tr><td class="cmd"><code>accept &lt;n&gt;</code></td><td class="desc">Accept contract by index number.</td></tr>
+  </table>
+
+  <div class="operator-note">Operator note: <code>sell astrographics all</code> is liquidation, not housekeeping. The terminal will not remind you what you meant to keep.</div>
+
+  <div class="section-divider"></div>
+  <h3>Field Operations</h3>
+  <table class="cmd-table">
+    <tr><td class="cmd"><code>salvage</code></td><td class="desc">Field salvage. Fills emergency reserve first, then cargo hold.</td></tr>
+    <tr><td class="cmd"><code>emergency refine &lt;n&gt;</code></td><td class="desc">Convert 10 kg reserve veydrite to 1 fold cell. 15% drive wear risk.</td></tr>
+    <tr><td class="cmd"><code>contract</code></td><td class="desc">View active contract status, target, and deadline.</td></tr>
+    <tr><td class="cmd"><code>complete</code></td><td class="desc">Complete active contract. Must be in target system.</td></tr>
+    <tr><td class="cmd"><code>abandon</code></td><td class="desc">Abandon active contract. Applies reputation penalty.</td></tr>
+  </table>
+
+  <div class="field-note">Field note: <code>emergency refine &lt;n&gt;</code> exists because enough contractors were going to do something worse. Standardizing desperation is one of the Guild’s few consistent mercies.</div>
+
+  <div class="section-divider"></div>
+  <h3>Combat</h3>
+  <table class="cmd-table">
+    <tr><td class="cmd"><code>evade</code></td><td class="desc">Attempt to break contact. Burns fuel.</td></tr>
+    <tr><td class="cmd"><code>negotiate</code></td><td class="desc">Attempt to talk or bribe out of engagement.</td></tr>
+    <tr><td class="cmd"><code>fight</code></td><td class="desc">Enter weapons engagement mode.</td></tr>
+    <tr><td class="cmd"><code>yield</code></td><td class="desc">Surrender. Attacker takes cargo or scrip.</td></tr>
+    <tr><td class="cmd"><code>profile</code></td><td class="desc">Hull signature scan. 10 power.</td></tr>
+    <tr><td class="cmd"><code>sigint</code></td><td class="desc">Full subsystem analysis. 25 power. Enemy may detect.</td></tr>
+    <tr><td class="cmd"><code>target &lt;subsystem&gt;</code></td><td class="desc">Lock onto specific subsystem. Requires profile.</td></tr>
+    <tr><td class="cmd"><code>fire &lt;slot&gt;</code></td><td class="desc">Fire weapon using active ammo.</td></tr>
+    <tr><td class="cmd"><code>fire &lt;slot&gt; &lt;ammo&gt;</code></td><td class="desc">Fire using specified ammo type.</td></tr>
+    <tr><td class="cmd"><code>disengage</code></td><td class="desc">Attempt to break off combat.</td></tr>
+  </table>
+
+  <div class="section-divider"></div>
+  <h3>Ship Status and Records</h3>
+  <table class="cmd-table">
+    <tr><td class="cmd"><code>status</code></td><td class="desc">Full ship status — hull, fuel, power, cells, reserve, scrip.</td></tr>
+    <tr><td class="cmd"><code>weapons</code></td><td class="desc">Weapon slot status — condition, ammo counts, active ammo type.</td></tr>
+    <tr><td class="cmd"><code>systems</code></td><td class="desc">Subsystem HP and stability for all nine ship subsystems.</td></tr>
+    <tr><td class="cmd"><code>rep</code></td><td class="desc">Faction standing — all factions, current scores and tiers.</td></tr>
+    <tr><td class="cmd"><code>logs</code></td><td class="desc">View recovered ruin logs and beacon transcripts.</td></tr>
+    <tr><td class="cmd"><code>record</code></td><td class="desc">Guild Record Archive — operational achievement log.</td></tr>
+    <tr><td class="cmd"><code>save</code></td><td class="desc">Manual save to current slot.</td></tr>
+    <tr><td class="cmd"><code>newsave</code></td><td class="desc">Delete current pilot record. Permanent. No recovery.</td></tr>
+    <tr><td class="cmd"><code>menu</code></td><td class="desc">Return to main menu. Autosaves first.</td></tr>
+    <tr><td class="cmd"><code>help</code></td><td class="desc">In-terminal command index.</td></tr>
+  </table>
+</div>
   </div>
 
   <div class="manual-footer">
