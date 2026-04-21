@@ -1747,7 +1747,7 @@ function cmdSalvage() {
   const hasRuin   = sys.bodies.some(b => b.hasRuin);
   const hasVeyd   = sys.bodies.some(b => b.veydrite);
   const hasDebris = ['Debris Field', 'Shattered Planet', 'Dust Belt']
-    .some(t => bodies.some(b => b.type === t));
+    .some(t => sys.bodies.some(b => b.type === t));
 
   if (!hasRuin && !hasVeyd && !hasDebris) {
     return ['', '  [SALVAGE] Nothing to salvage in ' + sys.name + '.', ''].join('\n');
