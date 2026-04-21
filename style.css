@@ -23,7 +23,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px;
+  padding: 20px;
   animation: flicker 8s infinite;
 }
 
@@ -35,17 +35,18 @@ body {
   align-items: flex-start;
   gap: 16px;
   width: 100%;
-  max-width: 1400px;
-  height: calc(100vh - 80px);
+  max-width: 1600px;
+  height: calc(100vh - 40px);
   justify-content: center;
 }
 
 /* ── Main Terminal ───────────────────────────── */
 
 #terminal {
-  flex: none;
-  width: 860px;
-  height: calc(100vh - 160px);
+  flex: 1;
+  min-width: 0;
+  max-width: 960px;
+  height: calc(100vh - 40px);
   border: 1px solid #00ff41;
   border-radius: 8px;
   padding: 24px;
@@ -145,12 +146,37 @@ body {
 /* ── Right Column ────────────────────────────── */
 
 #right-column {
-  width: 320px;
+  width: 280px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  height: calc(100vh - 160px);
+  height: calc(100vh - 40px);
+}
+
+/* ── Status toggle button (mobile/tablet only) ── */
+
+#status-toggle {
+  display: none;
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 10000;
+  background: #050f05;
+  border: 1px solid #00aa2a;
+  color: #00aa2a;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  padding: 8px 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+#status-toggle:hover {
+  color: #00ff41;
+  border-color: #00ff41;
 }
 
 /* ── Ship Sidebar ────────────────────────────── */
@@ -592,4 +618,68 @@ body::after {
 #sidebar.fold-peak {
   opacity: 0 !important;
   transition: opacity 0.2s ease;
+}
+
+/* ── Responsive breakpoints ──────────────────── */
+
+/* Ultrawide 2000px+ */
+@media (min-width: 2000px) {
+  #terminal { max-width: 1200px; }
+  #right-column { width: 320px; }
+  body { font-size: 16px; }
+}
+
+/* 1440–1999px */
+@media (min-width: 1440px) and (max-width: 1999px) {
+  #terminal { max-width: 1000px; }
+  #right-column { width: 300px; }
+}
+
+/* 1280–1439px */
+@media (min-width: 1280px) and (max-width: 1439px) {
+  body { padding: 16px; font-size: 13px; }
+  #layout { height: calc(100vh - 32px); gap: 12px; }
+  #terminal { height: calc(100vh - 32px); padding: 18px; max-width: 860px; }
+  #right-column { width: 240px; height: calc(100vh - 32px); }
+  .title { font-size: 18px; }
+}
+
+/* Tablet / small laptop — right column becomes slide-in overlay */
+@media (max-width: 1279px) {
+  body { padding: 12px; font-size: 13px; overflow: hidden; }
+  #layout { height: calc(100vh - 24px); gap: 0; }
+  #terminal { width: 100%; max-width: 100%; height: calc(100vh - 24px); padding: 16px; }
+  #right-column {
+    position: fixed;
+    top: 0; right: -320px;
+    width: 300px; height: 100vh;
+    z-index: 5000;
+    background: #0a0a0a;
+    padding: 16px;
+    border-left: 1px solid #006618;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+  }
+  #right-column.panel-open { right: 0; }
+  #status-toggle { display: block; }
+  .title { font-size: 18px; letter-spacing: 4px; }
+  #slot-modal-inner { min-width: calc(100vw - 48px); max-width: calc(100vw - 48px); padding: 24px; }
+  #achievements-modal-inner { min-width: calc(100vw - 48px); max-width: calc(100vw - 48px); padding: 24px; }
+}
+
+/* Mobile below 600px */
+@media (max-width: 600px) {
+  body { padding: 8px; font-size: 12px; }
+  #layout { height: calc(100vh - 16px); }
+  #terminal { height: calc(100vh - 16px); padding: 12px; border-radius: 4px; }
+  .title { font-size: 15px; letter-spacing: 3px; }
+  #terminal-subheader { font-size: 10px; }
+  .version { font-size: 10px; }
+  #output { font-size: 12px; line-height: 1.6; }
+  #right-column { width: calc(100vw - 16px); right: calc(-100vw + 8px); padding: 12px; }
+  #status-toggle { bottom: 12px; right: 12px; font-size: 10px; padding: 6px 10px; }
+  .menu-title { font-size: 24px; letter-spacing: 6px; }
+  .menu-option { font-size: 14px; }
+  #slot-modal-inner { min-width: calc(100vw - 24px); padding: 16px; }
+  #achievements-modal-inner { min-width: calc(100vw - 24px); padding: 16px; }
 }
