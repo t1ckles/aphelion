@@ -113,6 +113,7 @@ body {
 .output-dim    { color: #006618; }
 .output-warn   { color: #ff8800; }
 .output-bright { color: #ffffff; }
+.body-name      { color: #ffffff; text-shadow: 0 0 6px rgba(0, 255, 65, 0.9), 0 0 12px rgba(0, 255, 65, 0.4); }
 .output-label  { color: #00aa2a; }
 .output-cmd    { color: #00e5ff; }
 

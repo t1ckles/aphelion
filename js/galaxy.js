@@ -52,7 +52,7 @@ function buildHierarchicalBodies(rng, quadrantState, starClass) {
 
     const root = {
       id: 'body-' + (i + 1),
-            name: type + ' ' + (type === 'Dust Belt' || type === 'Debris Field' ? fieldOrdinal++ : planetOrdinal++) + ' (' + Naming.planetBody(rng) + ')',
+                  name: type + ' ' + (type === 'Dust Belt' || type === 'Debris Field' ? fieldOrdinal++ : planetOrdinal++) + ' (<span class="body-name">' + Naming.planetBody(rng) + '</span>)',
       shortName: type,
       type,
       kind: (type === 'Dust Belt' || type === 'Debris Field') ? 'field' : 'planet',
@@ -72,7 +72,7 @@ function buildHierarchicalBodies(rng, quadrantState, starClass) {
         const moonType = moonTypePool[Math.floor(rng.next() * moonTypePool.length)];
         root.children.push({
           id: root.id + '-moon-' + (m + 1),
-                name: moonType + ' ' + moonOrdinal++ + ' (' + Naming.planetBody(rng) + ')',
+                                name: moonType + ' ' + moonOrdinal++ + ' (<span class="body-name">' + Naming.planetBody(rng) + '</span>)',
           shortName: moonType,
           type: moonType,
           kind: 'moon',
