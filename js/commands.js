@@ -1938,8 +1938,8 @@ function cmdBuyCells(args) {
   const amount = parseInt(args[1]);
   if (isNaN(amount) || amount < 1) return '  [BUY] Usage: buy cells <amount>';
   const faction = playerState.dockedFactionKey;
-  const repTier = getRepTier(faction, playerState);
-  const result  = foldCellPrice(faction, repTier);
+  const repTier = getTier(faction, playerState);
+  const result  = foldCellPrice(faction, tier);
   if (!result)        return '  [REFUSED] This station will not sell fold cells to you.';
   if (result.noStock) return '  [NO STOCK] This station has no fold cells available.';
   const max    = 20 - playerState.foldCells;
