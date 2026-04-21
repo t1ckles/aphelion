@@ -74,6 +74,9 @@
     </div>
   </div>
 
+  <!-- Mobile/tablet status panel toggle -->
+  <button id="status-toggle" onclick="document.getElementById('right-column').classList.toggle('panel-open'); this.textContent = document.getElementById('right-column').classList.contains('panel-open') ? '[ESC] STATUS' : '[STA] STATUS';">[STA] STATUS</button>
+
   <div id="layout">
 
     <!-- Main terminal -->
@@ -191,5 +194,16 @@
   <script src="js/commands.js"></script>
   <script src="js/main.js"></script>
 
+  <script>
+    // Close status panel when clicking outside it on mobile
+    document.addEventListener("click", function(e) {
+      const col = document.getElementById("right-column");
+      const btn = document.getElementById("status-toggle");
+      if (col </body></body> col.classList.contains("panel-open") </body></body> !col.contains(e.target) </body></body> e.target !== btn) {
+        col.classList.remove("panel-open");
+        if (btn) btn.textContent = "[STA] STATUS";
+      }
+    });
+  </script>
 </body>
 </html>
