@@ -2061,10 +2061,7 @@ function executeTrade(tx) {
     ship.fuel = Math.min(ship.fuelMax, ship.fuel + tx.amount);
     return ['', '  [BUY] Fuel transfer complete.', '  Purchased: ' + tx.amount + ' units  |  Cost: ' + tx.cost + ' CR', '  Fuel: ' + ship.fuel + '/' + ship.fuelMax + '  |  Scrip: ' + playerState.credits + ' CR', ''].join('\n');
   }
-    playerState.credits -= tx.cost;
-    ship.fuel = Math.min(ship.fuelMax, ship.fuel + tx.amount);
-    return ['', '  [BUY] Fuel transfer complete.', '  Purchased: ' + tx.amount + ' units  |  Cost: ' + tx.cost + ' CR', '  Fuel: ' + ship.fuel + '/' + ship.fuelMax + '  |  Scrip: ' + playerState.credits + ' CR', ''].join('\n');
-  }
+
   if (tx.type === 'repair_hull') {
     ship.hull = Math.min(ship.hullMax, ship.hull + tx.amount);
     playerState.credits -= tx.cost;
