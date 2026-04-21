@@ -288,10 +288,12 @@ function getCurrentBody(sys) {
 
 function formatBodyDisplayName(body) {
   if (!body) return '';
-  if (body.type && body.name && body.type !== body.name) {
-    return body.type + ' (<span class="body-name">' + body.name + '</span>)';
+  const label = body.type || body.baseType || body.kind || 'Unknown Body';
+  const proper = body.properName || body.displayName || body.shortName || body.name;
+  if (proper && proper !== label && !String(proper).startsWith(label + ' (')) {
+    return label + ' (<span class="body-name">' + proper + '</span>)';
   }
-  return body.name || body.type || 'Unknown Body';
+  return label;
 }
 
 function formatBodyLine(body) {
