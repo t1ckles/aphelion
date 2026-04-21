@@ -518,6 +518,13 @@ const contBtn  = document.getElementById('menu-continue');
 
   if (mobileInputEl) {
     // Submit on Enter key
+    // Tap anywhere in terminal to focus input on mobile
+    document.getElementById('terminal-body').addEventListener('click', function() {
+      mobileInputEl.focus();
+    });
+    document.getElementById('output').addEventListener('click', function() {
+      mobileInputEl.focus();
+    });
     mobileInputEl.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
