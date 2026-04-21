@@ -1456,7 +1456,13 @@ if (response && response.trim().startsWith('__CLUSTERDEEPSCAN__')) {
           return;
         }
         if (response) {
-          response.split('\n').forEach(line => queue(line, '', 55));
+          response.split('\n').forEach(line => {
+            if (responseHasTrustedHtml) {
+              queueHtml(line, '', 55);
+            } else {
+              queue(line, '', 55);
+            }
+          });
         }
 
         const waitForResponse = setInterval(() => {
