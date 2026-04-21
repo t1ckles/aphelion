@@ -788,3 +788,6 @@ function oreMarketPrice(oreKey, quadrantState) {
 
   return Math.round(def.basePrice * stateMod);
 }
+
+
+// Phase 1 hierarchy note: resource assignment functions should treat system.bodies as a flattened body index when present.
