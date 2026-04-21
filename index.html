@@ -99,15 +99,20 @@
           <span id="typed"></span>
           <span class="cursor">█</span>
         </div>
-        <input 
-          id="mobile-input" 
-          type="text" 
-          autocomplete="off" 
-          autocorrect="off" 
-          autocapitalize="off" 
-          spellcheck="false"
-          style="position:absolute;opacity:0;width:1px;height:1px;top:0;left:0;pointer-events:none;"
-        >
+        <!-- Mobile input row — visible only on touch devices -->
+        <div id="mobile-input-row">
+          <span class="prompt">&gt;&nbsp;</span>
+          <input 
+            id="mobile-input"
+            type="text"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="enter command..."
+            enterkeyhint="send"
+          >
+          <button id="mobile-send">SEND</button>
         </div>
       </div>
     </div>
