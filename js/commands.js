@@ -2575,42 +2575,68 @@ function cmdSellWeapon(args) {
 
 function cmdRepairWeapon(args) {
   if (!playerState.docked) return '  [REPAIR] Must be docked.';
-
   const ctx = getArmoryContext();
   if (!ctx || !ctx.stock || !ctx.stock.repair) {
     return ['', '  [REPAIR] No weapon repair service at this station.', ''].join('\n');
   }
-
   const ship   = getShip();
   const slotId = parseInt(args[1]);
   if (isNaN(slotId)) return '  [REPAIR] Usage: repair weapon <slot>';
-
   const slot = ship.weaponSlots.find(s => s.id === slotId);
   if (!slot || !slot.type) return '  [REPAIR] No weapon in slot ' + slotId + '.';
-
   const damage = slot.conditionMax - slot.condition;
   if (damage <= 0) return ['', '  [REPAIR] Weapon is already at full condition.', ''].join('\n');
-
   const loc = playerState.location;
   const q   = galaxy.quadrants[loc.quadrantIndex];
   const costPerPoint = { Established: 5, Contested: 8, Declining: 12,
                           Collapsed: 20, Isolated: 15, Forbidden: 25 }[q.state] || 8;
-  const fullCost = damage * costPerPoint;
+
+  // No subcommand — show quote
+  if (!args[2]) {
+    return [
+      '',
+      '  [REPAIR] ' + slot.name,
+      '  Condition : ' + slot.condition + '/100',
+      '  Damage    : ' + damage + ' points',
+      '  Cost      : ' + (damage * costPerPoint) + ' CR  (' + costPerPoint + ' CR/point)',
+      '  Scrip     : ' + playerState.credits + ' CR',
+      '',
+      '  repair weapon ' + slotId + ' full     — full repair',
+      '  repair weapon ' + slotId + ' <amount> — partial repair',
+      '',
+    ].join('\n');
+  }
+
+  // Determine amount
+  let amount;
+  if (args[2] === 'full') {
+    amount = damage;
+  } else {
+    amount = parseInt(args[2]);
+    if (isNaN(amount) || amount <= 0) return '  [REPAIR] Usage: repair weapon ' + slotId + ' full  or  repair weapon ' + slotId + ' <amount>';
+    amount = Math.min(amount, damage);
+  }
+
+  const cost = amount * costPerPoint;
+  if (playerState.credits < cost) {
+    return ['', '  [REPAIR] Insufficient scrip.', '  Cost: ' + cost + ' CR  |  You have: ' + playerState.credits + ' CR', ''].join('\n');
+  }
+
+  // Execute repair
+  slot.condition = Math.min(slot.conditionMax, slot.condition + amount);
+  playerState.credits -= cost;
+  autosave();
+  updateSidebar();
 
   return [
     '',
-    '  [REPAIR] ' + slot.name,
+    '  [REPAIR] ' + slot.name + ' repaired.',
     '  Condition : ' + slot.condition + '/100',
-    '  Damage    : ' + damage + ' points',
-    '  Cost      : ' + fullCost + ' CR  (' + costPerPoint + ' CR/point)',
+    '  Cost      : ' + cost + ' CR',
     '  Scrip     : ' + playerState.credits + ' CR',
-    '',
-    '  repair weapon ' + slotId + ' full     — full repair',
-    '  repair weapon ' + slotId + ' <amount> — partial repair',
     '',
   ].join('\n');
 }
-
 function cmdRepairSystem(args) {
   if (!playerState.docked) return '  [REPAIR] Must be docked.';
 
