@@ -365,3 +365,6 @@ function renderSaveSummary(save) {
     '',
   ].join('\n');
 }
+
+
+// Phase 1 body hierarchy uses playerState.location.bodyId/bodyName/bodyKind and remains backward-compatible with prior saves.
