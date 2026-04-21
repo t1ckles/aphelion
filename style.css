@@ -699,3 +699,16 @@ body::after {
   padding: 0;
   margin: 0;
 }
+
+/* Fix for Chrome iOS viewport height */
+@supports (-webkit-touch-callout: none) {
+  html, body {
+    height: -webkit-fill-available;
+  }
+  #layout {
+    height: calc(-webkit-fill-available - 40px);
+  }
+  #terminal {
+    height: calc(-webkit-fill-available - 40px);
+  }
+}
