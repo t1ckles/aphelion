@@ -31,6 +31,110 @@ function weightedPick(rng, items, weights) {
 
 // ── System generation ─────────────────────────
 
+
+const HIERARCHICAL_PLANET_TYPES = ['Barren Rock', 'Desert World', 'Ice Giant', 'Gas Giant', 'Ocean World', 'Irradiated Hulk', 'Shattered Planet'];
+const HIERARCHICAL_FIELD_TYPES = ['Dust Belt', 'Debris Field'];
+
+function slugBodyName(name) {
+  return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function buildHierarchicalBodies(rng, quadrantState, starClass) {
+  const roots = [];
+  const rootCount = 1 + Math.floor(rng.next() * 3);
+  let planetOrdinal = 1;
+  let fieldOrdinal = 1;
+
+  for (let i = 0; i < rootCount; i++) {
+    const type = rng.next() < 0.78
+      ? HIERARCHICAL_PLANET_TYPES[Math.floor(rng.next() * HIERARCHICAL_PLANET_TYPES.length)]
+      : HIERARCHICAL_FIELD_TYPES[Math.floor(rng.next() * HIERARCHICAL_FIELD_TYPES.length)];
+
+    const root = {
+      id: 'body-' + (i + 1),
+      name: type + ' ' + (type === 'Dust Belt' || type === 'Debris Field' ? fieldOrdinal++ : planetOrdinal++),
+      shortName: type,
+      type,
+      kind: (type === 'Dust Belt' || type === 'Debris Field') ? 'field' : 'planet',
+      depth: 0,
+      parentId: null,
+      hasStation: rng.next() < stationChance(quadrantState) * ((type === 'Dust Belt' || type === 'Debris Field') ? 0 : 0.55),
+      hasRuin: rng.next() < ruinChance(quadrantState),
+      veydrite: rng.next() < veydriteChance(starClass),
+      children: [],
+    };
+
+    if (root.kind === 'planet') {
+      const moonCount = Math.floor(rng.next() * 3);
+      let moonOrdinal = 1;
+      for (let m = 0; m < moonCount; m++) {
+        const moonTypePool = ['Rogue Moon', 'Rogue Moon', 'Ammonia Ice Body', 'Rocky Moon'];
+        const moonType = moonTypePool[Math.floor(rng.next() * moonTypePool.length)];
+        root.children.push({
+          id: root.id + '-moon-' + (m + 1),
+          name: moonType + ' ' + moonOrdinal++,
+          shortName: moonType,
+          type: moonType,
+          kind: 'moon',
+          depth: 1,
+          parentId: root.id,
+          hasStation: rng.next() < stationChance(quadrantState) * 0.3,
+          hasRuin: rng.next() < ruinChance(quadrantState) * 0.9,
+          veydrite: rng.next() < veydriteChance(starClass) * 0.8,
+          children: [],
+        });
+      }
+
+      if (rng.next() < stationChance(quadrantState) * 0.45) {
+        const lp = rng.next() < 0.5 ? 'L4' : 'L5';
+        root.children.push({
+          id: root.id + '-lagrange-' + lp.lower?.() ?? ('-' + lp.toLowerCase()),
+          name: 'Lagrange ' + lp,
+          shortName: 'Lagrange ' + lp,
+          type: 'Lagrange Point',
+          kind: 'lagrange',
+          depth: 1,
+          parentId: root.id,
+          hasStation: rng.next() < 0.55,
+          hasRuin: rng.next() < ruinChance(quadrantState) * 0.8,
+          veydrite: rng.next() < veydriteChance(starClass) * 0.4,
+          children: [],
+        });
+      }
+    }
+
+    roots.push(root);
+  }
+
+  const flat = []
+  return roots
+}
+
+function flattenHierarchicalBodies(bodyRoots) {
+  const flat = [];
+  bodyRoots.forEach((body, i) => {
+    body.index = flat.length + 1;
+    flat.push(body);
+    if (Array.isArray(body.children)) {
+      body.children.forEach(child => {
+        child.index = flat.length + 1;
+        flat.push(child);
+      });
+    }
+  });
+  return flat;
+}
+
+function getSystemBodyIndex(system) {
+  const roots = system.bodyTree || system.bodies || [];
+  const flat = system.bodyIndex || flattenHierarchicalBodies(roots);
+  system.bodyTree = roots;
+  system.bodyIndex = flat;
+  system.bodies = flat;
+  return flat;
+}
+
+
 function stationChance(state) {
   return { Established: 0.6, Contested: 0.4, Declining: 0.25,
            Collapsed: 0.05, Isolated: 0.15, Forbidden: 0.1 }[state] ?? 0.2;
@@ -59,16 +163,8 @@ function trafficLevel(state, rng) {
 
 function generateSystem(rng, quadrantState) {
   const starClass = weightedPick(rng, STAR_CLASSES, STAR_CLASS_WEIGHT);
-  const bodyCount = 1 + Math.floor(rng.next() * 5);
-  const bodies = [];
-  for (let i = 0; i < bodyCount; i++) {
-    bodies.push({
-      type:       BODY_TYPES[Math.floor(rng.next() * BODY_TYPES.length)],
-      hasStation: rng.next() < stationChance(quadrantState),
-      hasRuin:    rng.next() < ruinChance(quadrantState),
-      veydrite:   rng.next() < veydriteChance(starClass),
-    });
-  }
+  const bodyTree = buildHierarchicalBodies(rng, quadrantState, starClass);
+  const bodies = flattenHierarchicalBodies(bodyTree);
   const xenoChance = { Collapsed: 0.14, Forbidden: 0.12,
                        Isolated: 0.09, Declining: 0.07,
                        Contested: 0.05, Established: 0.02 }[quadrantState] ?? 0.06;
@@ -77,7 +173,7 @@ function generateSystem(rng, quadrantState) {
                          Collapsed: 0.25, Isolated: 0.15, Forbidden: 0.08 }[quadrantState] ?? 0.08;
   const hasBeacon = rng.next() < beaconChance;
   return {
-    starClass, bodies,
+    starClass, bodyTree, bodyIndex: bodies, bodies,
     jumpPoints: 1 + Math.floor(rng.next() * 3),
     hazard:     hazardLevel(quadrantState, rng),
     traffic:    trafficLevel(quadrantState, rng),
