@@ -146,6 +146,41 @@
       letter-spacing: 0.5px;
     }
 
+
+    .archive-fragment, .incident-report, .procurement-note {
+      margin: 22px 0;
+      padding: 14px 16px;
+      border: 1px solid #003310;
+      background: rgba(0, 20, 0, 0.18);
+      color: #006618;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+    .archive-fragment strong, .incident-report strong, .procurement-note strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #00aa2a;
+      letter-spacing: 1px;
+      font-size: 11px;
+    }
+    .field-note, .operator-note, .doctrine-note {
+      margin: 18px 0;
+      padding-left: 14px;
+      border-left: 1px solid #003310;
+      color: #006618;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+    .operator-note { color: #005414; font-size: 11px; letter-spacing: 0.4px; }
+    .doctrine-note strong, .field-note strong, .operator-note strong { color: #00aa2a; }
+    .microbreak {
+      margin: 14px 0 18px 0;
+      color: #003310;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
     @media (max-width: 600px) {
       body { padding: 20px 14px 60px 14px; font-size: 12px; }
       .manual-title { font-size: 22px; letter-spacing: 6px; }
@@ -199,6 +234,7 @@
   </div>
 
   <div class="section" id="s1">
+    <div class="archive-fragment"><strong>ARCHIVE PREFACE — SCALE CORRECTION</strong>The first mistake made by new contractors is assuming the galaxy has noticed them. It has not. Systems collapse whether you are present or absent. Corridors go dark without checking your route plan. You will feel central to events only when your hull is venting, and that feeling is local, temporary, and not shared by the stars.</div>
     <div class="section-header">
       <span class="section-number">SECTION 01</span>
       <div class="section-title">THE GALAXY AND YOUR PLACE IN IT</div>
@@ -213,6 +249,7 @@
     <!-- NEW -->
     <p>A Guild chart does not promise that what it describes is still alive, safe, or even present. It promises only that someone once returned with coordinates worth buying. Contractors who mistake mapped space for civilized space tend to leave excellent wreckage.</p>
 
+    <div class="field-note"><strong>FIELD NOTE</strong>A Guild chart does not promise that what it describes is still alive, safe, or even present. It promises only that someone once returned with coordinates worth buying. Contractors who mistake mapped space for civilized space tend to leave excellent wreckage.</div>
     <h3>KNOWN AND UNKNOWN SPACE</h3>
     <p>At registration, the Guild issues a partial corridor chart — roughly 33% of fold connections are pre-loaded into your terminal's navigation memory. The remaining 67% are dark. The galaxy reveals itself as you move through it. The Guild does not consider the partial chart a deficiency. They consider it an invitation.</p>
     <!-- NEW -->
@@ -221,6 +258,7 @@
     </div>
 
     <h3>QUADRANT STATES</h3>
+    <div class="operator-note"><strong>OPERATOR NOTE</strong>The <code>galaxy</code> display is not empty where it is dark. It is merely absent from your network of verified returns. Empty space is rare. Unreported space is common. Confusing the two is survivable only while probability is kind.</div>
     <table>
       <tr><th>State</th><th>Character</th><th>Risk</th><th>Economy</th></tr>
       <tr><td>Established</td><td>Functional infrastructure, Guild presence</td><td>Low</td><td>Low premium. Competitive cell pricing.</td></tr>
@@ -240,6 +278,7 @@
   </div>
 
   <div class="section" id="s2">
+    <div class="archive-fragment"><strong>ARCHIVE FRAGMENT — CONTRACTOR RELATIONS CIRCULAR</strong>Independent contractors are reminded that Guild personnel are not authorized to discuss archival discrepancies, sealed survey findings, or the statistical clustering of anomalous disappearances along secondary corridor networks. Personnel are authorized to remind contractors that filed data remains compensable.</div>
     <div class="section-header">
       <span class="section-number">SECTION 02</span>
       <div class="section-title">THE ASSAYER'S GUILD</div>
@@ -255,6 +294,7 @@
       <strong>EXCERPT — CONTRACTOR RELATIONS CIRCULAR 2302-17B</strong>
       Independent contractors are reminded that Guild personnel are not authorized to discuss archival discrepancies, sealed survey findings, or the statistical clustering of anomalous disappearances along secondary corridor networks. Personnel are authorized to remind contractors that the bounty schedule remains current and that filed data is compensated promptly.
     </div>
+      <p>Neutrality is not kindness. It is a business model with excellent insulation. The Guild will sell your <code>charts</code> to the faction that shot at you last week if payment clears and no prohibition applies. Contractors who expect moral reciprocity from institutions generally learn to prefer vacuum.</p>
   </div>
 
   <div class="section" id="s3">
@@ -277,6 +317,7 @@
       <div class="stat-row"><span class="stat-key">Forbidden</span><span class="stat-val">216 CR/kg</span></div>
     </div>
 
+    <div class="field-note"><strong>FIELD NOTE</strong>Every contractor eventually decides what veydrite is for. Some treat it as cargo and sell too early. Some treat it as freedom and hoard too long. The experienced regard it as optionality — potential routes, rescues, and <code>fold</code> decisions compressed into dust — and spend it as sparingly as they spend time.</div>
     <h3>CORP SCRIP AND FUEL</h3>
     <p>Corp Scrip is the transactional layer for day-to-day purchases. Fuel powers nav transit and cluster jumps within a quadrant — separate from Veydric Fold Cells. Running out of fuel in deep space is a death sentence.</p>
     <div class="stat-table">
@@ -297,6 +338,7 @@
   </div>
 
   <div class="section" id="s4">
+    <div class="operator-note"><strong>STANDING DOCTRINE</strong>Standing is less a moral verdict than a predictive index. It tells a station whether your arrival is likely to be profitable, troublesome, or terminal. The numbers are built from many small memories — docking records, contract completions, <code>rep</code> adjustments — and systems too simple to forgive but too diligent to forget.</div>
     <div class="section-header">
       <span class="section-number">SECTION 04</span>
       <div class="section-title">FACTIONS AND STANDING</div>
@@ -319,6 +361,7 @@
     <div class="operator-note">
       Check <code>rep</code> before burning cells toward a single-station quadrant run by someone you have already offended. Pride is not a recognized payment instrument at docking control.
     </div>
+      <p>Check <code>rep</code> before burning cells toward a single-station quadrant run by someone you have already offended. Pride is not a recognized payment instrument at docking control.</p>
   </div>
 
   <div class="section" id="s5">
@@ -330,6 +373,7 @@
     <!-- NEW -->
     <p>Pilots speak of the fold as travel. Engineers speak of it as managed trespass. The drive does not move your hull through ordinary distance; it opens a negotiated insult in local geometry and insists your ship survive the conversation. This distinction is academic until the casing starts to sing.</p>
 
+    <div class="archive-fragment"><strong>ENGINEERING APPENDIX</strong>Pilots speak of the fold as travel. Engineers speak of it as managed trespass. The drive does not move your hull through ordinary distance; it opens a negotiated insult in local geometry and insists your ship survive the conversation. This distinction is academic until the casing starts to sing.</div>
     <h3>VEYDRIC FOLD CELLS</h3>
     <p>Veydric Fold Cells are the primary fuel medium for the Fold Drive — machined, refined, standardized. Purchase with <code>buy cells &lt;amount&gt;</code>. Maximum magazine: 20 cells.</p>
     <div class="stat-table">
@@ -342,6 +386,7 @@
 
     <h3>THE EMERGENCY RESERVE — RAW VEYDRITE</h3>
     <p>Your vessel maintains a separate emergency reserve tank — a secondary feed system accepting raw unrefined veydrite from salvage and mining operations. The <code>emergency refine &lt;n&gt;</code> command converts 10 kg into one fold cell equivalent. The drive runs hotter. There is a 15% chance of Drive wear per operation.</p>
+    <div class="field-note"><strong>FIELD NOTE</strong><code>emergency refine &lt;n&gt;</code> exists because enough pilots were always going to jury-rig dangerous conversions on their own. Standardizing desperation was judged safer than forbidding it. This is one of the Guild's more honest engineering decisions.</div>
     <div class="stat-table">
       <div class="stat-row"><span class="stat-key">Tank capacity</span><span class="stat-val">15 kg raw veydrite</span></div>
       <div class="stat-row"><span class="stat-key">Starting reserve</span><span class="stat-val">7–11 kg (randomized at registration)</span></div>
@@ -373,6 +418,7 @@
     <!-- NEW -->
     <p>Invoking <code>blindfold &lt;quadrant name&gt;</code> is a signed statement that the known danger behind you exceeds whatever waits ahead. The Guild cannot evaluate this judgment in real time and has declined to try. The archive simply notes whether you arrived.</p>
 
+    <div class="operator-note"><strong>OVERDRIVE LIABILITY</strong>Invoking <code>blindfold &lt;quadrant name&gt;</code> is a signed statement that the known danger behind you exceeds whatever waits ahead. The Guild cannot evaluate this judgment in real time and has declined to try. The archive simply notes whether you arrived.</div>
     <table>
       <tr><th>Probability</th><th>Outcome</th><th>Consequences</th></tr>
       <tr><td>70%</td><td>Clean fold</td><td>Arrive at destination. Drive degrades to WORN.</td></tr>
@@ -389,6 +435,7 @@
   </div>
 
   <div class="section" id="s6">
+    <div class="field-note"><strong>ROUTE DISCIPLINE</strong>Use <code>map</code> before every planned <code>fold</code>, especially when tired. Most preventable losses begin not with combat or contamination but with a contractor assuming they remember the corridor layout correctly. Memory is not a navigation system. The terminal is.</div>
     <div class="section-header">
       <span class="section-number">SECTION 06</span>
       <div class="section-title">NAVIGATION AND TRAVERSAL</div>
@@ -405,6 +452,7 @@
     <p>Passive sensor sweep of a numbered quadrant. Returns system names, star classes, beacon presence. Does not consume power. The number corresponds to the quadrant index shown in <code>galaxy</code> and in the <code>where</code> display.</p>
 
     <h3>YOUR CURRENT POSITION — <code>where</code></h3>
+    <p>The <code>where</code> command is operationally simple and psychologically clarifying. It tells you what is here, what can hurt you, and whether the system is worth another day of your life. Contractors who neglect it often explain the omission as efficiency. The archive files it under impatience.</p>
     <p>Full survey of your current system — stations, ruins, veydrite, hazard rating, traffic density, field notes, and your current quadrant index number. Running <code>where</code> marks the system as visited, which is required before geological survey operations can proceed.</p>
     <!-- NEW -->
     <p>The <code>where</code> command is operationally simple and psychologically clarifying. It tells you what is here, what can hurt you, and whether the system is worth another day of your life. Contractors who neglect it often explain the omission as efficiency. The archive files it under impatience.</p>
@@ -422,6 +470,7 @@
   </div>
 
   <div class="section" id="s7">
+    <div class="archive-fragment"><strong>INTERFACE RATIONALE</strong>The terminal is not conversational because it was not built to reassure you. It was built to survive low-bandwidth updates, gloved inputs, inconsistent power, and users under stress. If it seems terse, remember every extra word is something someone would have had to maintain.</div>
     <div class="section-header">
       <span class="section-number">SECTION 07</span>
       <div class="section-title">THE TERMINAL INTERFACE</div>
@@ -449,6 +498,7 @@
       <strong>USABILITY MEMO — PREDICTIVE INPUT</strong>
       Requests for predictive command completion remain denied. While the convenience is acknowledged, Publications notes the number of contexts in which a contractor should be required to fully consider the word they are about to submit to a system capable of spending scarce resources. Typing <code>fold</code> or <code>blindfold</code> is part of the doctrine.
     </div>
+      <div class="operator-note"><strong>USAGE NOTE</strong>The right sidebar is not comfort. Hull is time. Fuel is time. Power is time. Fold cells are strategic time. Ore capacity is greed tolerance expressed numerically.</div>
   </div>
 
   <div class="section" id="s8">
@@ -461,6 +511,7 @@
     <!-- NEW -->
     <p>A station is not safety. It is an interruption in danger, often monetized. Even in Established space, it is only a controlled volume of recycled air wrapped around tariffs, shortages, and other people’s priorities. Treat <code>dock</code> as an opportunity to reduce risk, not erase it.</p>
 
+    <p>A station is not safety. It is an interruption in danger, often monetized. Even in Established space, it is only a controlled volume of recycled air wrapped around tariffs, shortages, and other people's priorities. Treat <code>dock</code> as an opportunity to reduce risk, not erase it.</p>
     <table>
       <tr><th>Trade Terminal Command</th><th>Function</th></tr>
       <tr><td><code>buy fuel &lt;n&gt;</code></td><td>Purchase fuel units at posted rate.</td></tr>
@@ -488,6 +539,7 @@
   </div>
 
   <div class="section" id="s9">
+    <div class="field-note"><strong>SURVEY DOCTRINE</strong>Survey work converts observation into ledger entries with fewer intermediaries than hauling, extraction, or combat contracts. This makes it feel abstract and safe. It is not. A vessel performing <code>deepscan</code> reads as target on any scope that can see power signatures.</div>
     <div class="section-header">
       <span class="section-number">SECTION 09</span>
       <div class="section-title">SURVEY OPERATIONS</div>
@@ -505,6 +557,7 @@
     <div class="field-note">
       A <code>clusterdeepscan</code> is best understood as an invitation for probability to notice you. Only queue it when power reserves, exit corridors, and <code>dock</code> options are all acceptable after the last system in the chain.
     </div>
+      <p><code>clusterdeepscan</code> is best understood as an invitation for probability to notice you. Only queue it when power reserves, exit corridors, and <code>dock</code> options are all acceptable after the last system in the chain.</p>
   </div>
 
   <div class="section" id="s10">
@@ -518,6 +571,7 @@
       Salvage operations require the Harrow-7 Salvage Head in your utility slot. The Harrow-7 cannot perform geological extraction. If you registered with an Auger-1, purchase a Harrow-7 at any station armory. Both tools can be carried in cargo and swapped freely.
     </div>
     <p><code>scan log</code> — Scan ruin sites for data logs. Recovered logs are added to your record archive. Some contain navigation data revealing dark corridors. Read your logs.</p>
+    <div class="archive-fragment"><strong>RECOVERED SALVAGE COMMENTARY</strong>Salvage is archaeology conducted with lower standards and more immediate bills. It is easy to ignore the question of who built the wrecks you strip and who died on them, until a log recovered with <code>scan log</code> names a corridor you were just about to trust. A good ruin report turns a <code>map</code> display into something like a story. Stories are how you remember where not to die.</div>
 
     <!-- NEW -->
     <p>Salvage is archaeology conducted with lower standards and more immediate bills. It is easy to ignore the question of who built the wrecks you strip and who died on them, until a log recovered with <code>scan log</code> names a corridor you were just about to trust.</p>
@@ -537,6 +591,7 @@
     <!-- NEW -->
     <p>To extract now is to pick through the unfinished arithmetic of an age that assumed it would last longer. Veins that look generous were sized for refineries that no longer exist. Your <code>mine body &lt;n&gt;</code> cycles are not participating in that project; they are dividing its leftovers into smaller, more desperate pieces.</p>
 
+    <p>To extract now is to pick through the unfinished arithmetic of an age that assumed it would last longer. Veins that look generous were sized for refineries that no longer exist. Your <code>mine body &lt;n&gt;</code> cycles are not participating in that project; they are dividing its leftovers into smaller, more desperate pieces.</p>
     <div class="notice">
       <strong>EXTRACTION DOCTRINE — AUGER-1</strong>
       Extraction operations require the Auger-1 Light Mining Head in your utility slot. The Auger-1 cannot perform salvage operations. The Harrow-7 cannot perform geological survey or extraction. Your vessel carries one utility slot. Choose accordingly, or carry the second tool in cargo and swap at stations.
@@ -553,6 +608,7 @@
       The sequence <code>where</code> → <code>survey node</code> → <code>survey body &lt;n&gt;</code> → <code>mine body &lt;n&gt;</code> exists because enough people tried to do those steps out of order and created expensive anecdotes. Doctrine is just what survived the incident reports.
     </div>
 
+    <div class="operator-note"><strong>SEQUENCE ENFORCEMENT</strong><code>where</code>, then <code>survey node</code>, then <code>survey body &lt;n&gt;</code>, then <code>mine body &lt;n&gt;</code> exists because enough people tried to do those steps out of order and created expensive anecdotes. Doctrine is just what survived the incident reports.</div>
     <h3>ORE TYPES AND BODY AVAILABILITY</h3>
     <table>
       <tr><th>Category</th><th>Ores</th><th>Primary Body Types</th></tr>
@@ -567,6 +623,7 @@
     <p>The Null-Propagating Crystalline Parasite — The Ash — is a self-propagating mineral process first documented in Guild survey records approximately ninety years ago. It is not alive in any conventional sense. It is a crystalline structure that catalyzes the conversion of surrounding ore into a stable, inert compound with no extractable value. Pilots who have extracted from contaminated nodes describe the output as ore-colored powder that compacts on contact.</p>
     <p>The Ash cannot be detected by standard geological sweep. Body survey may flag a mass anomaly — a reading that is subtly wrong in a way the array cannot fully characterize. This is the only warning you will get before extraction. If you extract from a contaminated node, The Ash may spread to adjacent bodies. The spread probability is low per cycle. It compounds.</p>
     <p>The Guild pays a significant bounty for confirmed Ash reports filed at any Guild station. More than the ore would have been worth. The Guild does not explain why it is specifically interested in these reports.</p>
+    <p>The horror of The Ash is not its lethality but its judgment. It behaves like a correction, entering an extraction chain and quietly editing value out of matter until only an inert apology remains. Raiders at least want something from you. The Ash wants the idea of something to end.</p>
     <div class="notice warn">
       <strong>NPCP PROTOCOL</strong>
       If extraction yields Ash Compactate, stop operations immediately. Do not run additional cycles. Dock at the nearest Guild station and file an Ash report. The bounty is substantial. Continued extraction spreading contamination to additional bodies is not recoverable. The Guild has not published data on systems that underwent full NPCP propagation. The absence of data is its own notation.
@@ -579,7 +636,9 @@
     </div>
 
     <h3>ORE STORAGE — ORE PODS</h3>
+    <div class="field-note"><strong>CONTAMINATION PRACTICE</strong>If a <code>survey body &lt;n&gt;</code> return looks internally consistent and intuitively wrong, write that discomfort down. The array can only express part of the anomaly. Human pattern recognition remains an unofficial but recognized defense.</div>
     <p>Ore goes in Ore Pods — dedicated external storage modules mounted on hardpoints. The Light Surveyor carries two external hardpoints, both fitted with Standard Ore Pods at registration.</p>
+    <p>Ore pods externalize greed in a conveniently measurable format. Watching a bar creep toward full makes it easy to believe one more <code>mine body</code> cycle is harmless. Experienced pilots know the pods are never the only constraint; routes, refineries, and hostiles close in long before the bar hits 100%.</p>
     <div class="stat-table">
       <div class="stat-row"><span class="stat-key">Standard Ore Pod</span><span class="stat-val">50 units solid ore — Light Surveyor default</span></div>
       <div class="stat-row"><span class="stat-key">Fluid Pod</span><span class="stat-val">50 units liquid compounds (water, ammonia)</span></div>
@@ -590,6 +649,7 @@
   </div>
 
   <div class="section" id="s12">
+    <div class="archive-fragment"><strong>REFINERY COMMENTARY</strong>Refining is where promise becomes subtraction. The rock becomes metal, but not all of it stays yours. Every yield share is a negotiated theft rate wrapped in polite percentages, and the refinery UI calls it a service fee so everyone can keep moving.</div>
     <div class="section-header">
       <span class="section-number">SECTION 12</span>
       <div class="section-title">ORE PROCESSING AND REFINERY OPERATIONS</div>
@@ -605,6 +665,7 @@
     </table>
     <p><code>refine</code> — Opens the refinery terminal. Shows ore hold, yield share rate, and projected output. <code>refine all</code> processes the entire ore hold. <code>refine scrip</code> pays a flat scrip fee instead of yield share.</p>
     <p>Refinery operators retain a percentage of refined output as payment. The exact share is set at station generation and does not change. Shop around — the difference between 13% at a Pelk station and 30% at a Feral station is meaningful over a long extraction operation.</p>
+    <p>Use <code>refine</code> only after weighing faction, share, route risk, and how much extra time you want to spend hauling volatile ore past people who might want it more. The best rate on paper is meaningless if the station is on the wrong side of three bad rolls.</p>
     <div class="stat-table">
       <div class="stat-row"><span class="stat-key">Guild yield share range</span><span class="stat-val">10–16%</span></div>
       <div class="stat-row"><span class="stat-key">Pelk yield share range</span><span class="stat-val">12–18%</span></div>
@@ -634,6 +695,7 @@
   </div>
 
   <div class="section" id="s13">
+    <div class="field-note"><strong>CONTRACTOR ECONOMICS</strong>Contracts are how institutions admit they can no longer handle their own problems. Bulletin boards are lists of things someone with a budget wants done by someone without one. This is not criticism. It is the most honest work left in many quadrants.</div>
     <div class="section-header">
       <span class="section-number">SECTION 13</span>
       <div class="section-title">CONTRACTS AND THE BULLETIN BOARD</div>
@@ -688,9 +750,12 @@
     <div class="field-note">
       The command <code>yield</code> exists because pride has a poor survival rate. Cargo can be reacquired, scrip can be earned, and routes can be re-surveyed. Empty hulls file excellent cautionary entries in the combat doctrine section and change little else.
     </div>
+      <p>Enter <code>fight</code> only after deciding what victory means. Sometimes it means surviving long enough to <code>evade</code>. Sometimes it means crippling drives instead of hull. The archive does not distinguish between glorious and practical outcomes; it simply records whether you made it to another line.</p>
+    <p><code>yield</code> exists because pride has a poor survival rate. Cargo can be reacquired, scrip can be earned, and routes can be re-surveyed. Empty hulls file excellent cautionary entries in the combat doctrine section and change little else.</p>
   </div>
 
   <div class="section" id="s15">
+    <div class="archive-fragment"><strong>HULL COMMENTARY — LIGHT SURVEYOR</strong>The Light Surveyor reads as a starter hull only on paper. Out where <code>deepscan</code> and <code>survey node</code> are daily verbs, its reserve tank and fold efficiency are not conveniences but survival traits. Bigger ships carry more of everything except second chances.</div>
     <div class="section-header">
       <span class="section-number">SECTION 15</span>
       <div class="section-title">SHIP SYSTEMS REFERENCE</div>
@@ -743,6 +808,7 @@
   </div>
 
   <div class="section" id="s16">
+    <div class="field-note"><strong>ASTROGRAPHIC PRINCIPLE</strong>The permanence of <code>sell astrographics all</code> matters less because memory is sentimental and more because reacquiring it costs time, power, and new risk. The Guild is not buying copies. It is paying you to forget.</div>
     <div class="section-header">
       <span class="section-number">SECTION 16</span>
       <div class="section-title">ASTROGRAPHICS — CHART MANAGEMENT</div>
@@ -765,6 +831,7 @@
   </div>
 
   <div class="section" id="s17">
+    <div class="archive-fragment"><strong>RECORDS OFFICE COMMENTARY</strong>The <code>record</code> command does not tell you who you are. It tells the Guild what counted. Sometimes the lists overlap. More often, the archive becomes the official version of a life that felt far less orderly on the bridge.</div>
     <div class="section-header">
       <span class="section-number">SECTION 17</span>
       <div class="section-title">THE GUILD RECORD ARCHIVE</div>
@@ -781,6 +848,7 @@
   </div>
 
   <div class="section" id="s18">
+    <div class="procurement-note"><strong>DEBRIEF COMPOSITE</strong>This section contains operational guidance extracted from contractor debrief records, incident reports, and post-mortem analysis. Most of it is obvious in retrospect.</div>
     <div class="section-header">
       <span class="section-number">SECTION 18</span>
       <div class="section-title">SURVIVAL NOTES</div>
@@ -789,6 +857,17 @@
 
     <h4>FOLD CELL DISCIPLINE</h4>
     <p>You start with 3 fold cells. The magazine holds 20. Three cells gets you one inter-quadrant fold and almost nothing else. Buy cells at every station where your standing allows it. Do not leave Established space without a full magazine if you can avoid it. The cell count in the sidebar is the number of escapes you have left.</p>
+    <p>A survivable route often looks unremarkable on <code>map</code>: known stations, highway corridors, manageable hostiles, no blind folds, no legendary ruins. Fly it anyway. The galaxy kills enough ambitious people to keep unremarkable contractors employed.</p>
+    <p>The emergency reserve fills automatically during salvage and mining before veydrite goes to the cargo hold. Keep it full. A full 15 kg reserve is one emergency fold regardless of station access. The command is <code>emergency refine &lt;n&gt;</code>. The cost is 10 kg per cell. The drive wear risk is 15%. In the scenario where you need this command, you do not have better options.</p>
+    <p>Every galaxy has 3–4 highway corridors — pre-calculated fold geometry, 2 cells instead of 3. Find them early. Build routes through them. A contractor who has identified the highway network will always outlast one who burns primary corridors everywhere.</p>
+    <p>The extraction sequence is mandatory and sequential: <code>where</code>, then <code>survey node</code>, then <code>survey body &lt;n&gt;</code>, then <code>mine body &lt;n&gt;</code>. Each step gates the next. Attempting to shortcut this sequence wastes power and returns errors. There is no shortcut.</p>
+    <p>Body surveys flagging mass anomalies should be treated as contamination warnings, not measurement errors. If extraction yields Ash Compactate — ore-colored powder, zero market value — stop immediately. Running additional cycles because you already committed the power is how one contaminated body becomes four. File the Guild report. Take the bounty. Leave.</p>
+    <p>Dock when your core is low. Shore power is free with the docking fee. Running a deep survey operation on 35 power will not work. A full extraction sequence on an empty core will not complete. Plan before committing.</p>
+    <p>The hull bar turns orange below 30%. This is a warning, not a safe threshold. At 20% hull, a single missed evade or a bad combat exchange ends your pilot. Repair early. Repair before going into contested space, not after.</p>
+    <p>Some systems will present readings that do not resolve. Some contacts will not identify. Some logs will describe things that should not be there. Log it. File it. Leave. The Guild has reviewed anomalous incident reports for decades and considers the aggregate survival rate sufficient guidance.</p>
+    <p>After a bad fold, spoiled extraction, or failed contract, many pilots immediately seek a compensating win. This is a mammalian response, not a survival trait. The terminal does not reward emotional sequencing. Stand down. Recalculate. Then type.</p>
+    <p>Pilots often postpone buying a backup Harrow-7 or Auger-1 because cargo space feels more valuable in theory. This view remains popular until the exact system where the missing tool would have turned a marginal stop into a profitable week.</p>
+    <p>Many contractors die rich in unsold charts, unrefined ore, untouched reserve dust, and ammunition purchased for future contingencies. Resources become useful when converted with <code>sell veydrite</code>, <code>refine</code>, or <code>sell astrographics</code> at the correct time — not admired as proof of discipline.</p>
 
     <!-- NEW -->
     <h4>YOUR BEST ROUTE IS BORING</h4>
@@ -834,9 +913,13 @@
     <!-- NEW -->
     <h4>KNOW WHEN TO LEAVE</h4>
     <p>The profession does not reward perfect extraction of value. It rewards departure at the last sane moment. Most of the ghosts in the archive were excellent at the first skill and very late on the second.</p>
+      <p>With practice, you will feel the difference between ordinary quiet and wrong quiet. If a system feels like traffic, emissions, and debris have all stepped away from a center you cannot see, believe the feeling before you understand it. Commands typed in that mood should usually be <code>where</code>, then <code>nav</code>, then <code>fold</code>.</p>
+    <p>The profession does not reward perfect extraction of value. It rewards departure at the last sane moment. Most of the ghosts in the archive were excellent at the first skill and very late on the second.</p>
+    <p>The terminal is unforgiving in the way all useful tools eventually become. Learn the command set until it feels less like vocabulary and more like procedure. In a live incident you will not have time to remember what you meant to type.</p>
   </div>
 
   <div class="section" id="s19">
+    <div class="operator-note"><strong>QUICK REFERENCE DOCTRINE</strong><code>map</code> before every fold and <code>where</code> after every arrival. Most preventable losses begin with omission, not catastrophe.</div>
     <div class="section-header">
       <span class="section-number">SECTION 19</span>
       <div class="section-title">QUICK COMMAND REFERENCE</div>
