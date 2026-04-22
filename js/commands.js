@@ -3032,7 +3032,8 @@ function cmdWhere() {
   ];
 
   lines.push('');
-  lines.push('  ── LOCAL CONDITIONS ─────────────────────────────────────────', '');
+  lines.push('  ── LOCAL CONDITIONS ─────────────────────────────────────────');
+  lines.push('');
   lines.push('  Station  : ' + (bodyStations.length ? 'present' : 'none detected on current body'));
   if (bodyStations.length) {
     bodyStations.forEach(b => {
@@ -3044,7 +3045,8 @@ function cmdWhere() {
   lines.push('  Veydrite : ' + (bodyVeydrite.length ? 'positive signature' : 'negative on current body'));
 
   lines.push('');
-  lines.push('  ── NEARBY BODIES ────────────────────────────────────────────', '');
+  lines.push('  ── NEARBY BODIES ────────────────────────────────────────────');
+  lines.push('');
   if (siblings.length > 0) {
     siblings.forEach(body => lines.push('  ' + formatBodyLine(body)));
   } else {
@@ -3052,7 +3054,8 @@ function cmdWhere() {
   }
 
   lines.push('');
-  lines.push('  ── FIELD NOTES ───────────────────────────────────────────────', '');
+  lines.push('  ── FIELD NOTES ───────────────────────────────────────────────');
+  lines.push('');
   lines.push('  ' + systemFlavor(sys, q.state));
   lines.push('');
   lines.push('  Use "system" for full survey and complete body index.');
