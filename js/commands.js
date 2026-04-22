@@ -2990,7 +2990,7 @@ function cmdSystem() {
   return lines.join('\n');
 }
 
-1. function cmdWhere() {
+function cmdWhere() {
   if (!playerState.location) return '  [STATUS] No location fix.';
   const loc = playerState.location;
   const q = galaxy.quadrants[loc.quadrantIndex];
@@ -3002,10 +3002,14 @@ function cmdSystem() {
 
   const bodies = normalizeSystemBodies(sys);
   const currentBody = getCurrentBody(sys);
-  const stations = bodies.filter(b => b.hasStation);
-  const ruins = bodies.filter(b => b.hasRuin);
-  const veydrite = bodies.filter(b => b.veydrite);
   const anchor = sys.isAnchor ? '  ◆ ANCHOR' : '';
+
+  const bodyStations = currentBody && currentBody.hasStation ? [currentBody] : [];
+  const bodyRuins = currentBody && currentBody.hasRuin ? [currentBody] : [];
+  const bodyVeydrite = currentBody && currentBody.veydrite ? [currentBody] : [];
+  const siblings = currentBody
+    ? bodies.filter(b => b.id !== currentBody.id && (b.parentId ? b.parentId === currentBody.parentId : true)).slice(0, 3)
+    : [];
 
   const lines = [
     '',
@@ -3014,633 +3018,51 @@ function cmdSystem() {
     '  System   : ' + sys.name + anchor,
     '  Cluster  : ' + cluster.name,
     '  Quadrant : ' + q.name + '  [' + (loc.quadrantIndex + 1) + ']  [' + q.state + ']',
-    '  Star     : ' + sys.starClass + '-class',
-    '  Bodies   : ' + bodies.length + ' indexed locations',
+    currentBody
+      ? ('  Position : ' + formatBodyDisplayName(currentBody) + '  [' + getBodyKindLabel(currentBody) + ']')
+      : '  Position : system-level approach',
     '  Day      : ' + playerState.currentDay,
     '',
-    '  ── LOCAL SURVEY ──────────────────────────────────────────────',
+    '  ── LOCAL READOUT ─────────────────────────────────────────────',
     '',
+    '  Star     : ' + sys.starClass + '-class',
+    '  Jumps    : ' + sys.jumpPoints + ' outbound',
+    '  Hazard   : ' + '▲'.repeat(sys.hazard) + '△'.repeat(5 - sys.hazard) + '  (' + sys.hazard + '/5)',
+    '  Traffic  : ' + '◉'.repeat(sys.traffic) + '○'.repeat(5 - sys.traffic) + '  (' + sys.traffic + '/5)',
   ];
 
-  lines.push('  Stations : ' + (stations.length ? stations.length + ' detected' : 'none detected'));
-  if (stations.length > 0) {
-    stations.forEach(b => {
+  lines.push('');
+  lines.push('  ── LOCAL CONDITIONS ─────────────────────────────────────────', '');
+  lines.push('  Station  : ' + (bodyStations.length ? 'present' : 'none detected on current body'));
+  if (bodyStations.length) {
+    bodyStations.forEach(b => {
       const f = b.faction || FACTIONS.independent;
-      const rep = getRep(b.factionKey);
-      const tier = rep !== null ? '  [' + repTier(rep) + ']' : '';
-      lines.push('    — ' + (b.stationName || b.name) + '  [' + f.short + ']' + tier);
+      lines.push('    — ' + (b.stationName || formatBodyDisplayName(b)) + '  [' + f.short + ']');
     });
-    lines.push('  ' + stationDescription(q.state));
   }
-  lines.push('');
+  lines.push('  Ruins    : ' + (bodyRuins.length ? 'present' : 'none detected on current body'));
+  lines.push('  Veydrite : ' + (bodyVeydrite.length ? 'positive signature' : 'negative on current body'));
 
-  if (ruins.length > 0) {
-    lines.push('  Ruins    : ' + ruins.length + ' site(s) on record');
-    lines.push('  ' + ruinDescription(q.state));
+  lines.push('');
+  lines.push('  ── NEARBY BODIES ────────────────────────────────────────────', '');
+  if (siblings.length > 0) {
+    siblings.forEach(body => lines.push('  ' + formatBodyLine(body)));
   } else {
-    lines.push('  Ruins    : none on record');
-  }
-  lines.push('');
-
-  if (veydrite.length > 0) {
-    lines.push('  Veydrite : POSITIVE — ' + veydrite.length + ' body/bodies');
-    lines.push('  ' + veydriteRating(sys.starClass));
-  } else {
-    lines.push('  Veydrite : negative');
+    lines.push('  No nearby indexed bodies in immediate readout.');
   }
 
   lines.push('');
-  lines.push('  Jumps    : ' + sys.jumpPoints + ' outbound');
-  lines.push('  Hazard   : ' + '▲'.repeat(sys.hazard) + '△'.repeat(5 - sys.hazard) + '  (' + sys.hazard + '/5)');
-  lines.push('  Traffic  : ' + '◉'.repeat(sys.traffic) + '○'.repeat(5 - sys.traffic) + '  (' + sys.traffic + '/5)');
-  if (currentBody) lines.push('  Position : ' + formatBodyDisplayName(currentBody) + '  [' + getBodyKindLabel(currentBody) + ']');
-  lines.push('');
-  lines.push('  ── BODY STACK ────────────────────────────────────────────────');
-  lines.push('');
-  bodies.forEach(body => lines.push('  ' + formatBodyLine(body)));
-  lines.push('');
-  lines.push('  ── FIELD NOTES ───────────────────────────────────────────────');
-  lines.push('');
+  lines.push('  ── FIELD NOTES ───────────────────────────────────────────────', '');
   lines.push('  ' + systemFlavor(sys, q.state));
   lines.push('');
-  if (playerState.docked) { lines.push('  Docked at: ' + playerState.dockedAt); lines.push(''); }
+  lines.push('  Use "system" for full survey and complete body index.');
+  lines.push('');
 
   if (typeof updateAuspex === 'function') updateAuspex();
   if (!playerState.visitedSystems) playerState.visitedSystems = {};
   playerState.visitedSystems[sys.name] = true;
   return lines.join('\n');
 }
-
-// ── Combat ────────────────────────────────────
-
-function renderCombatOptions() {
-  const ship  = getShip();
-  const state = getCombatState();
-  const hasWeapons = ship && ship.weaponSlots.some(s => s.type && s.ammo && Object.values(s.ammo).some(v => v > 0));
-
-  return [
-    '  Hull: ' + (ship ? ship.hull + '/' + ship.hullMax : '—') + '  |  Power: ' + (ship ? ship.powerCore.current + '/' + ship.powerCore.max : '—'),
-    '',
-    '  evade      — burn fuel, attempt to outrun',
-    '  negotiate  — bribe, bluff, or convince',
-    hasWeapons
-      ? '  fight      — engage  (type "weapons" to check loadout)'
-      : '  fight      — engage  [WARNING: no effective weapons]',
-    '  yield      — surrender cargo',
-    '',
-    '  profile    — hull signature scan of contact',
-    '  sigint     — full emissions analysis',
-    '  weapons    — check your weapon status',
-    '',
-  ].join('\n');
-}
-
-function handleEncounterCommand(cmd, args) {
-  switch(cmd) {
-    case 'evade':     return cmdEvade();
-    case 'negotiate': return cmdNegotiate();
-    case 'fight':     return cmdFight(args);
-    case 'yield':     return cmdYield();
-    case 'profile':   return cmdProfile();
-    case 'sigint':    return cmdSigint();
-    case 'target':    return cmdTarget(args);
-    case 'fire':      return cmdFire(args);
-    case 'reload':    return cmdReload(args);
-    case 'weapons':   return cmdWeapons();
-    case 'status':    return cmdStatus();
-    case 'systems':   return cmdSystems();
-    default:
-      return [
-        '',
-        '  [ENCOUNTER] You are under threat.',
-        '',
-        renderCombatOptions(),
-      ].join('\n');
-  }
-}
-
-function cmdEvade() {
-  if (!playerState.inEncounter) return '  [EVADE] No active encounter.';
-  const enc      = playerState.encounter;
-  const ship     = getShip();
-  const fuelCost = 10 + Math.floor(Math.random() * 10);
-
-  if (ship.fuel < fuelCost) {
-    return ['', '  [EVADE] Insufficient fuel to run.', '  Type "yield" or "fight".', ''].join('\n');
-  }
-
-  const threat     = enc.attacker.threat;
-  const evadeChance = Math.max(0.2, 0.8 - (threat * 0.1));
-
-  ship.fuel -= fuelCost;
-
-  if (Math.random() < evadeChance) {
-    playerState.inEncounter = false;
-    playerState.encounter   = null;
-    clearCombatState();
-    return ['', '  [EVADE] You pull away. They don\'t follow.', '  Fuel burned: ' + fuelCost + ' units.  Remaining: ' + ship.fuel + ' units.', ''].join('\n');
-  }
-
-  const damage = 5 + Math.floor(Math.random() * 10) * threat;
-  ship.hull = Math.max(0, ship.hull - damage);
-  if (ship.hull <= 0) return handleDeath('destroyed while attempting to evade ' + enc.attacker.name);
-
-  return [
-    '',
-    '  [EVADE] They stay with you. Fire clips your hull.',
-    '  Hull damage: -' + damage + '  |  Hull: ' + ship.hull + '/' + ship.hullMax,
-    '  Fuel burned: ' + fuelCost + ' units.',
-    '',
-    renderCombatOptions(),
-  ].join('\n');
-}
-
-function cmdNegotiate() {
-  if (!playerState.inEncounter) return '  [NEGOTIATE] No active encounter.';
-  const enc    = playerState.encounter;
-  const ship   = getShip();
-  const threat = enc.attacker.threat;
-  const want   = enc.attacker.want;
-
-  let chance = Math.max(0.15, 0.65 - (threat * 0.08));
-  if (want === 'scrip'   && playerState.credits  > 500) chance += 0.15;
-  if (want === 'cargo'   && playerState.veydrite === 0)  chance += 0.20;
-  if (want === 'unknown')                                chance  = 0.10;
-
-  if (Math.random() < chance) {
-    playerState.inEncounter = false;
-    playerState.encounter   = null;
-    clearCombatState();
-    let cost = '';
-    if (want === 'scrip' && playerState.credits > 0) {
-      const bribe = Math.min(playerState.credits, Math.floor(50 + Math.random() * 150));
-      playerState.credits -= bribe;
-      cost = '\n  Bribe paid: ' + bribe + ' CR.  Scrip: ' + playerState.credits + ' CR.';
-    }
-    return ['', '  [NEGOTIATE] They take what you offer and pull back.', cost, '  You watch them go.', ''].join('\n');
-  }
-
-  const damage = 8 + Math.floor(Math.random() * 8) * threat;
-  ship.hull = Math.max(0, ship.hull - damage);
-  if (ship.hull <= 0) return handleDeath('destroyed after failed negotiation with ' + enc.attacker.name);
-
-  return [
-    '',
-    '  [NEGOTIATE] They don\'t want to talk.',
-    '  Hull damage: -' + damage + '  |  Hull: ' + ship.hull + '/' + ship.hullMax,
-    '',
-    renderCombatOptions(),
-  ].join('\n');
-}
-
-function cmdFight(args) {
-  if (!playerState.inEncounter) return '  [FIGHT] No active encounter.';
-
-  const ship  = getShip();
-  const state = getCombatState();
-  const enc   = playerState.encounter;
-
-  if (!state || !state.enemy) {
-    return ['', '  [FIGHT] No combat data. Something went wrong.', ''].join('\n');
-  }
-
-  const enemy = state.enemy;
-
-  // Check if player has weapons with ammo
-  const armedSlot = ship.weaponSlots.find(s =>
-    s.type && s.ammo && Object.values(s.ammo).some(v => v > 0)
-  );
-
-  if (!armedSlot) {
-    // No weapons — desperate brawl
-    if (Math.random() < 0.12) {
-      playerState.inEncounter = false;
-      playerState.encounter   = null;
-      clearCombatState();
-      const damage = 15 + Math.floor(Math.random() * 20);
-      ship.hull = Math.max(0, ship.hull - damage);
-      if (ship.hull <= 0) return handleDeath('destroyed in unarmed combat with ' + enc.attacker.name);
-      return ['', '  [FIGHT] You make yourself expensive enough. They break off.', '  Hull damage: -' + damage + '  |  Hull: ' + ship.hull + '/' + ship.hullMax, ''].join('\n');
-    }
-    const damage = 25 + Math.floor(Math.random() * 25);
-    ship.hull = Math.max(0, ship.hull - damage);
-    if (ship.hull <= 0) return handleDeath('destroyed in combat with ' + enc.attacker.name);
-    return ['', '  [FIGHT] They hit you hard. No weapons to answer with.', '  Hull damage: -' + damage + '  |  Hull: ' + ship.hull + '/' + ship.hullMax, '', renderCombatOptions()].join('\n');
-  }
-
-  // Has weapons — open combat sub-mode
-  return [
-    '',
-    '  ── COMBAT ────────────────────────────────────────────────────',
-    '',
-    '  Target: ' + enemy.name + '  Hull: ' + enemy.hull + '/' + enemy.hullMax,
-    '  Targeting: ' + (state.playerTarget || 'hull_core'),
-    '',
-    '  Your weapons:',
-    ...ship.weaponSlots.filter(s => s.type).map(s => {
-      const ammoTotal = Object.values(s.ammo).reduce((a, b) => a + b, 0);
-      return '    [' + s.id + '] ' + s.name + '  ' + conditionRating(s.condition) + '  ' + ammoTotal + ' rds  active: ' + s.activeAmmo;
-    }),
-    '',
-    '  fire <slot>          — fire weapon',
-    '  fire <slot> <ammo>   — fire with specific ammo',
-    '  target <subsystem>   — change target',
-    '  profile              — scan enemy hull',
-    '  sigint               — full enemy analysis',
-    '  disengage            — attempt to break off',
-    '',
-  ].join('\n');
-}
-
-function cmdFire(args) {
-  if (!playerState.inEncounter) return '  [FIRE] No active encounter.';
-
-  const ship  = getShip();
-  const state = getCombatState();
-  if (!state || !state.enemy) return '  [FIRE] No combat data.';
-
-  const slotId = parseInt(args[0]);
-  if (isNaN(slotId)) return '  [FIRE] Usage: fire <slot number>';
-
-  // Override ammo if specified
-  const slot = ship.weaponSlots.find(s => s.id === slotId);
-  if (!slot || !slot.type) return '  [FIRE] No weapon in slot ' + slotId + '.';
-
-  if (args[1]) {
-    const ammoType = args[1].toUpperCase();
-    if (slot.ammo[ammoType] === undefined) return '  [FIRE] Ammo type "' + ammoType + '" not loaded in slot ' + slotId + '.';
-    slot.activeAmmo = ammoType;
-  }
-
-  const enemy  = state.enemy;
-  const target = state.playerTarget || 'hull_core';
-  const targetSub = enemy.subsystems[target];
-  const targetArm = targetSub ? targetSub.arm : enemy.armor;
-
-  const result = resolveShot(ship, slotId, target, targetArm);
-
-  if (result.error) return ['', '  [FIRE] ' + result.error, ''].join('\n');
-
-  const lines = ['', '  ── WEAPONS FIRE ──────────────────────────────────────────────', ''];
-
-  if (result.jammed) {
-    lines.push('  [JAM] ' + result.weapon + ' jammed.');
-    lines.push('  Condition: ' + slot.condition + '/100  [' + conditionRating(slot.condition) + ']');
-    lines.push('  Repair at next station to reduce jam risk.');
-    lines.push('');
-  } else {
-    lines.push('  ' + result.weapon + '  [' + result.ammoType + ']  burst: ' + result.burst + ' rds');
-
-    // Apply damage to enemy
-    if (targetSub) {
-      const eff = Math.max(1, result.hullDamage - targetSub.arm);
-      targetSub.hp  = Math.max(0, targetSub.hp  - eff);
-      targetSub.sta = Math.max(0, targetSub.sta - Math.round(eff * 1.5));
-      enemy.hull    = Math.max(0, enemy.hull - Math.round(eff * 0.5));
-
-      lines.push('  Hit: ' + target.replace('_', ' ').toUpperCase() + '  Damage: ' + eff);
-      lines.push('  ' + target.replace('_', ' ').toUpperCase() + ' HP: ' + targetSub.hp + '  Hull: ' + enemy.hull + '/' + enemy.hullMax);
-
-      if (targetSub.hp <= 0) {
-        lines.push('  [!] ' + target.replace('_', ' ').toUpperCase() + ' DESTROYED.');
-        if (target === 'hull_core') {
-          playerState.inEncounter = false;
-          playerState.encounter   = null;
-          clearCombatState();
-          lines.push('  Enemy vessel destroyed.');
-          lines.push('  Salvage may be available. Type "salvage".');
-          const killAch1 = triggerAchievements({ type: 'kill', enemyClass: enemy.name, attackerKey: enc.attackerKey });
-          if (killAch1) lines.push(killAch1);
-          lines.push('');
-          return lines.join('\n');
-        }
-      }
-    } else {
-      const eff = Math.max(1, result.hullDamage - (enemy.armor || 0));
-      enemy.hull = Math.max(0, enemy.hull - eff);
-      lines.push('  Hull hit.  Damage: ' + eff + '  Enemy hull: ' + enemy.hull + '/' + enemy.hullMax);
-    }
-
-    lines.push('  Weapon condition: ' + result.conditionAfter + '/100  [' + result.conditionRating + ']');
-    if (result.conditionBefore !== result.conditionRating) {
-      const warnings = {
-        WORN:     '  [WARN] ' + result.weapon + ' wearing. Jam risk increasing.',
-        DEGRADED: '  [WARN] ' + result.weapon + ' degraded. Performance compromised.',
-        CRITICAL: '  [!!] ' + result.weapon + ' CRITICAL. High jam probability. Repair immediately.',
-      };
-      if (warnings[result.conditionRating]) lines.push(warnings[result.conditionRating]);
-    }
-    lines.push('  Ammo remaining: ' + (slot.ammo[slot.activeAmmo] || 0) + ' rds');
-    lines.push('');
-
-    // Enemy destroyed?
-      if (enemy.hull <= 0) {
-      playerState.inEncounter = false;
-      playerState.encounter   = null;
-      clearCombatState();
-      lines.push('  Enemy vessel destroyed.');
-      lines.push('  Salvage may be available. Type "salvage".');
-      const killAch2 = triggerAchievements({ type: 'kill', enemyClass: enemy.name, attackerKey: enc.attackerKey });
-      if (killAch2) lines.push(killAch2);
-      lines.push('');
-      return lines.join('\n');
-    }
-
-    // Enemy fires back
-    const counterResult = enemyAttack(enemy, ship);
-    if (counterResult && counterResult.hit) {
-      ship.hull = Math.max(0, ship.hull - counterResult.damage);
-      lines.push('  ── RETURN FIRE ───────────────────────────────────────────────');
-      lines.push('  Enemy hit your hull.  Damage: -' + counterResult.damage + '  Hull: ' + ship.hull + '/' + ship.hullMax);
-      lines.push('');
-      if (ship.hull <= 0) return handleDeath('destroyed in combat with ' + enc.attacker.name);
-      const surviveAch = triggerAchievements({ type: 'survived_combat', hullPct: Math.round((ship.hull / ship.hullMax) * 100), attackerKey: enc.attackerKey });
-      if (surviveAch) lines.push(surviveAch);
-    } else if (counterResult && counterResult.missed) {
-      lines.push('  Enemy fires — missed.');
-      lines.push('');
-    }
-  }
-
-  lines.push(renderCombatOptions());
-  return lines.join('\n');
-}
-
-function cmdTarget(args) {
-  if (!playerState.inEncounter) return '  [TARGET] No active encounter.';
-  const state = getCombatState();
-  if (!state || !state.enemy) return '  [TARGET] No combat data.';
-
-  const enemy = state.enemy;
-  if (!enemy.profiled && !enemy.siginted) {
-    return ['', '  [TARGET] Run "profile" first to reveal enemy subsystems.', ''].join('\n');
-  }
-
-  const query = args.join('_').toLowerCase();
-  const subsystems = Object.keys(enemy.subsystems);
-  const match = subsystems.find(k => k.includes(query) || query.includes(k.replace('_', '')));
-
-  if (!match) {
-    return [
-      '',
-      '  [TARGET] Unknown subsystem. Available:',
-      ...subsystems.map(k => '    — ' + k.replace('_', ' ')),
-      '',
-    ].join('\n');
-  }
-
-  state.playerTarget = match;
-  return ['', '  [TARGET] Targeting: ' + match.replace('_', ' ').toUpperCase(), ''].join('\n');
-}
-
-function cmdProfile() {
-  if (!playerState.inEncounter) return '  [PROFILE] No active encounter.';
-  const state = getCombatState();
-  const ship  = getShip();
-  if (!state || !state.enemy) return '  [PROFILE] No combat data.';
-
-  const powerCost = 10;
-  if (ship.powerCore.current < powerCost) {
-    return ['', '  [PROFILE] Insufficient power.  Core: ' + ship.powerCore.current + '/' + ship.powerCore.max, ''].join('\n');
-  }
-
-  drainPower(ship, powerCost);
-  state.enemy.profiled = true;
-  return renderEnemyProfile(state.enemy);
-}
-
-function cmdSigint() {
-  if (!playerState.inEncounter) return '  [SIGINT] No active encounter.';
-  const state = getCombatState();
-  const ship  = getShip();
-  if (!state || !state.enemy) return '  [SIGINT] No combat data.';
-
-  if (!state.enemy.profiled) {
-    return ['', '  [SIGINT] Run "profile" first.', ''].join('\n');
-  }
-
-  const powerCost = 25;
-  if (ship.powerCore.current < powerCost) {
-    return ['', '  [SIGINT] Insufficient power.  Core: ' + ship.powerCore.current + '/' + ship.powerCore.max, ''].join('\n');
-  }
-
-  drainPower(ship, powerCost);
-  state.enemy.siginted = true;
-
-  // Enemy may detect the scan
-  if (Math.random() < 0.3) {
-    const damage = 5 + Math.floor(Math.random() * 10);
-    ship.hull = Math.max(0, ship.hull - damage);
-    const result = renderEnemyProfile(state.enemy);
-    return result + '\n  [!] They detected your scan. Hull damage: -' + damage + '  Hull: ' + ship.hull + '/' + ship.hullMax + '\n';
-  }
-
-  return renderEnemyProfile(state.enemy);
-}
-
-function cmdYield() {
-  if (!playerState.inEncounter) return '  [YIELD] No active encounter.';
-  const enc  = playerState.encounter;
-  const want = enc.attacker.want;
-
-  playerState.inEncounter = false;
-  playerState.encounter   = null;
-  clearCombatState();
-
-  const lines = ['', '  [YIELD] You cut your drive and broadcast surrender.', ''];
-
-  if (want === 'cargo' || want === 'scrip') {
-    if (playerState.veydrite > 0) {
-      lines.push('  They take your veydrite. All ' + playerState.veydrite + ' kg.');
-      playerState.veydrite = 0;
-    }
-    if (playerState.credits > 100) {
-      const taken = Math.floor(playerState.credits * 0.4);
-      playerState.credits -= taken;
-      lines.push('  They take ' + taken + ' CR.');
-    }
-  } else if (want === 'expulsion') {
-    lines.push('  They escort you to the jump point.');
-    const repResult = adjustRep(playerState.dockedFactionKey || 'colonial', -5, 'Expelled from controlled space');
-    if (repResult) lines.push(renderRepChange(repResult));
-  } else {
-    lines.push('  They take nothing. They just watch you.');
-    lines.push('  The contact disappears from sensors.');
-  }
-
-  lines.push('');
-  lines.push('  You are clear. For now.');
-  lines.push('');
-  return lines.join('\n');
-}
-
-function handleDeath(cause) {
-  recordDeath(playerState, cause);
-  deleteSave();
-  playerState.isDead     = true;
-  playerState.deathCause = cause;
-  return '__DEATH__';
-}
-
-// ── Ping ──────────────────────────────────────
-
-function cmdPing() {
-  if (!playerState.location) return '  [PING] No location fix.';
-
-  const ship = getShip();
-  const powerCost = 5;
-  if (ship.powerCore.current < powerCost) {
-    return ['', '  [PING] Insufficient power for gravimetric sweep.', '  Core: ' + ship.powerCore.current + '/' + ship.powerCore.max, ''].join('\n');
-  }
-
-  const loc     = playerState.location;
-  const q       = galaxy.quadrants[loc.quadrantIndex];
-  const cluster = loc.clusterName
-    ? q && q.clusters.find(c => c.name === loc.clusterName)
-    : q && q.clusters[loc.clusterIndex || 0];
-  const sys     = cluster && cluster.systems.find(s => s.name === loc.systemName);
-  if (!sys) return '  [ERROR] Location data corrupted.';
-
-  drainPower(ship, powerCost);
-
-  const isRepeatPing = currentContacts !== null;
-
-  if (isRepeatPing) {
-    const roll = Math.random();
-    if (roll < 0.02) {
-      const validContacts = currentContacts.filter(c => !c.xeno);
-      if (validContacts.length >= 2) {
-        const c1 = validContacts[Math.floor(Math.random() * validContacts.length)];
-        let c2   = validContacts[Math.floor(Math.random() * validContacts.length)];
-        while (c2 === c1) c2 = validContacts[Math.floor(Math.random() * validContacts.length)];
-        const c1idx = currentContacts.indexOf(c1) + 1;
-        const c2idx = currentContacts.indexOf(c2) + 1;
-        if (Math.random() < 0.6) currentContacts.splice(currentContacts.indexOf(c2), 1);
-        const lines = ['', '  [PING] Gravimetric sweep complete.', '  ' + currentContacts.length + ' contact(s) detected.', ''];
-        currentContacts.forEach((c, i) => {
-          lines.push(c.resolved && !c.xeno
-            ? (c.dark ? '  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark' : '  ◈ [' + (i+1) + '] ' + c.shipClass + ' — ' + c.registry + (c.shipName ? '\n       "' + c.shipName + '"' : ''))
-            : '  ◈ [' + (i+1) + '] ' + (c.xeno ? 'mass-unknown' : c.mass));
-        });
-        lines.push('');
-        lines.push('  [!] Weapons discharge detected — contacts ' + c1idx + ' and ' + c2idx + '.');
-        lines.push('  One contact is no longer responding.');
-        lines.push('');
-        if (sys) contactCache[sys.name] = currentContacts;
-        const anyResolved = currentContacts.some(c => c.resolved);
-        updateAuspexTraffic(currentContacts, anyResolved ? 'mixed' : false);
-        return lines.join('\n');
-      }
-    } else if (roll < 0.05) {
-      const removable = currentContacts.filter(c => !c.xeno);
-      if (removable.length > 0) {
-        const gone = removable[Math.floor(Math.random() * removable.length)];
-        currentContacts.splice(currentContacts.indexOf(gone), 1);
-      }
-    } else if (roll < 0.08) {
-      const newContact = generateContacts(sys, q.state);
-      if (newContact.length > 0) currentContacts.push(newContact[0]);
-    }
-  } else {
-    if (contactCache[sys.name]) {
-      currentContacts = contactCache[sys.name];
-    } else {
-      currentContacts = generateContacts(sys, q.state);
-      contactCache[sys.name] = currentContacts;
-    }
-  }
-
-  if (sys) contactCache[sys.name] = currentContacts;
-  const anyResolved = currentContacts.some(c => c.resolved);
-  updateAuspexTraffic(currentContacts, anyResolved ? 'mixed' : false);
-
-  if (currentContacts.length === 0) {
-    return ['', '  [PING] Gravimetric sweep complete.', '  No contacts in local space.', '  Power used: ' + powerCost + ' — Core: ' + ship.powerCore.current + '/' + ship.powerCore.max, ''].join('\n');
-  }
-
-  const lines = ['', '  [PING] Gravimetric sweep complete.', '  ' + currentContacts.length + ' contact(s) detected.', '  Power used: ' + powerCost + ' — Core: ' + ship.powerCore.current + '/' + ship.powerCore.max, ''];
-  currentContacts.forEach((c, i) => {
-    if (c.resolved && !c.xeno) {
-      if (c.dark) {
-        lines.push('  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark');
-      } else {
-        lines.push('  ◈ [' + (i+1) + '] ' + c.shipClass + ' — ' + c.registry);
-        if (c.shipName) lines.push('       "' + c.shipName + '"');
-      }
-    } else {
-      lines.push('  ◈ [' + (i+1) + '] ' + (c.xeno ? 'mass-unknown' : c.mass));
-    }
-  });
-  lines.push('');
-  lines.push('  Type "resolve <number>" to identify a contact.');
-  lines.push('');
-  return lines.join('\n');
-}
-
-// ── Resolve ───────────────────────────────────
-
-function cmdResolve(args) {
-  if (!playerState.location) return '  [RESOLVE] No location fix.';
-  if (!currentContacts || currentContacts.length === 0) {
-    return ['', '  [RESOLVE] No contacts to resolve. Run "ping" first.', ''].join('\n');
-  }
-
-  const ship = getShip();
-  const powerCost = Math.max(3, Math.round(currentContacts.length * 1.5));
-  if (ship.powerCore.current < powerCost) {
-    return ['', '  [RESOLVE] Insufficient power.  Core: ' + ship.powerCore.current + '/' + ship.powerCore.max, ''].join('\n');
-  }
-
-  if (args[0] === 'all') {
-    drainPower(ship, powerCost * 2);
-    const scanDays = Math.max(1, Math.floor(currentContacts.length * 0.4));
-    playerState.currentDay += scanDays;
-    const lines = ['', '  [RESOLVE] Scanning all contacts...', '  Scan duration: ' + scanDays + ' day(s).  Day: ' + playerState.currentDay, ''];
-    currentContacts.forEach((c, i) => {
-      if (c.xeno) { lines.push('  ◈ [' + (i+1) + '] [NO SIGNATURE] — does not resolve'); }
-      else { c.resolved = true; lines.push(c.dark ? '  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark' : '  ◈ [' + (i+1) + '] ' + c.shipClass + ' — ' + c.registry + (c.shipName ? '\n       "' + c.shipName + '"' : '')); }
-    });
-    lines.push('');
-    updateAuspexTraffic(currentContacts, true);
-    return lines.join('\n');
-  }
-
-  const index = parseInt(args[0]) - 1;
-  if (isNaN(index) || index < 0 || index >= currentContacts.length) {
-    return ['', '  [RESOLVE] Invalid contact.  Usage: resolve <1-' + currentContacts.length + '>  or  resolve all', ''].join('\n');
-  }
-
-  const contact  = currentContacts[index];
-  const scanDays = Math.max(0, Math.round(currentContacts.length * 0.15));
-
-  if (contact.resolved) {
-    const lines = ['', '  [RESOLVE] Contact ' + (index+1) + ' already resolved.', ''];
-    if (contact.xeno) { lines.push('  ◈ [' + (index+1) + '] [NO SIGNATURE] — does not resolve'); }
-    else if (contact.dark) { lines.push('  ◈ [' + (index+1) + '] [NO SIGNATURE] — running dark'); }
-    else { lines.push('  ◈ [' + (index+1) + '] ' + contact.shipClass + ' — ' + contact.registry); if (contact.shipName) lines.push('       "' + contact.shipName + '"'); }
-    lines.push('');
-    return lines.join('\n');
-  }
-
-  drainPower(ship, powerCost);
-
-  if (contact.xeno) {
-    if (scanDays > 0) playerState.currentDay += scanDays;
-    return ['', '  [RESOLVE] Scanning contact ' + (index+1) + '...', scanDays > 0 ? '  Scan duration: ' + scanDays + ' day(s).  Day: ' + playerState.currentDay : '', '', '  ◈ [' + (index+1) + '] [NO SIGNATURE]', '  Contact does not resolve. Signal structure is anomalous.', ''].join('\n');
-  }
-
-  contact.resolved = true;
-  if (scanDays > 0) playerState.currentDay += scanDays;
-
-  const lines = ['', '  [RESOLVE] Scanning contact ' + (index+1) + '...', scanDays > 0 ? '  Scan duration: ' + scanDays + ' day(s).  Day: ' + playerState.currentDay : '', ''];
-  if (contact.dark) { lines.push('  ◈ [' + (index+1) + '] [NO SIGNATURE] — running dark'); lines.push('  No transponder. No registry ping.'); }
-  else { lines.push('  ◈ [' + (index+1) + '] ' + contact.shipClass + ' — ' + contact.registry); if (contact.shipName) lines.push('       "' + contact.shipName + '"'); }
-  lines.push('');
-  updateAuspexTraffic(currentContacts, 'mixed');
-  return lines.join('\n');
-}
-
-// ── Rep ───────────────────────────────────────
 
 function cmdRep() {
   const sys = getCurrentSystem();
