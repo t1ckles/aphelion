@@ -880,6 +880,8 @@ const NAMES = {
     'Joint Registry','Combined Authority','Allied Commission','United Board'
   ],
 
+  ],
+  establishment: [
      // The good originals — keep all of these
     'The Cargo Hold','Last Shift','The Depot','The Anchor','Dry Dock',
     'The Forward Mess','Miner\'s Rest','The Gyre','Transfer Lounge',
