@@ -504,6 +504,7 @@ function handleCommand(raw) {
     case 'where':
     case 'look':      return cmdWhere();
     case 'move':      return cmdMove(args);
+    case 'area':       return cmdArea();
     case 'system':    return cmdSystem();
     case 'dock':      return cmdDock();
     case 'undock':    return cmdUndock();
@@ -3278,6 +3279,434 @@ function cmdRep() {
   const sys = getCurrentSystem();
   return renderRep(sys);
 }
+
+// ── Area command ──────────────────────────────
+ 
+// Compartment metadata — display names and available commands per compartment.
+const COMPARTMENT_META = {
+  bridge: {
+    label:    'Bridge',
+    commands: ['nav', 'fold', 'blindfold', 'map', 'galaxy', 'where', 'system',
+               'ping', 'resolve', 'scan', 'deepscan', 'clusterdeepscan',
+               'status', 'systems'],
+  },
+  engineering: {
+    label:    'Engineering',
+    commands: ['power', 'recharge', 'repair drive', 'emergency refine',
+               'fold cell status', 'power management', 'systems'],
+  },
+  cargo: {
+    label:    'Cargo Bay',
+    commands: ['inventory', 'jettison', 'transfer', 'manifest'],
+  },
+  quarters: {
+    label:    'Crew Quarters',
+    commands: ['rest', 'crew status'],
+  },
+  airlock: {
+    label:    'Airlock',
+    commands: ['deploy tool', 'retrieve tool', 'swap pod'],
+  },
+  reserve_tank: {
+    label:    'Reserve Tank Bay',
+    commands: ['emergency refine', 'check reserve', 'fill reserve'],
+  },
+  extraction: {
+    label:    'Extraction Bay',
+    commands: ['mine', 'survey', 'pod status', 'ore manifest'],
+  },
+  salvage_bay: {
+    label:    'Salvage Bay',
+    commands: ['salvage', 'scan log', 'salvage manifest'],
+  },
+  refinery: {
+    label:    'Refinery',
+    commands: ['refine', 'refine all', 'yield check'],
+  },
+  weapons_bay: {
+    label:    'Weapons Bay',
+    commands: ['load', 'unload', 'weapon status', 'ammo count'],
+  },
+  flight_deck: {
+    label:    'Flight Deck',
+    commands: ['launch', 'recall', 'flight status'],
+  },
+};
+ 
+// ---------------------------------------------------------------------------
+// Procedural flavor text generators — one per compartment.
+// Each receives the ship object and returns a single descriptive line.
+// Text reacts to power state, hull integrity, subsystem damage, and docked state.
+// ---------------------------------------------------------------------------
+ 
+function areaFlavor_bridge(ship, docked) {
+  const pwr   = powerStatus(ship);
+  const hull  = Math.round((ship.hull / ship.hullMax) * 100);
+  const sensor = ship.subsystems && ship.subsystems.sensor_suite;
+  const sensorDamaged = sensor && sensor.hp < sensor.hpMax * 0.5;
+ 
+  if (pwr === 'EMERGENCY') return 'The displays are dim. Emergency lighting only. Half the consoles are dark.';
+  if (pwr === 'CRITICAL')  return 'Readouts flicker. The navigation array is pulling from reserve. Fold calculations are suspended.';
+  if (sensorDamaged)       return 'The sensor suite is degraded. Auspex returns incomplete data. Ping range is reduced.';
+  if (hull < 30)           return 'Warning indicators crowd the damage panel. The hull is not in good shape. Neither is the mood on this bridge.';
+  if (docked)              return 'Shore power connected. All consoles nominal. The station feed scrolls quietly in the background.';
+  if (pwr === 'FULL')      return 'All displays nominal. Navigation array locked. The galaxy is waiting.';
+  return 'Consoles nominal. Sensor array passive. Nothing unusual on the boards.';
+}
+ 
+function areaFlavor_engineering(ship) {
+  const drive  = ship.subsystems && ship.subsystems.drive;
+  const pcore  = ship.subsystems && ship.subsystems.power_core;
+  const pwr    = powerStatus(ship);
+  const driveDamaged  = drive  && drive.hp  < drive.hpMax  * 0.5;
+  const pcoreDamaged  = pcore  && pcore.hp  < pcore.hpMax  * 0.5;
+ 
+  if (pwr === 'EMERGENCY')  return 'The power core is nearly spent. The recharge coils are cycling at minimum. Everything else is waiting.';
+  if (pwr === 'CRITICAL')   return 'Core output is low. The drive is running on what it has. Do not attempt a fold from this state.';
+  if (driveDamaged && pcoreDamaged) return 'Both the drive and the power core are showing significant damage. This ship needs a station.';
+  if (driveDamaged)         return 'The drive is damaged. Nav and fold functions are degraded. Repair before attempting transit.';
+  if (pcoreDamaged)         return 'The power core is running below rated output. Recharge rate is reduced. Dock when possible.';
+  if (pwr === 'FULL')       return 'Core at capacity. Drive nominal. Fold cells loaded. Engineering is in good shape.';
+  return 'Core cycling normally. Drive nominal. The hum of the power plant fills the space.';
+}
+ 
+function areaFlavor_cargo(ship, playerState) {
+  const cargoHold = ship.subsystems && ship.subsystems.cargo_hold;
+  const holdDamaged = cargoHold && cargoHold.hp < cargoHold.hpMax * 0.5;
+  const hasOre      = playerState.oreHold && Object.keys(playerState.oreHold).some(k => playerState.oreHold[k] > 0);
+  const hasVeyd     = playerState.veydrite > 0;
+  const podSolid    = playerState.orePods && playerState.orePods.solid > 0;
+ 
+  if (holdDamaged) return 'The hold is showing structural damage. Cargo integrity is at risk. Do not jettison unless necessary.';
+  if (hasOre && podSolid) return 'Ore pods are loaded. The hold smells like rock dust and machine heat. Good work.';
+  if (hasVeyd) return 'Veydrite in the hold. ' + playerState.veydrite + ' kg. It sits quiet, the way valuable things do.';
+  if (!hasVeyd && !hasOre) return 'The hold is empty. It echoes. That is either a problem or an opportunity, depending on where you are.';
+  return 'Hold integrity nominal. Cargo secured.';
+}
+ 
+function areaFlavor_quarters(ship) {
+  const life = ship.subsystems && ship.subsystems.life_support;
+  const crew = ship.subsystems && ship.subsystems.crew_quarters;
+  const lifeDamaged = life && life.hp < life.hpMax * 0.5;
+  const crewDamaged = crew && crew.hp < crew.hpMax * 0.5;
+  const hull = Math.round((ship.hull / ship.hullMax) * 100);
+ 
+  if (lifeDamaged) return 'Life support is degraded. The air is thin. CO2 scrubbers are running at reduced capacity. This is urgent.';
+  if (crewDamaged) return 'The quarters took damage. Some bunks are unsealed. The structural integrity report makes for uncomfortable reading.';
+  if (hull < 30)   return 'The hull damage is audible from here. The ship makes sounds it should not make. Sleep is unlikely.';
+  return 'Quarters nominal. Life support cycling. It is not comfortable, but it is adequate.';
+}
+ 
+function areaFlavor_airlock(ship, docked) {
+  const hull = Math.round((ship.hull / ship.hullMax) * 100);
+ 
+  if (docked)    return 'Docked and sealed. The station umbilical is connected. External hardpoints are accessible for pod management.';
+  if (hull < 30) return 'The outer hull is compromised. EVA is not recommended in this condition. The void is less forgiving than usual when you are already damaged.';
+  return 'Airlock sealed. Pressure nominal. External hardpoints accessible. The dark is right on the other side of that door.';
+}
+ 
+function areaFlavor_reserve_tank(ship, playerState) {
+  const reserve = playerState.reserveVeydrite || 0;
+  const pct     = Math.round((reserve / 15) * 100);
+ 
+  if (reserve <= 0)  return 'The reserve tank is empty. You have no emergency fold capability. Fill this before entering Collapsed space.';
+  if (reserve < 5)   return 'Reserve critically low — ' + reserve.toFixed(1) + ' kg. Less than one emergency fold available. Prioritize refill.';
+  if (reserve < 10)  return 'Reserve at ' + reserve.toFixed(1) + ' kg — ' + pct + '%. One emergency fold available if you are careful.';
+  if (reserve >= 15) return 'Reserve full — 15 kg. One emergency fold guaranteed. The tank is doing its job.';
+  return 'Reserve at ' + reserve.toFixed(1) + ' kg — ' + pct + '%. Emergency fold capability standing by.';
+}
+ 
+function areaFlavor_extraction(ship, playerState) {
+  const miningSlot = ship.utilitySlots && ship.utilitySlots.find(s => s.type === 'mining_auger');
+  const podSolid   = playerState.orePods && playerState.orePods.solid || 0;
+  const podCap     = 50;
+ 
+  if (!miningSlot)           return 'No mining tool detected in utility slots. The extraction bay is quiet. Install an Auger-1 to begin operations.';
+  if (podSolid >= podCap)    return 'Ore pod at capacity. The bay is full. Offload at a station before running another extraction cycle.';
+  if (podSolid > podCap * 0.7) return 'Ore pod ' + Math.round((podSolid / podCap) * 100) + '% full. Room for more, but plan your next offload.';
+  if (miningSlot.condition < 40) return 'The Auger array is showing wear — condition ' + miningSlot.condition + '/100. Operations will continue but plan for repair.';
+  return 'Auger array nominal. Ore pod ready. Run survey node to identify extraction targets.';
+}
+ 
+function areaFlavor_salvage_bay(ship) {
+  const salvageSlot = ship.utilitySlots && ship.utilitySlots.find(s => s.type === 'salvage_cutter');
+ 
+  if (!salvageSlot)              return 'No salvage tool detected. The Harrow mount is empty. Install a Harrow-7 to begin salvage operations.';
+  if (salvageSlot.condition < 20) return 'Harrow-7 is in critical condition — ' + salvageSlot.condition + '/100. Jam probability is high. Repair before operating.';
+  if (salvageSlot.condition < 40) return 'Harrow-7 is worn — condition ' + salvageSlot.condition + '/100. It will work, but not reliably. Repair when you can.';
+  return 'Harrow-7 nominal. Ready for salvage operations. Find a ruin site, a debris field, or a veydrite deposit.';
+}
+ 
+function areaFlavor_refinery(ship, docked) {
+  const hasOre = true; // check in cmdArea directly
+ 
+  if (!docked) return 'The refinery is offline in open space. Dock at a station to access refinery services, or use onboard processing if this hull supports it.';
+  return 'Refinery systems online. Station connection active. Ore ready for processing.';
+}
+ 
+function areaFlavor_weapons_bay(ship) {
+  const weapons     = ship.weaponSlots || [];
+  const armed       = weapons.filter(s => s.type);
+  const totalAmmo   = armed.reduce((n, s) => n + Object.values(s.ammo || {}).reduce((a, b) => a + b, 0), 0);
+  const weapArray   = ship.subsystems && ship.subsystems.weapons_array;
+  const arrayDamaged = weapArray && weapArray.hp < weapArray.hpMax * 0.5;
+ 
+  if (arrayDamaged)    return 'Weapons array is damaged. Fire control is degraded. Accuracy is reduced. Repair before entering contested space.';
+  if (armed.length === 0) return 'No weapons installed. The bay is cold. The ship is not armed. Plan accordingly.';
+  if (totalAmmo === 0) return armed.length + ' weapon(s) installed, no ammunition loaded. The guns are present. The rounds are not.';
+  if (totalAmmo < 20)  return 'Ammunition running low across ' + armed.length + ' slot(s). Resupply at next station.';
+  return armed.length + ' weapon(s) nominal. ' + totalAmmo + ' rounds across all slots. Weapons array standing by.';
+}
+ 
+function areaFlavor_flight_deck(ship) {
+  return 'Flight deck pressurized. Fighter bays standing by. Launch authority requires Flight Deck command.';
+}
+ 
+// ---------------------------------------------------------------------------
+// Subsystem status relevant to each compartment.
+// Returns an array of { label, value, alert } objects for display.
+// ---------------------------------------------------------------------------
+ 
+function areaSubsystems(compartmentId, ship, playerState) {
+  const s = ship.subsystems || {};
+  const pwr = ship.powerCore || {};
+ 
+  const fmt = (sub) => {
+    if (!sub) return null;
+    const pct = Math.round((sub.hp / sub.hpMax) * 100);
+    const alert = pct < 30 ? 'CRITICAL' : pct < 60 ? 'DAMAGED' : null;
+    return { label: sub.name, value: pct + '%  HP: ' + sub.hp + '/' + sub.hpMax, alert };
+  };
+ 
+  const powerRow = {
+    label: 'Power Core',
+    value: pwr.current + '/' + pwr.max + '  [' + powerStatus(ship) + ']',
+    alert: powerStatus(ship) === 'EMERGENCY' ? 'EMERGENCY'
+         : powerStatus(ship) === 'CRITICAL'  ? 'CRITICAL' : null,
+  };
+ 
+  const cellRow = {
+    label: 'Fold Cells',
+    value: (playerState.foldCells || 0) + ' / 20',
+    alert: (playerState.foldCells || 0) < 3 ? 'LOW' : null,
+  };
+ 
+  switch (compartmentId) {
+    case 'bridge':
+      return [
+        powerRow,
+        cellRow,
+        fmt(s.sensor_suite),
+        fmt(s.weapons_array),
+      ].filter(Boolean);
+ 
+    case 'engineering':
+      return [
+        powerRow,
+        cellRow,
+        fmt(s.power_core),
+        fmt(s.drive),
+      ].filter(Boolean);
+ 
+    case 'cargo':
+      return [
+        fmt(s.cargo_hold),
+        {
+          label: 'Veydrite Hold',
+          value: (playerState.veydrite || 0) + ' kg',
+          alert: null,
+        },
+        {
+          label: 'Ore Pod (solid)',
+          value: ((playerState.orePods && playerState.orePods.solid) || 0) + ' / 50 units',
+          alert: null,
+        },
+      ].filter(Boolean);
+ 
+    case 'quarters':
+      return [
+        fmt(s.life_support),
+        fmt(s.crew_quarters),
+        fmt(s.galley),
+      ].filter(Boolean);
+ 
+    case 'airlock':
+      return [
+        {
+          label: 'Hull Integrity',
+          value: ship.hull + '/' + ship.hullMax + '  (' + Math.round((ship.hull / ship.hullMax) * 100) + '%)',
+          alert: ship.hull < ship.hullMax * 0.3 ? 'CRITICAL' : ship.hull < ship.hullMax * 0.6 ? 'DAMAGED' : null,
+        },
+        fmt(s.hull_core),
+      ].filter(Boolean);
+ 
+    case 'reserve_tank':
+      return [
+        {
+          label: 'Reserve Veydrite',
+          value: ((playerState.reserveVeydrite || 0)).toFixed(1) + ' / 15 kg',
+          alert: (playerState.reserveVeydrite || 0) < 5 ? 'LOW' : null,
+        },
+        powerRow,
+      ].filter(Boolean);
+ 
+    case 'extraction':
+      return [
+        powerRow,
+        {
+          label: 'Ore Pod (solid)',
+          value: ((playerState.orePods && playerState.orePods.solid) || 0) + ' / 50 units',
+          alert: null,
+        },
+        {
+          label: 'Ore Pod (liquid)',
+          value: ((playerState.orePods && playerState.orePods.liquid) || 0) + ' / 50 units',
+          alert: null,
+        },
+      ].filter(Boolean);
+ 
+    case 'salvage_bay':
+      return [
+        powerRow,
+        {
+          label: 'Veydrite Hold',
+          value: (playerState.veydrite || 0) + ' kg',
+          alert: null,
+        },
+        {
+          label: 'Reserve Tank',
+          value: ((playerState.reserveVeydrite || 0)).toFixed(1) + ' / 15 kg',
+          alert: (playerState.reserveVeydrite || 0) < 5 ? 'LOW' : null,
+        },
+      ].filter(Boolean);
+ 
+    case 'refinery':
+      return [
+        fmt(s.cargo_hold),
+        {
+          label: 'Ore in Hold',
+          value: playerState.oreHold
+            ? Object.values(playerState.oreHold).reduce((a, b) => a + b, 0) + ' units'
+            : '0 units',
+          alert: null,
+        },
+      ].filter(Boolean);
+ 
+    case 'weapons_bay':
+      return [
+        powerRow,
+        fmt(s.weapons_array),
+        {
+          label: 'Ammo Bay',
+          value: (ship.ammoBayUsed || 0) + ' / ' + (ship.ammoBayMax || 200) + ' kg',
+          alert: null,
+        },
+      ].filter(Boolean);
+ 
+    case 'flight_deck':
+      return [
+        powerRow,
+        {
+          label: 'Fighter Bays',
+          value: '4 bays',
+          alert: null,
+        },
+      ].filter(Boolean);
+ 
+    default:
+      return [powerRow].filter(Boolean);
+  }
+}
+ 
+// ---------------------------------------------------------------------------
+// Main area command
+// ---------------------------------------------------------------------------
+ 
+function cmdArea() {
+  const ship        = getShip();
+  const compartment = playerState.currentCompartment || 'bridge';
+  const meta        = COMPARTMENT_META[compartment];
+ 
+  if (!ship)  return '  [AREA] No ship data available.';
+  if (!meta)  return '  [AREA] Compartment not recognized: ' + compartment;
+ 
+  const label   = meta.label;
+  const docked  = playerState.docked;
+ 
+  // Generate procedural flavor text
+  const flavor = {
+    bridge:      () => areaFlavor_bridge(ship, docked),
+    engineering: () => areaFlavor_engineering(ship),
+    cargo:       () => areaFlavor_cargo(ship, playerState),
+    quarters:    () => areaFlavor_quarters(ship),
+    airlock:     () => areaFlavor_airlock(ship, docked),
+    reserve_tank:() => areaFlavor_reserve_tank(ship, playerState),
+    extraction:  () => areaFlavor_extraction(ship, playerState),
+    salvage_bay: () => areaFlavor_salvage_bay(ship),
+    refinery:    () => areaFlavor_refinery(ship, docked),
+    weapons_bay: () => areaFlavor_weapons_bay(ship),
+    flight_deck: () => areaFlavor_flight_deck(ship),
+  }[compartment];
+ 
+  const flavorText = flavor ? flavor() : 'Systems nominal.';
+ 
+  // Get relevant subsystem status
+  const subsystems = areaSubsystems(compartment, ship, playerState);
+ 
+  // Filter commands to those on this ship
+  const availableCompartments = (ship.compartments && Array.isArray(ship.compartments))
+    ? ship.compartments
+    : ['bridge', 'engineering', 'cargo', 'quarters', 'airlock'];
+ 
+  const lines = [
+    '',
+    '  ── ' + label.toUpperCase() + ' ──────────────────────────────────────────────────',
+    '',
+    '  ' + flavorText,
+    '',
+  ];
+ 
+  // Subsystem status block
+  if (subsystems.length > 0) {
+    lines.push('  ── STATUS ───────────────────────────────────────────────────');
+    lines.push('');
+    subsystems.forEach(sub => {
+      const alertTag = sub.alert ? '  [' + sub.alert + ']' : '';
+      lines.push('  ' + sub.label.padEnd(20) + sub.value + alertTag);
+    });
+    lines.push('');
+  }
+ 
+  // Available commands in this compartment
+  lines.push('  ── AVAILABLE HERE ───────────────────────────────────────────');
+  lines.push('');
+ 
+  const cmds = meta.commands;
+  // Display in two columns
+  for (let i = 0; i < cmds.length; i += 2) {
+    const left  = cmds[i]   ? cmds[i].padEnd(28)   : '';
+    const right = cmds[i+1] ? cmds[i+1]             : '';
+    lines.push('  ' + left + right);
+  }
+ 
+  lines.push('');
+ 
+  // Other compartments — quick move list
+  const otherCompartments = availableCompartments.filter(c => c !== compartment);
+  if (otherCompartments.length > 0) {
+    lines.push('  ── OTHER COMPARTMENTS ───────────────────────────────────────');
+    lines.push('');
+    otherCompartments.forEach(c => {
+      const m = COMPARTMENT_META[c];
+      if (m) lines.push('  move ' + c.replace('_', ' ').padEnd(22) + m.label);
+    });
+    lines.push('');
+  }
+ 
+  return lines.join('\n');
+}
+ 
+ 
 
 // ── Charts ────────────────────────────────────
 
