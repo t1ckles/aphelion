@@ -3279,6 +3279,377 @@ function cmdRecord() {
 
 // ── Deepscan ──────────────────────────────────
 
+function cmdPing() {
+  if (!playerState.location) return '  [PING] No location fix.';
+
+  const ship = getShip();
+  const powerCost = 5;
+  if (ship.powerCore.current < powerCost) {
+    return ['', '  [PING] Insufficient power for gravimetric sweep.', '  Core: ' + ship.powerCore.current + '/' + ship.powerCore.max, ''].join('\n');
+  }
+
+  const loc     = playerState.location;
+  const q       = galaxy.quadrants[loc.quadrantIndex];
+  const cluster = loc.clusterName
+    ? q && q.clusters.find(c => c.name === loc.clusterName)
+    : q && q.clusters[loc.clusterIndex || 0];
+  const sys     = cluster && cluster.systems.find(s => s.name === loc.systemName);
+  if (!sys) return '  [ERROR] Location data corrupted.';
+
+  drainPower(ship, powerCost);
+
+  const isRepeatPing = currentContacts !== null;
+
+  if (isRepeatPing) {
+    const roll = Math.random();
+    if (roll < 0.02) {
+      const validContacts = currentContacts.filter(c => !c.xeno);
+      if (validContacts.length >= 2) {
+        const c1 = validContacts[Math.floor(Math.random() * validContacts.length)];
+        let c2   = validContacts[Math.floor(Math.random() * validContacts.length)];
+        while (c2 === c1) c2 = validContacts[Math.floor(Math.random() * validContacts.length)];
+        const c1idx = currentContacts.indexOf(c1) + 1;
+        const c2idx = currentContacts.indexOf(c2) + 1;
+        if (Math.random() < 0.6) currentContacts.splice(currentContacts.indexOf(c2), 1);
+        const lines = ['', '  [PING] Gravimetric sweep complete.', '  ' + currentContacts.length + ' contact(s) detected.', ''];
+        currentContacts.forEach((c, i) => {
+          lines.push(c.resolved && !c.xeno
+            ? (c.dark ? '  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark' : '  ◈ [' + (i+1) + '] ' + c.shipClass + ' — ' + c.registry + (c.shipName ? '\n       "' + c.shipName + '"' : ''))
+            : '  ◈ [' + (i+1) + '] ' + (c.xeno ? 'mass-unknown' : c.mass));
+        });
+        lines.push('');
+        lines.push('  [!] Weapons discharge detected — contacts ' + c1idx + ' and ' + c2idx + '.');
+        lines.push('  One contact is no longer responding.');
+        lines.push('');
+        if (sys) contactCache[sys.name] = currentContacts;
+        const anyResolved = currentContacts.some(c => c.resolved);
+        updateAuspexTraffic(currentContacts, anyResolved ? 'mixed' : false);
+        return lines.join('\n');
+      }
+    } else if (roll < 0.05) {
+      const removable = currentContacts.filter(c => !c.xeno);
+      if (removable.length > 0) {
+        const gone = removable[Math.floor(Math.random() * removable.length)];
+        currentContacts.splice(currentContacts.indexOf(gone), 1);
+      }
+    } else if (roll < 0.08) {
+      const newContact = generateContacts(sys, q.state);
+      if (newContact.length > 0) currentContacts.push(newContact[0]);
+    }
+  } else {
+    if (contactCache[sys.name]) {
+      currentContacts = contactCache[sys.name];
+    } else {
+      currentContacts = generateContacts(sys, q.state);
+      contactCache[sys.name] = currentContacts;
+    }
+  }
+
+  if (sys) contactCache[sys.name] = currentContacts;
+  const anyResolved = currentContacts.some(c => c.resolved);
+  updateAuspexTraffic(currentContacts, anyResolved ? 'mixed' : false);
+
+  if (currentContacts.length === 0) {
+    return ['', '  [PING] Gravimetric sweep complete.', '  No contacts in local space.', '  Power used: ' + powerCost + ' — Core: ' + ship.powerCore.current + '/' + ship.powerCore.max, ''].join('\n');
+  }
+
+  const lines = ['', '  [PING] Gravimetric sweep complete.', '  ' + currentContacts.length + ' contact(s) detected.', '  Power used: ' + powerCost + ' — Core: ' + ship.powerCore.current + '/' + ship.powerCore.max, ''];
+  currentContacts.forEach((c, i) => {
+    if (c.resolved && !c.xeno) {
+      if (c.dark) {
+        lines.push('  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark');
+      } else {
+        lines.push('  ◈ [' + (i+1) + '] ' + c.shipClass + ' — ' + c.registry);
+        if (c.shipName) lines.push('       "' + c.shipName + '"');
+      }
+    } else {
+      lines.push('  ◈ [' + (i+1) + '] ' + (c.xeno ? 'mass-unknown' : c.mass));
+    }
+  });
+  lines.push('');
+  lines.push('  Type "resolve <number>" to identify a contact.');
+  lines.push('');
+  return lines.join('\n');
+}
+
+// ── Resolve ───────────────────────────────────
+
+function cmdResolve(args) {
+  if (!playerState.location) return '  [RESOLVE] No location fix.';
+  if (!currentContacts || currentContacts.length === 0) {
+    return ['', '  [RESOLVE] No contacts to resolve. Run "ping" first.', ''].join('\n');
+  }
+
+  const ship = getShip();
+  const powerCost = Math.max(3, Math.round(currentContacts.length * 1.5));
+  if (ship.powerCore.current < powerCost) {
+    return ['', '  [RESOLVE] Insufficient power.  Core: ' + ship.powerCore.current + '/' + ship.powerCore.max, ''].join('\n');
+  }
+
+  if (args[0] === 'all') {
+    drainPower(ship, powerCost * 2);
+    const scanDays = Math.max(1, Math.floor(currentContacts.length * 0.4));
+    playerState.currentDay += scanDays;
+    const lines = ['', '  [RESOLVE] Scanning all contacts...', '  Scan duration: ' + scanDays + ' day(s).  Day: ' + playerState.currentDay, ''];
+    currentContacts.forEach((c, i) => {
+      if (c.xeno) { lines.push('  ◈ [' + (i+1) + '] [NO SIGNATURE] — does not resolve'); }
+      else { c.resolved = true; lines.push(c.dark ? '  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark' : '  ◈ [' + (i+1) + '] ' + c.shipClass + ' — ' + c.registry + (c.shipName ? '\n       "' + c.shipName + '"' : '')); }
+    });
+    lines.push('');
+    updateAuspexTraffic(currentContacts, true);
+    return lines.join('\n');
+  }
+
+  const index = parseInt(args[0]) - 1;
+  if (isNaN(index) || index < 0 || index >= currentContacts.length) {
+    return ['', '  [RESOLVE] Invalid contact.  Usage: resolve <1-' + currentContacts.length + '>  or  resolve all', ''].join('\n');
+  }
+
+  const contact  = currentContacts[index];
+  const scanDays = Math.max(0, Math.round(currentContacts.length * 0.15));
+
+  if (contact.resolved) {
+    const lines = ['', '  [RESOLVE] Contact ' + (index+1) + ' already resolved.', ''];
+    if (contact.xeno) { lines.push('  ◈ [' + (index+1) + '] [NO SIGNATURE] — does not resolve'); }
+    else if (contact.dark) { lines.push('  ◈ [' + (index+1) + '] [NO SIGNATURE] — running dark'); }
+    else { lines.push('  ◈ [' + (index+1) + '] ' + contact.shipClass + ' — ' + contact.registry); if (contact.shipName) lines.push('       "' + contact.shipName + '"'); }
+    lines.push('');
+    return lines.join('\n');
+  }
+
+  drainPower(ship, powerCost);
+
+  if (contact.xeno) {
+    if (scanDays > 0) playerState.currentDay += scanDays;
+    return ['', '  [RESOLVE] Scanning contact ' + (index+1) + '...', scanDays > 0 ? '  Scan duration: ' + scanDays + ' day(s).  Day: ' + playerState.currentDay : '', '', '  ◈ [' + (index+1) + '] [NO SIGNATURE]', '  Contact does not resolve. Signal structure is anomalous.', ''].join('\n');
+  }
+
+  contact.resolved = true;
+  if (scanDays > 0) playerState.currentDay += scanDays;
+
+  const lines = ['', '  [RESOLVE] Scanning contact ' + (index+1) + '...', scanDays > 0 ? '  Scan duration: ' + scanDays + ' day(s).  Day: ' + playerState.currentDay : '', ''];
+  if (contact.dark) { lines.push('  ◈ [' + (index+1) + '] [NO SIGNATURE] — running dark'); lines.push('  No transponder. No registry ping.'); }
+  else { lines.push('  ◈ [' + (index+1) + '] ' + contact.shipClass + ' — ' + contact.registry); if (contact.shipName) lines.push('       "' + contact.shipName + '"'); }
+  lines.push('');
+  updateAuspexTraffic(currentContacts, 'mixed');
+  return lines.join('\n');
+}
+
+// ── Rep ───────────────────────────────────────
+
+function cmdRep() {
+  const sys = getCurrentSystem();
+  return renderRep(sys);
+}
+
+// ── Charts ────────────────────────────────────
+
+function cmdCharts(args) {
+  const records = playerState.astrographics;
+  if (!records || records.length === 0) {
+    return [
+      '',
+      '  [CHARTS] No astrographic data on record.',
+      '  Run deepscan on systems to generate chart data.',
+      '',
+    ].join('\n');
+  }
+
+  // charts <system name> — show detail for a specific record
+  if (args.length > 0) {
+    const query  = args.join(' ').toLowerCase();
+    const entry  = records.find(r => r.systemName.toLowerCase().includes(query));
+    if (!entry) {
+      return [
+        '',
+        '  [CHARTS] No record matching "' + args.join(' ') + '".',
+        '  Type "charts" to list all records.',
+        '',
+      ].join('\n');
+    }
+
+    const d       = entry.data;
+    const age     = playerState.currentDay - entry.scannedDay;
+    const quality = entry.quality === 'deep' ? 'Deep scan' : 'Basic scan';
+
+    const lines = [
+      '',
+      '  ── CHART RECORD: ' + entry.systemName.toUpperCase() + ' ──────────────────────────',
+      '',
+      '  Quality     : ' + quality + '  (' + entry.units + ' units)',
+      '  Recorded    : Day ' + entry.scannedDay + '  (' + age + ' days ago)',
+      '',
+    ];
+
+    if (entry.quality === 'deep' && d) {
+      const hazardBar  = d.hazard  !== undefined ? '▲'.repeat(d.hazard)  + '△'.repeat(5 - d.hazard)  : '—';
+      const trafficBar = d.traffic !== undefined ? '◉'.repeat(d.traffic) + '○'.repeat(5 - d.traffic) : '—';
+      lines.push('  Star class  : ' + (d.starClass || '—') + '-type');
+      lines.push('  Bodies      : ' + (d.bodyCount  || '—'));
+      lines.push('  State       : ' + (d.state       || '—'));
+      lines.push('  Hazard      : ' + hazardBar);
+      lines.push('  Traffic     : ' + trafficBar);
+      lines.push('  Jump points : ' + (d.jumpPoints  || '—') + ' outbound');
+      lines.push('  Station     : ' + (d.hasStation  ? 'present' : 'none detected'));
+      lines.push('  Veydrite    : ' + (d.hasVeydrite ? 'trace deposits  [VYD]' : 'none detected'));
+      lines.push('  Ruins       : ' + (d.hasRuin     ? 'structural signatures  [RUN]' : 'none detected'));
+    } else {
+      lines.push('  Detail      : basic record only — deepscan for full data');
+    }
+
+    lines.push('');
+    lines.push('  Type "sell astrographics" to sell this record at a Guild station.');
+    lines.push('');
+    return lines.join('\n');
+  }
+
+  // charts — list all records
+  const repScore = getRep('guild');
+  const lines    = [
+    '',
+    '  ── ASTROGRAPHIC RECORDS ──────────────────────────────────────',
+    '',
+    '  ' + records.length + ' system(s) on record.',
+    '',
+  ];
+
+  records.forEach((entry, i) => {
+    const val     = astrographicValue(entry, playerState.currentDay, repScore);
+    const aging   = val.aging ? ' [aging]' : '';
+    const quality = entry.quality === 'deep' ? 'deep' : 'basic';
+    const age     = playerState.currentDay - entry.scannedDay;
+    lines.push(
+      '  [' + (i + 1) + '] ' + entry.systemName.padEnd(26) +
+      quality.padEnd(8) +
+      ('Day ' + entry.scannedDay).padEnd(10) +
+      entry.units + ' units' + aging
+    );
+  });
+
+  lines.push('');
+  lines.push('  charts <system name>   — view full record');
+  lines.push('  sell astrographics     — sell records at a Guild station');
+  lines.push('');
+  return lines.join('\n');
+}
+
+// ── Cluster Deepscan ──────────────────────────
+
+function cmdClusterDeepscan(args) {
+  if (!galaxy) return '  [ERROR] Galaxy not initialized.';
+
+  const ship = getShip();
+  const loc  = playerState.location;
+  const q    = galaxy.quadrants[loc.quadrantIndex];
+  if (!q) return '  [ERROR] Location data unavailable.';
+
+  const query = args.join(' ').toLowerCase().trim();
+  if (!query) return '  [CLUSTERDEEPSCAN] Usage: clusterdeepscan <cluster name>';
+
+  // Find cluster in current quadrant
+  let targetCluster = null;
+  q.clusters.forEach(cluster => {
+    if (cluster.name.toLowerCase().includes(query)) {
+      targetCluster = cluster;
+    }
+  });
+
+  if (!targetCluster) {
+    return [
+      '',
+      '  [CLUSTERDEEPSCAN] No cluster matching "' + query + '" in this quadrant.',
+      '  Use scan <#> to list clusters in your quadrant.',
+      '',
+    ].join('\n');
+  }
+
+  const systems    = targetCluster.systems;
+  const costPerSys = 25;
+
+  // Check we have enough power for at least one system
+  if (ship.powerCore.current < costPerSys + 1) {
+    return [
+      '',
+      '  [CLUSTERDEEPSCAN] Insufficient power to begin sweep.',
+      '  Required: ' + (costPerSys + 1) + ' minimum  |  Available: ' + ship.powerCore.current,
+      '',
+    ].join('\n');
+  }
+
+  // Calculate how many systems we can scan
+  const maxScannable = Math.floor((ship.powerCore.current - 1) / costPerSys);
+  const toScan       = systems.slice(0, maxScannable);
+  const skipped      = systems.length - toScan.length;
+
+  // Return special prefix for main.js to handle sequentially
+  const payload = {
+    clusterName: targetCluster.name,
+    systems:     toScan.map(sys => {
+      const hasStation  = sys.bodies.some(b => b.hasStation);
+      const hasRuin     = sys.bodies.some(b => b.hasRuin);
+      const hasVeyd     = sys.bodies.some(b => b.veydrite);
+      const bodyCount   = sys.bodies.length;
+      const units       = astrographicYield(sys, 'deep', q.state);
+
+      // Find station name
+      let stationName = 'none detected';
+      if (hasStation) {
+        const stationBody = sys.bodies.find(b => b.hasStation);
+        stationName = stationBody && stationBody.stationName
+          ? stationBody.stationName
+          : 'station present';
+      }
+
+      const hazardBar  = '▲'.repeat(sys.hazard)  + '△'.repeat(5 - sys.hazard);
+      const trafficBar = '◉'.repeat(sys.traffic) + '○'.repeat(5 - sys.traffic);
+
+      return {
+        name:       sys.name,
+        starClass:  sys.starClass,
+        bodyCount,
+        hazard:     sys.hazard,
+        traffic:    sys.traffic,
+        jumpPoints: sys.jumpPoints,
+        hasStation,
+        hasRuin,
+        hasVeyd,
+        hasBeacon:  sys.hasBeacon,
+        stationName,
+        hazardBar,
+        trafficBar,
+        state:      q.state,
+        units,
+        costPerSys,
+      };
+    }),
+    skipped,
+    quadrantIndex: loc.quadrantIndex,
+  };
+
+// Data and power are applied per-system during display in main.js
+  triggerAchievements({ type: 'cluster_sweep', clusterName: targetCluster.name });
+  return '__CLUSTERDEEPSCAN__' + JSON.stringify(payload);
+}
+
+// ── Achievement helper ────────────────────────
+
+function triggerAchievements(context) {
+  const awarded = checkAchievements(playerState, context);
+  if (!awarded || awarded.length === 0) return '';
+  return awarded.map(a =>
+    '\n  [RECORD] Guild Archive updated — ' + a.title
+  ).join('');
+}
+
+// ── Record command ────────────────────────────
+
+function cmdRecord() {
+  return renderAchievements(playerState);
+}
+
+// ── Deepscan ──────────────────────────────────
+
+
 function cmdDeepscan(args) {
   if (!galaxy) return '  [ERROR] Galaxy not initialized.';
 
