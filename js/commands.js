@@ -3315,8 +3315,10 @@ function cmdPing() {
         if (Math.random() < 0.6) currentContacts.splice(currentContacts.indexOf(c2), 1);
         const lines = ['', '  [PING] Gravimetric sweep complete.', '  ' + currentContacts.length + ' contact(s) detected.', ''];
         currentContacts.forEach((c, i) => {
-          lines.push(c.resolved && !c.xeno
-            ? (c.dark ? ''  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '" — ' : '') + c.shipClass + '  [' + c.registry + ']'
+            lines.push(c.resolved && !c.xeno
+              ? (c.dark
+                ? '  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark'
+                : '  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '" — ' : '') + c.shipClass + '  [' + c.registry + ']')
             : '  ◈ [' + (i+1) + '] ' + (c.xeno ? 'mass-unknown' : c.mass));
         });
         lines.push('');
