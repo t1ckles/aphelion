@@ -3318,7 +3318,7 @@ function cmdPing() {
             lines.push(c.resolved && !c.xeno
               ? (c.dark
                 ? '  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark'
-                : '  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '" — ' : '') + c.shipClass + '  [' + c.registry + ']')
+                : '  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '" — ' : '— ') + c.shipClass + '  [' + c.registry + ']')
             : '  ◈ [' + (i+1) + '] ' + (c.xeno ? 'mass-unknown' : c.mass));
         });
         lines.push('');
@@ -3363,7 +3363,7 @@ function cmdPing() {
       if (c.dark) {
         lines.push('  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark');
       } else {
-            lines.push('  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '" — ' : '') + c.shipClass + '  [' + c.registry + ']');
+            lines.push('  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '" — ' : '— ') + c.shipClass + '  [' + c.registry + ']');
       }
     } else {
       lines.push('  ◈ [' + (i+1) + '] ' + (c.xeno ? 'mass-unknown' : c.mass));
@@ -3396,7 +3396,7 @@ function cmdResolve(args) {
     const lines = ['', '  [RESOLVE] Scanning all contacts...', '  Scan duration: ' + scanDays + ' day(s).  Day: ' + playerState.currentDay, ''];
     currentContacts.forEach((c, i) => {
       if (c.xeno) { lines.push('  ◈ [' + (i+1) + '] [NO SIGNATURE] — does not resolve'); }
-      else { c.resolved = true; lines.push(c.dark ? '  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark' : '  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '" — ' : '') + c.shipClass + '  [' + c.registry + ']'); }
+      else { c.resolved = true; lines.push(c.dark ? '  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark' : '  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '" — ' : '— ') + c.shipClass + '  [' + c.registry + ']'); }
     });
     lines.push('');
     updateAuspexTraffic(currentContacts, true);
