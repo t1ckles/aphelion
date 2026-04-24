@@ -3361,8 +3361,7 @@ function cmdPing() {
       if (c.dark) {
         lines.push('  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark');
       } else {
-          lines.push('  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '"' : c.shipClass) + '  [' + c.registry + ']');
-          if (c.shipName) lines.push('       ' + c.shipClass);
+            lines.push('  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '" — ' : '') + c.shipClass + '  [' + c.registry + ']');
       }
     } else {
       lines.push('  ◈ [' + (i+1) + '] ' + (c.xeno ? 'mass-unknown' : c.mass));
