@@ -1829,19 +1829,35 @@ function cmdDock() {
     return ['', '  [DOCK] Docking refused.', '  ' + faction.name + ' has flagged your vessel.', ''].join('\n');
   }
 
+// ─────────────────────────────────────────────────────────────────────────────
+ 
+  let hardshipDock = false;
+ 
   if (fee > 0 && playerState.credits < fee) {
-    return ['', '  [DOCK] Docking fee: ' + fee + ' CR.  Insufficient scrip.', ''].join('\n');
+    // Hardship docking — allowed but penalised.
+    // Feral stations don't care. Hostile factions still refuse.
+    if (body.factionKey === 'feral' || fee === 0) {
+      // No fee anyway — fall through normally.
+    } else {
+      hardshipDock = true;
+    }
+  }
+ 
+  if (!hardshipDock && fee > 0) {
+    playerState.credits -= fee;
   }
 
-  if (fee > 0) playerState.credits -= fee;
-
   meetFaction(body.factionKey);
+  
   // Only gain rep once per day per station
   const repKey = 'docked_' + body.stationName + '_' + playerState.currentDay;
   const repResult = playerState.flags[repKey]
     ? null
-    : adjustRep(body.factionKey, 1, 'Docked and paid fees');
+    : hardshipDock
+      ? adjustRep(body.factionKey, -5, 'Docked without paying fees')
+      : adjustRep(body.factionKey, 1, 'Docked and paid fees');
   if (repResult) playerState.flags[repKey] = true;
+  
   // Shore power — recharge core fully
   ship.powerCore.current = ship.powerCore.max;
 
@@ -1856,9 +1872,11 @@ function cmdDock() {
     playerState.bulletinContracts = [];
   }
 
-  const feeNote = fee > 0
-    ? 'Docking fee: ' + fee + ' CR.  Scrip: ' + playerState.credits + ' CR.'
-    : 'No docking fee.';
+  const feeNote = hardshipDock
+    ? 'Hardship dock — fee of ' + fee + ' CR waived. Reputation penalty applied.'
+    : fee > 0
+      ? 'Docking fee: ' + fee + ' CR.  Scrip: ' + playerState.credits + ' CR.'
+      : 'No docking fee.';
 
   const lines = [
     '',
