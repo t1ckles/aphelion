@@ -877,7 +877,7 @@ const NAMES = {
     'Colonial Board','Frontier Board','Rim Commission','Belt Commission',
     'Outer Commission','Deep Commission','Void Authority','Null Commission',
     'Free Commission','Open Authority','Common Board','Mutual Commission',
-    'Joint Registry','Combined Authority','Allied Commission','United Board',
+    'Joint Registry','Combined Authority','Allied Commission','United Board'
   ],
 
      // The good originals — keep all of these
@@ -932,7 +932,7 @@ const NAMES = {
     'No Questions','The Extraction Run','The Removal','Targeted',
     'The Contract Board','Bulletin & Beer','The Accepted','The Abandoned',
     'Hull & Hammer','The Drive Bay','Fold Cell Bar','The Magazine',
-    'Twenty Cells','Three Cells','The Emergency','The Last Cell',
+    'Twenty Cells','Three Cells','The Emergency','The Last Cell'
   ],
 };
 
