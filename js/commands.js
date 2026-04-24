@@ -4125,7 +4125,8 @@ function generateContacts(sys, quadrantState) {
     const registry     = REGISTRIES[Math.floor(Math.random() * REGISTRIES.length)];
     const isRegistered = registry !== 'unregistered';
     const hasName      = !dark && isRegistered && Math.random() < shipClass.named;
-    const shipName     = hasName ? generateContactName() : null;const prefix = generateVesselPrefix(registry, shipClass.name);
+    const shipName     = hasName ? generateContactName() : null;
+    const prefix       = generateVesselPrefix(registry, shipClass.name);
     contacts.push({ shipClass: shipClass.name, mass: shipClass.mass, dark, registry, shipName, prefix, resolved: false });
   }
 
