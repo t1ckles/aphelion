@@ -2313,16 +2313,16 @@ if (tx.type === 'buy_tool') {
     ].join('\n');
   }
   
-  return '  [ERROR] Unknown transaction type.';
-}
-
-if (tx.type === 'buy_ship') {
+  if (tx.type === 'buy_ship') {
     const result = executeShipPurchase(playerState, tx.shipId, tx.price);
     shipyardSession = null;
     autosave();
     updateSidebar();
     return result;
   }
+
+  return '  [ERROR] Unknown transaction type.';
+}
 
 // ── Repair ────────────────────────────────────
 
