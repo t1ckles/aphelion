@@ -3316,7 +3316,7 @@ function cmdPing() {
         const lines = ['', '  [PING] Gravimetric sweep complete.', '  ' + currentContacts.length + ' contact(s) detected.', ''];
         currentContacts.forEach((c, i) => {
           lines.push(c.resolved && !c.xeno
-            ? (c.dark ? '  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark' : '  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '" ' : '') + '— ' + c.shipClass + '  [' + c.registry + ']'+ (c.shipName ? '\n       "' + c.shipName + '"' : ''))
+            ? (c.dark ? ''  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '" — ' : '') + c.shipClass + '  [' + c.registry + ']'
             : '  ◈ [' + (i+1) + '] ' + (c.xeno ? 'mass-unknown' : c.mass));
         });
         lines.push('');
@@ -3394,7 +3394,7 @@ function cmdResolve(args) {
     const lines = ['', '  [RESOLVE] Scanning all contacts...', '  Scan duration: ' + scanDays + ' day(s).  Day: ' + playerState.currentDay, ''];
     currentContacts.forEach((c, i) => {
       if (c.xeno) { lines.push('  ◈ [' + (i+1) + '] [NO SIGNATURE] — does not resolve'); }
-      else { c.resolved = true; lines.push(c.dark ? '  ◈ [' + (i+1) + '] [NO SIGNATURE] — running dark' : '  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '" ' : '') + '— ' + c.shipClass + '  [' + c.registry + ']' + (c.shipName ? '\n       "' + c.shipName + '"' : '')); }
+      else { c.resolved = true; lines.push(c.dark ? '  ◈ [' + (i+1) + '] ' + (c.prefix ? c.prefix + ' ' : '') + (c.shipName ? '"' + c.shipName + '" — ' : '') + c.shipClass + '  [' + c.registry + ']'); }
     });
     lines.push('');
     updateAuspexTraffic(currentContacts, true);
@@ -3413,7 +3413,7 @@ function cmdResolve(args) {
     const lines = ['', '  [RESOLVE] Contact ' + (index+1) + ' already resolved.', ''];
     if (contact.xeno) { lines.push('  ◈ [' + (index+1) + '] [NO SIGNATURE] — does not resolve'); }
     else if (contact.dark) { lines.push('  ◈ [' + (index+1) + '] [NO SIGNATURE] — running dark'); }
-    else { lines.push('  ◈ [' + (index+1) + '] ' + contact.shipClass + ' — ' + contact.registry); if (contact.shipName) lines.push('       "' + contact.shipName + '"'); }
+    else { lines.push('  ◈ [' + (index+1) + '] ' + (contact.prefix ? contact.prefix + ' ' : '') + (contact.shipName ? '"' + contact.shipName + '" — ' : '') + contact.shipClass + '  [' + contact.registry + ']'); }
     lines.push('');
     return lines.join('\n');
   }
@@ -3430,7 +3430,7 @@ function cmdResolve(args) {
 
   const lines = ['', '  [RESOLVE] Scanning contact ' + (index+1) + '...', scanDays > 0 ? '  Scan duration: ' + scanDays + ' day(s).  Day: ' + playerState.currentDay : '', ''];
   if (contact.dark) { lines.push('  ◈ [' + (index+1) + '] [NO SIGNATURE] — running dark'); lines.push('  No transponder. No registry ping.'); }
-  else { lines.push('  ◈ [' + (index+1) + '] ' + contact.shipClass + ' — ' + contact.registry); if (contact.shipName) lines.push('       "' + contact.shipName + '"'); }
+  else { lines.push('  ◈ [' + (index+1) + '] ' + (contact.prefix ? contact.prefix + ' ' : '') + (contact.shipName ? '"' + contact.shipName + '" — ' : '') + contact.shipClass + '  [' + contact.registry + ']'); }
   lines.push('');
   updateAuspexTraffic(currentContacts, 'mixed');
   return lines.join('\n');
@@ -4138,17 +4138,18 @@ function generateContacts(sys, quadrantState) {
 }
 
 function generateContactName() {
-  if (typeof NAMES !== 'undefined') {
-    const roll = Math.random();
-    if (roll < 0.3 && NAMES.ship_virtue) {
-      return NAMES.ship_virtue[Math.floor(Math.random() * NAMES.ship_virtue.length)];
-    } else if (roll < 0.6 && NAMES.ship_endurance && NAMES.ship_endurance_noun) {
-      return NAMES.ship_endurance[Math.floor(Math.random() * NAMES.ship_endurance.length)] + ' ' +
-             NAMES.ship_endurance_noun[Math.floor(Math.random() * NAMES.ship_endurance_noun.length)];
-    } else if (NAMES.ship_endurance && NAMES.ship_aspiration) {
-      return NAMES.ship_endurance[Math.floor(Math.random() * NAMES.ship_endurance.length)] + ' ' +
-             NAMES.ship_aspiration[Math.floor(Math.random() * NAMES.ship_aspiration.length)];
-    }
+  if (typeof NAMES === 'undefined') return null;
+  const roll = Math.random();
+  if (roll < 0.3 && NAMES.ship_virtue) {
+    // Single word — e.g. "Resolute"
+    return NAMES.ship_virtue[Math.floor(Math.random() * NAMES.ship_virtue.length)];
+  } else if (roll < 0.6 && NAMES.ship_endurance && NAMES.ship_endurance_noun) {
+    // Two words — e.g. "Iron Watch"
+    return NAMES.ship_endurance[Math.floor(Math.random() * NAMES.ship_endurance.length)] + ' ' +
+           NAMES.ship_endurance_noun[Math.floor(Math.random() * NAMES.ship_endurance_noun.length)];
+  } else if (NAMES.ship_aspiration) {
+    // Single or two words from aspiration — e.g. "Long Claim" or "Resolve"
+    return NAMES.ship_aspiration[Math.floor(Math.random() * NAMES.ship_aspiration.length)];
   }
   return null;
 }
