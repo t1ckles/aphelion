@@ -463,6 +463,44 @@
 
     .risk-table td:first-child { color: var(--orange); }
 
+    .ship-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 11px;
+    }
+
+    .ship-table th {
+      text-align: left;
+      color: var(--green-dim);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--green-dark);
+      text-transform: uppercase;
+    }
+
+    .ship-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--green-deep);
+      color: var(--green-dim);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .ship-table td:first-child { color: var(--green); }
+    .ship-table tr:hover td { color: var(--green-mid); }
+
+    .ship-line-header {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--green-dim);
+      text-transform: uppercase;
+      padding: 16px 0 4px;
+      border-bottom: 1px solid var(--green-dark);
+      margin: 24px 0 8px;
+    }
+
     .manual-footer {
       max-width: 860px;
       margin: 0 auto;
@@ -491,13 +529,13 @@
   <div class="cover-subtitle">DEEP SURVEY TERMINAL — OPERATOR'S FIELD MANUAL</div>
   <div class="cover-meta">
     <p>Document Class: <span>Contractor Reference — Unrestricted Distribution</span></p>
-    <p>Revision: <span>9 — Current as of Guild Standard Year 2302</span></p>
+    <p>Revision: <span>10 — Current as of Guild Standard Year 2302</span></p>
     <p>Issuing Authority: <span>Assayer's Guild, Contractor Relations Office, Solace Reach</span></p>
-    <p>Terminal Version: <span>v0.3.1-dev — Veydric Fold Drive Build</span></p>
+    <p>Terminal Version: <span>v0.3.2-dev — Veydric Fold Drive Build</span></p>
   </div>
   <div class="cover-warning">
     <strong>NOTICE TO INDEPENDENT CONTRACTORS</strong>
-    This document is issued upon registration confirmation and constitutes the complete operational reference for Guild-networked deep survey terminals. Revision 9 incorporates updated guidance on the Veydric Fold Drive, corridor navigation, and galaxy structure. Contractors are presumed to have read and understood all sections prior to field operations. The Guild accepts no liability for losses arising from operational unfamiliarity. The galaxy is not forgiving of ignorance. Neither is the Guild.
+    This document is issued upon registration confirmation and constitutes the complete operational reference for Guild-networked deep survey terminals. Revision 10 incorporates updated guidance on vessel hull classes, the ship registry and shipyard system, interior compartment navigation, expanded armory doctrine, and hardship docking procedures. Contractors are presumed to have read and understood all sections prior to field operations. The Guild accepts no liability for losses arising from operational unfamiliarity. The galaxy is not forgiving of ignorance. Neither is the Guild.
   </div>
 </div>
 
@@ -518,15 +556,17 @@
     <li><a href="#s10"><span class="toc-num">10.</span> Salvage Operations</a></li>
     <li><a href="#s11"><span class="toc-num">11.</span> Contracts and the Bulletin Board</a></li>
     <li><a href="#s12"><span class="toc-num">12.</span> Combat Doctrine</a></li>
-    <li><a href="#s13"><span class="toc-num">13.</span> Ship Systems Reference</a></li>
-    <li><a href="#s14"><span class="toc-num">14.</span> Astrographics — Chart Management</a></li>
-    <li><a href="#s15"><span class="toc-num">15.</span> The Guild Record Archive</a></li>
-    <li><a href="#s16"><span class="toc-num">16.</span> Survival Notes</a></li>
-    <li><a href="#s17"><span class="toc-num">17.</span> Quick Command Reference</a></li>
+    <li><a href="#s13"><span class="toc-num">13.</span> Ship Registry and the Shipyard</a></li>
+    <li><a href="#s14"><span class="toc-num">14.</span> Vessel Interior Navigation</a></li>
+    <li><a href="#s15"><span class="toc-num">15.</span> Ship Systems Reference</a></li>
+    <li><a href="#s16"><span class="toc-num">16.</span> Astrographics — Chart Management</a></li>
+    <li><a href="#s17"><span class="toc-num">17.</span> The Guild Record Archive</a></li>
+    <li><a href="#s18"><span class="toc-num">18.</span> Survival Notes</a></li>
+    <li><a href="#s19"><span class="toc-num">19.</span> Quick Command Reference</a></li>
   </ul>
 </div>
 
-<!-- ═══════════════════════════════════════════ S1: THE GALAXY -->
+<!-- ═══════════════════════════════════════════ S1 -->
 
 <div class="section" id="s1">
   <div class="section-header">
@@ -614,10 +654,9 @@
     <strong>FIELD NOTE</strong>
     If something in a system does not resolve on sensors, do not attempt repeated resolution sweeps. Log the anomaly. Leave the system. File your data. The Guild will handle classification. You are a surveyor, not an investigator.
   </div>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S2: THE GUILD -->
+<!-- ═══════════════════════════════════════════ S2 -->
 
 <div class="section" id="s2">
   <div class="section-header">
@@ -638,10 +677,9 @@
   <p>As a registered independent contractor, you operate on Guild-issued credentials. Your terminal connects to the Guild network. Your astrographic data sells to Guild archive stations. Your reputation score is maintained in Guild ledgers. Your fold corridor data — when you file it — is incorporated into the Guild's cartographic record. You are, in a meaningful sense, a Guild instrument deployed into space at no cost to themselves, because you bear all the operational risk.</p>
 
   <div class="lore">The Guild does not think of contractors this way, officially. Officially, contractors are valued independent partners whose contributions to the cartographic record are essential to Guild operations. This is also true. Both things can be true simultaneously. The Guild is comfortable with this.</div>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S3: ECONOMY -->
+<!-- ═══════════════════════════════════════════ S3 -->
 
 <div class="section" id="s3">
   <div class="section-header">
@@ -701,10 +739,9 @@
   </div>
 
   <p>Docking recharges your Power Core to full via shore power. This is the most reliable way to restore power outside of passive recharge over travel time.</p>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S4: FACTIONS -->
+<!-- ═══════════════════════════════════════════ S4 -->
 
 <div class="section" id="s4">
   <div class="section-header">
@@ -773,10 +810,9 @@
       <td class="rep-effect">Docking refused. Patrol vessels may engage on sight. No cell sales.</td>
     </tr>
   </table>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S5: FOLD DRIVE -->
+<!-- ═══════════════════════════════════════════ S5 -->
 
 <div class="section" id="s5">
   <div class="section-header">
@@ -812,6 +848,11 @@
   <p>Your vessel maintains a separate emergency reserve tank — a secondary feed system that accepts raw, unrefined veydrite directly from salvage operations. The emergency reserve holds a maximum of 15 kg. It is not elegant. It is not recommended as a primary fuel source. It exists because the people who designed the Light Surveyor understood that contractors operating in Collapsed space cannot always find a station.</p>
 
   <p>The emergency feed converts 10 kg of raw veydrite into one cell equivalent. The drive runs hotter. The fold geometry is less precise. There is a 15% chance of minor Drive subsystem wear per feed operation. Like running a reactor on unprocessed ore — technically functional, not recommended as a lifestyle.</p>
+
+  <div class="warning">
+    <strong>CLASS EXCLUSIVE — LIGHT SURVEYOR ONLY</strong>
+    The emergency reserve tank is a feature of the Light Surveyor hull class specifically. No other vessel in the registry carries one. If you upgrade to a larger hull, you gain capacity, armament, and utility — and you permanently lose this safety net. Factor this into your upgrade decision. The galaxy does not offer the same margin to pilots of heavier iron.
+  </div>
 
   <div class="stat-block">
     <div class="stat-title">Emergency Reserve — Light Surveyor</div>
@@ -885,14 +926,6 @@
     <tr>
       <th>Probability</th><th>Outcome</th><th>Consequences</th>
     </tr>
-
-    <h3>Local Movement — Intra-System Transit</h3>
-
-<p>Not all movement requires a fold event. Transit within a single star system — body-to-body navigation — is accomplished using conventional thrusters and sublight drives. These movements consume minimal fuel and power, but require time measured in hours rather than the days spent folding between systems.</p>
-
-<p>Typical intra-system transit ranges from 4 to 12 hours depending on orbital distance, current relative velocity, and approach vectors. The terminal displays local transit time when plotting courses within the current system. Unlike fold jumps, local movement does not advance the day counter significantly, allowing for multiple movements within a single operational period.</p>
-
-<p class="lore">The Fold Drive is a tool for crossing voids. For everything else, there is patience and reaction mass. Guild contractors learn quickly which movements justify the veydrite cost and which do not.</p>
     <tr>
       <td>70%</td>
       <td>Clean fold</td>
@@ -916,10 +949,9 @@
   </table>
 
   <p>A destroyed Drive subsystem disables all fold and nav functions. You cannot move between systems until the Drive is repaired at a station. If the nearest station requires a fold to reach and your drive is destroyed, you are stranded. This outcome is recoverable only if you have enough reserve veydrite and hull integrity to wait for a contact or negotiate with whatever is in the system with you.</p>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S6: NAVIGATION -->
+<!-- ═══════════════════════════════════════════ S6 -->
 
 <div class="section" id="s6">
   <div class="section-header">
@@ -981,10 +1013,9 @@
   <h3>Corridor Discovery</h3>
 
   <p>Dark corridors become known through several methods: folding into a new quadrant reveals all corridors from that position; deepscan operations detect corridor signatures in adjacent space; Guild data purchases can provide named connection records at Guild station trade terminals; salvaged ruin logs occasionally contain navigation data; resolved contacts sometimes mention specific corridors they have used. The galaxy reveals itself to those who move through it.</p>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S7: TERMINAL -->
+<!-- ═══════════════════════════════════════════ S7 -->
 
 <div class="section" id="s7">
   <div class="section-header">
@@ -1012,6 +1043,10 @@
       <td class="desc">Entered via <code>armory</code> when docked. Weapons, ammo, and repair. Exit with <code>exit</code>.</td>
     </tr>
     <tr>
+      <td class="cmd">Shipyard terminal</td>
+      <td class="desc">Entered via <code>shipyard</code> when docked at Established or Contested stations. Hull browsing and purchase. No exit command — returns to field mode after transaction.</td>
+    </tr>
+    <tr>
       <td class="cmd">Encounter mode</td>
       <td class="desc">Automatically entered on contact. Combat commands only. Resolve encounter to exit.</td>
     </tr>
@@ -1030,10 +1065,9 @@
   <h3>The Auspex Panel</h3>
 
   <p>The lower-right panel shows local grid data for your current system. It populates on <code>where</code>, <code>nav</code>, <code>fold</code>, and <code>dock</code> commands. It shows system name and type, body list, station presence, signal status, environmental hazard, and traffic contacts. It rebuilds automatically on arrival at a new system via fold transit.</p>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S8: STATION OPS -->
+<!-- ═══════════════════════════════════════════ S8 -->
 
 <div class="section" id="s8">
   <div class="section-header">
@@ -1049,19 +1083,27 @@
 
   <p>Docking pays the fee, connects shore power (fully recharging your Power Core), and grants access to station services. Faction standing is checked on arrival — HOSTILE standing results in refusal. Standing increases by 1 point upon each successful docking, once per day per station.</p>
 
-  <div class="section-divider"></div>
+  <h4>Hardship Docking</h4>
+
+  <p>If your scrip balance falls below the required docking fee, the station will not turn you away — but it will remember. Hardship docking is permitted at the discretion of station management. The docking fee is waived, but a reputation penalty of 5 points is applied to your standing with that faction. It is not presented as charity. It is presented as a debt the station knows you cannot currently pay.</p>
+
+  <p>Repeated hardship docking will degrade your standing progressively — from KNOWN toward WATCHED, and eventually toward HOSTILE. At HOSTILE, the faction stops extending the courtesy entirely. There is no indefinite credit line. Manage your scrip or manage your standing. The two are not independent variables.</p>
+
+  <div class="lore">The Guild's position on hardship docking is that it represents a reasonable accommodation for contractors operating in resource-constrained environments. The Guild's unstated position is that a contractor who cannot pay a docking fee is a contractor approaching the end of their operational usefulness. The Guild does not say this. The docking record implies it.</div>
 
   <div class="section-divider"></div>
 
-<h3>Navigation and Spatial Awareness</h3>
+  <h3>Navigation and Spatial Awareness</h3>
 
-<p>Guild terminals provide two levels of spatial data for operational awareness:</p>
+  <p>Guild terminals provide two levels of spatial data for operational awareness:</p>
 
-<p><code>where</code> returns local position data. This is a lightweight query focused on your immediate surroundings — the body you occupy, local orbital assets, and navigable destinations within immediate reach. Use this for routine position checks and local situation assessment.</p>
+  <p><code>where</code> returns local position data. This is a lightweight query focused on your immediate surroundings — the body you occupy, local orbital assets, and navigable destinations within immediate reach. Use this for routine position checks and local situation assessment.</p>
 
-<p><code>system</code> returns full system survey data. This command performs a complete scan of all indexed bodies, stations, hazards, and jump corridors within the current star system. More comprehensive, but draws more terminal processing time. Use when planning longer movements or assessing overall system conditions.</p>
+  <p><code>system</code> returns full system survey data. This command performs a complete scan of all indexed bodies, stations, hazards, and jump corridors within the current star system. More comprehensive, but draws more terminal processing time. Use when planning longer movements or assessing overall system conditions.</p>
 
-<p class="lore">The distinction exists because not every contractor needs full astrographic context at all times. Local awareness is faster. System awareness is thorough. The Guild designed these commands for efficiency, not comfort.</p>
+  <div class="lore">The distinction exists because not every contractor needs full astrographic context at all times. Local awareness is faster. System awareness is thorough. The Guild designed these commands for efficiency, not comfort.</div>
+
+  <div class="section-divider"></div>
 
   <h3>Trade Terminal — <code>trade</code></h3>
 
@@ -1095,9 +1137,20 @@
     A damaged Drive subsystem can be repaired at any armory terminal with <code>repair system Drive</code>. If your Drive was destroyed in a blind fold incident, this is not optional — it is the only way to restore fold and nav capability. Budget for it. The repair is not cheap in Collapsed space.
   </div>
 
+  <div class="section-divider"></div>
+
+  <h3>Shipyard Terminal — <code>shipyard</code></h3>
+
+  <p>The shipyard terminal is available at Established and Contested installations only. Feral and Forbidden space do not maintain registered shipyards. The hulls on offer vary by faction — Pelk stocks freighters and mining vessels, CCC stocks military hulls, the Guild stocks survey and specialist classes. Not every hull is available everywhere. Not every hull will be sold to you at your current standing.</p>
+
+  <table class="cmd-table">
+    <tr><td class="cmd">shipyard</td><td class="desc">Browse available hulls at current station. Displays price, role, and key stats.</td></tr>
+    <tr><td class="cmd">shipyard info &lt;#&gt;</td><td class="desc">Full spec sheet for a hull by index number — all stats, compartments, class features.</td></tr>
+    <tr><td class="cmd">shipyard buy &lt;#&gt;</td><td class="desc">Initiate purchase of a hull. Confirmation required. See Section 13.</td></tr>
+  </table>
 </div>
 
-<!-- ═══════════════════════════════════════════ S9: SURVEY OPS -->
+<!-- ═══════════════════════════════════════════ S9 -->
 
 <div class="section" id="s9">
   <div class="section-header">
@@ -1144,10 +1197,9 @@
   <h3>Chart Management — <code>charts</code> / <code>charts &lt;system name&gt;</code></h3>
 
   <p><code>charts</code> displays all astrographic records in your memory matrix. <code>charts &lt;system name&gt;</code> displays the full stored profile for a specific system. Astrographic data sells exclusively at Guild stations via the trade terminal.</p>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S10: SALVAGE -->
+<!-- ═══════════════════════════════════════════ S10 -->
 
 <div class="section" id="s10">
   <div class="section-header">
@@ -1168,10 +1220,9 @@
   <h3>Ruin Logs — <code>scan log</code></h3>
 
   <p>Ruin sites can be scanned for data logs. Recovered logs are added to your record archive and viewable with <code>logs</code>. They are flavor artifacts: crew records, manifests, station closure notices, personal accounts. Some contain navigation data that reveals specific dark corridors. These are mechanically significant finds. Read your logs.</p>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S11: CONTRACTS -->
+<!-- ═══════════════════════════════════════════ S11 -->
 
 <div class="section" id="s11">
   <div class="section-header">
@@ -1202,10 +1253,9 @@
   <h3>Deadlines and Speed Bonuses</h3>
 
   <p>Contract deadlines are generated based on realistic travel time plus a 20% margin. Speed bonuses apply when you complete a contract within 60% of the allotted time — 10% additional payment plus 3 extra reputation points. Complete a contract with <code>complete</code> when in the target system. Abandon with <code>abandon</code> — applies a -15 reputation penalty. Deadline expiry also applies the penalty.</p>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S12: COMBAT -->
+<!-- ═══════════════════════════════════════════ S12 -->
 
 <div class="section" id="s12">
   <div class="section-header">
@@ -1248,14 +1298,56 @@
 
   <h3>Weapons Reference</h3>
 
+  <p>Revision 10 incorporates the full expanded armory. Weapons are available by faction and quadrant state — CCC stocks the heaviest hardware; Pelk covers commercial and mid-grade kinetics; Guild installations carry survey-appropriate defensive loadouts. Black market availability at Feral stations is randomized on each visit.</p>
+
+  <h4>Kinetic — Standard Line</h4>
   <table class="cmd-table">
-    <tr><td class="cmd">PDT-4 Point Defense Turret</td><td class="desc">Starting weapon. Rapid burst, light damage. AP/HE/Frag compatible.</td></tr>
-    <tr><td class="cmd">AC-20 Autocannon</td><td class="desc">High burst rate, moderate damage. Four ammo types.</td></tr>
-    <tr><td class="cmd">LR-12 Light Railgun</td><td class="desc">Single-round, high damage, high armor penetration.</td></tr>
-    <tr><td class="cmd">HR-7 Heavy Railgun</td><td class="desc">Single-round, very high damage. CCC station access required.</td></tr>
-    <tr><td class="cmd">Javelin-4 SRM Launcher</td><td class="desc">Guided missile. 15 power per launch.</td></tr>
-    <tr><td class="cmd">Mk.9 Torpedo Launcher</td><td class="desc">Extreme damage. 20 power per launch.</td></tr>
-    <tr><td class="cmd">DF-6 Dumbfire Rocket Pod</td><td class="desc">Unguided. Variable burst. High damage. No power required.</td></tr>
+    <tr><td class="cmd">PDT-4 Point Defense Turret</td><td class="desc">Starting weapon. Rapid burst, light damage. AP/HE/Frag compatible. Guild and Pelk stock.</td></tr>
+    <tr><td class="cmd">HMG-8 Heavy Machinegun</td><td class="desc">High rate of fire, low damage per round. Good against light hulls, poor vs armor. Pelk and Independent stock.</td></tr>
+    <tr><td class="cmd">AC-20 Autocannon</td><td class="desc">High burst rate, moderate damage. Four ammo types including Incendiary. Pelk stock.</td></tr>
+    <tr><td class="cmd">GC-4 Grapeshot Cannon</td><td class="desc">Short range, devastating burst. Frag/HE/Depleted. Independent and Pelk stock.</td></tr>
+    <tr><td class="cmd">PC-2 Penetrator Cannon</td><td class="desc">Armor-piercing specialist. Sabot/AP/EMP Round. CCC stock.</td></tr>
+  </table>
+
+  <h4>Kinetic — Railgun Line</h4>
+  <table class="cmd-table">
+    <tr><td class="cmd">LR-12 Light Railgun</td><td class="desc">Single-round, high damage, high armor penetration. Pelk stock.</td></tr>
+    <tr><td class="cmd">RG-20 Railgun</td><td class="desc">Medium class. Better penetration than LR-12. Sabot compatible. Pelk and CCC stock.</td></tr>
+    <tr><td class="cmd">RG-40 Heavy Railgun</td><td class="desc">Capital class. Frigate minimum hull recommended. CCC stock only.</td></tr>
+  </table>
+
+  <h4>Guided and Unguided</h4>
+  <table class="cmd-table">
+    <tr><td class="cmd">Javelin-4 SRM Launcher</td><td class="desc">Guided missile. 15 power per launch. Pelk stock.</td></tr>
+    <tr><td class="cmd">DF-6 Dumbfire Rocket Pod</td><td class="desc">Unguided. Variable burst. High damage. No power required. Guild/Pelk/Independent.</td></tr>
+    <tr><td class="cmd">TC-12 Torpedo</td><td class="desc">Slow, extreme damage. Capital targets. 25 power per launch. CCC stock only.</td></tr>
+    <tr><td class="cmd">FM-6 Flechette Mine</td><td class="desc">Deployable area denial. CCC stock.</td></tr>
+    <tr><td class="cmd">Mk.9 Torpedo Launcher</td><td class="desc">Extreme damage. 20 power per launch. CCC stock.</td></tr>
+  </table>
+
+  <h4>Utility Weapons</h4>
+  <table class="cmd-table">
+    <tr><td class="cmd">EMP-1 Pulse Emitter</td><td class="desc">Disables enemy systems. No hull damage. 40 power. Useful for capture scenarios. CCC stock.</td></tr>
+    <tr><td class="cmd">TB-4 Tow Beam</td><td class="desc">Salvage tool that also functions as a weapon. 20 power. Guild and Independent stock.</td></tr>
+    <tr><td class="cmd">NET-1 Debris Net</td><td class="desc">Area denial. Slows contacts. 10 power. Guild stock.</td></tr>
+  </table>
+
+  <div class="section-divider"></div>
+
+  <h3>Ammunition Types</h3>
+
+  <table class="ammo-table">
+    <tr>
+      <th>Type</th><th>Armor Pen</th><th>Effect</th><th>Notes</th>
+    </tr>
+    <tr><td>AP</td><td>+10</td><td>Standard</td><td>General purpose armor-piercing. Universally stocked.</td></tr>
+    <tr><td>HE</td><td>—</td><td>+5 damage, +10 systems</td><td>High explosive. Good against unarmored hulls.</td></tr>
+    <tr><td>Frag</td><td>-5</td><td>+5 systems</td><td>Fragmentation. Anti-personnel use. Poor vs armor.</td></tr>
+    <tr><td>Incendiary</td><td>-3</td><td>+2 damage, +8 systems</td><td>Causes ongoing system damage. AC-20 only.</td></tr>
+    <tr><td>Sabot</td><td>+25</td><td>-5 damage</td><td>Armor piercing specialist. Railgun and PC-2 compatible.</td></tr>
+    <tr><td>Depleted</td><td>-5</td><td>-3 damage</td><td>Reduced performance. Available everywhere including Feral.</td></tr>
+    <tr><td>Tracer</td><td>—</td><td>+8% accuracy</td><td>Reveals position. Accuracy bonus. HMG compatible.</td></tr>
+    <tr><td>EMP Round</td><td>-15</td><td>+15 systems</td><td>Mild system disruption per hit. PC-2 compatible.</td></tr>
   </table>
 
   <div class="section-divider"></div>
@@ -1271,14 +1363,272 @@
   <p>Hull reaching zero is death. Your save file is deleted. Your pilot record is entered into the graveyard. There is no continue from last checkpoint. There is no reload. The void does not give back.</p>
 
   <div class="lore">The Guild records the death of every registered contractor. The record includes cause of death, day of death, last known location, and achievement log. This information is retained in the Guild archive indefinitely. The Guild does not consider this morbid. It considers it accurate.</div>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S13: SHIP SYSTEMS -->
+<!-- ═══════════════════════════════════════════ S13: SHIP REGISTRY -->
 
 <div class="section" id="s13">
   <div class="section-header">
     <div class="section-num">SECTION 13</div>
+    <div class="section-title">SHIP REGISTRY AND THE SHIPYARD</div>
+  </div>
+
+  <p>Revision 10 of this manual incorporates the first complete Guild ship registry issued to independent contractors since the collapse of the Pelk-Guild joint publication agreement in 2289. The registry covers all eighteen hull classes currently in active circulation across known space. It is not exhaustive — prototype hulls, decommissioned classes, and certain military variants are not listed here. What is listed represents every hull a registered independent contractor is likely to encounter, purchase, or fly.</p>
+
+  <div class="lore">The Guild does not manufacture ships. It certifies them. Every hull in the registry has been assessed, classified, and assigned a designation code by Guild assessors. A hull without a Guild designation is, technically, not a ship — it is a vessel, which is a category the Guild uses for anything that moves through space but that it has not chosen to formally acknowledge. This distinction matters more in some quadrants than others.</div>
+
+  <div class="section-divider"></div>
+
+  <h3>Hull Lines</h3>
+
+  <p>The eighteen registered hull classes are organized into six lines by primary operational function. Hull configurations are static — a Light Surveyor is always a Light Surveyor. You cannot turn a freighter into a warship by swapping modules. The hull determines what is possible. Modules determine how well you do it.</p>
+
+  <div class="section-divider"></div>
+
+  <h3>The Surveyor Line</h3>
+
+  <p>Survey hulls are built around sensor arrays, fold efficiency, and long-range operational endurance. They trade raw capacity for survivability tools. The Light Surveyor is the only hull in the registry with a class-exclusive emergency reserve tank and above-average fold efficiency. These are not incidental features. They are the reason the Light Surveyor remains the baseline contractor hull after forty years of galaxy-wide infrastructure decline.</p>
+
+  <table class="ship-table">
+    <tr>
+      <th>Hull</th><th>Desig.</th><th>Hull HP</th><th>Power</th><th>Wpn</th><th>Util</th><th>Pods</th><th>Notes</th>
+    </tr>
+    <tr>
+      <td>Light Surveyor</td><td>LSV</td><td>100</td><td>500</td><td>2</td><td>1</td><td>2</td><td>Emergency tank. +25% scanner. Above-average fold. Starting hull.</td>
+    </tr>
+    <tr>
+      <td>Medium Surveyor</td><td>MSV</td><td>180</td><td>800</td><td>3</td><td>2</td><td>3</td><td>+10% scanner. First hull with dual-tool operation.</td>
+    </tr>
+    <tr>
+      <td>Deep Survey Vessel</td><td>DSV</td><td>300</td><td>1200</td><td>4</td><td>3</td><td>4</td><td>+15% scanner. Below-standard fold. Guild typically operates these.</td>
+    </tr>
+  </table>
+
+  <div class="section-divider"></div>
+
+  <h3>The Freight Line</h3>
+
+  <p>Freight hulls prioritize cargo volume over everything else. They are slow, poorly armed relative to their size, and increasingly attractive targets in contested space. Pelk Logistics operates the majority of heavy freight in the known galaxy. Independent ownership of Heavy Freighters requires significant capital and, usually, a willingness to operate under escort.</p>
+
+  <table class="ship-table">
+    <tr>
+      <th>Hull</th><th>Desig.</th><th>Hull HP</th><th>Power</th><th>Wpn</th><th>Util</th><th>Pods</th><th>Notes</th>
+    </tr>
+    <tr>
+      <td>Light Freighter</td><td>LFT</td><td>150</td><td>600</td><td>2</td><td>1</td><td>4</td><td>Medium cargo. Pelk workhorse. Good volume, mediocre everything else.</td>
+    </tr>
+    <tr>
+      <td>Medium Freighter</td><td>MFT</td><td>280</td><td>900</td><td>3</td><td>1</td><td>6</td><td>Large cargo. Below-standard fold. Needs escort in contested space.</td>
+    </tr>
+    <tr>
+      <td>Heavy Freighter</td><td>HFT</td><td>500</td><td>1500</td><td>4</td><td>2</td><td>12</td><td>Industrial cargo. Poor fold. A target in Collapsed space.</td>
+    </tr>
+  </table>
+
+  <div class="section-divider"></div>
+
+  <h3>The Industrial Line</h3>
+
+  <p>Industrial hulls are extraction platforms. They carry more utility slots than any other line — the dedicated miner's hull runs two tools simultaneously from day one. Medium and Heavy Industrial vessels add onboard refinery capability, eliminating the need to dock for ore processing. The tradeoff is everything else: slow folds, limited weaponry, and a profile that reads as a target to anyone operating outside the law.</p>
+
+  <table class="ship-table">
+    <tr>
+      <th>Hull</th><th>Desig.</th><th>Hull HP</th><th>Power</th><th>Wpn</th><th>Util</th><th>Pods</th><th>Notes</th>
+    </tr>
+    <tr>
+      <td>Light Mining Vessel</td><td>LMV</td><td>160</td><td>700</td><td>2</td><td>2</td><td>6</td><td>Small cargo. Auger + secondary. More pods than LSV.</td>
+    </tr>
+    <tr>
+      <td>Medium Industrial</td><td>MIV</td><td>350</td><td>1100</td><td>3</td><td>3</td><td>10</td><td>Basic onboard refinery. First hull that processes without docking.</td>
+    </tr>
+    <tr>
+      <td>Heavy Industrial</td><td>HIV</td><td>600</td><td>2000</td><td>4</td><td>4</td><td>20</td><td>Standard onboard refinery. Mobile mining platform. Needs escort.</td>
+    </tr>
+  </table>
+
+  <div class="section-divider"></div>
+
+  <h3>The Salvage Line</h3>
+
+  <p>Salvage hulls are built around the Harrow-7 and its successors — configured for debris field operations, large wreck extraction, and contested salvage zone work. Better cargo capacity than the Light Surveyor. No scanner bonus. No emergency reserve. The dedicated salvager gives up survey capability in exchange for the ability to run multiple Harrow units simultaneously on larger hulls.</p>
+
+  <table class="ship-table">
+    <tr>
+      <th>Hull</th><th>Desig.</th><th>Hull HP</th><th>Power</th><th>Wpn</th><th>Util</th><th>Pods</th><th>Notes</th>
+    </tr>
+    <tr>
+      <td>Light Salvager</td><td>LSG</td><td>140</td><td>600</td><td>2</td><td>2</td><td>4</td><td>Medium cargo. Harrow + secondary. No emergency tank.</td>
+    </tr>
+    <tr>
+      <td>Medium Salvager</td><td>MSG</td><td>320</td><td>1000</td><td>3</td><td>3</td><td>8</td><td>Large cargo. Multiple Harrow units. Pelk and Independent favor this hull.</td>
+    </tr>
+  </table>
+
+  <div class="section-divider"></div>
+
+  <h3>The Military Line</h3>
+
+  <p>Military hulls are CCC platforms. The Interceptor carries more weapons than any ship its size and sacrifices everything non-combat to do it — no utility slots, no pod hardpoints, fold efficiency that rivals the Light Surveyor. The Corvette is the backbone of CCC patrol operations. The Frigate is rare in independent hands and requires TRUSTED standing with CCC to acquire. None of these hulls can mine, salvage, or haul meaningful cargo. They are built for one purpose.</p>
+
+  <table class="ship-table">
+    <tr>
+      <th>Hull</th><th>Desig.</th><th>Hull HP</th><th>Power</th><th>Wpn</th><th>Util</th><th>Pods</th><th>Notes</th>
+    </tr>
+    <tr>
+      <td>Interceptor</td><td>INT</td><td>120</td><td>600</td><td>4</td><td>0</td><td>0</td><td>Excellent fold. No utility. No pods. Pure combat. CCC only.</td>
+    </tr>
+    <tr>
+      <td>Corvette</td><td>CVT</td><td>350</td><td>1200</td><td>6</td><td>1</td><td>2</td><td>CCC patrol backbone. KNOWN standing required.</td>
+    </tr>
+    <tr>
+      <td>Frigate</td><td>FRG</td><td>600</td><td>1800</td><td>8</td><td>2</td><td>3</td><td>Below-standard fold. Needs crew. TRUSTED standing required.</td>
+    </tr>
+  </table>
+
+  <div class="section-divider"></div>
+
+  <h3>The Specialist Line</h3>
+
+  <p>Specialist hulls do not fit neatly into any other category. The Courier and Data Runner are built for speed and small cargo — fast fold, minimal weapons, encrypted or shielded holds. The Research Vessel is the anomaly investigator's platform of choice: four utility slots, a +20% scanner bonus, and Guild access to Forbidden space. The Escort Carrier is the endgame — a fleet command platform that cannot be purchased, only commissioned, and only by pilots with TRUSTED standing and a crew of forty.</p>
+
+  <table class="ship-table">
+    <tr>
+      <th>Hull</th><th>Desig.</th><th>Hull HP</th><th>Power</th><th>Wpn</th><th>Util</th><th>Pods</th><th>Notes</th>
+    </tr>
+    <tr>
+      <td>Courier</td><td>CRR</td><td>90</td><td>500</td><td>1</td><td>1</td><td>1</td><td>Excellent fold. Enhanced data storage ×2. Guild only.</td>
+    </tr>
+    <tr>
+      <td>Data Runner</td><td>DRN</td><td>95</td><td>520</td><td>2</td><td>1</td><td>1</td><td>Excellent fold. Shielded cargo hold. Feral/Independent. Guild does not officially recognize this class.</td>
+    </tr>
+    <tr>
+      <td>Research Vessel</td><td>RSV</td><td>220</td><td>900</td><td>2</td><td>4</td><td>4</td><td>+20% scanner. Four utility slots. Guild anomaly investigator hull.</td>
+    </tr>
+    <tr>
+      <td>Escort Carrier</td><td>ECV</td><td>1200</td><td>4000</td><td>12</td><td>4</td><td>8</td><td>Commission only. TRUSTED required. 40 crew minimum. 4 fighter bays. Changes the nature of play entirely.</td>
+    </tr>
+  </table>
+
+  <div class="section-divider"></div>
+
+  <h3>Leaving the Light Surveyor</h3>
+
+  <p>Every hull in the registry offers something the Light Surveyor does not. More weapons. More cargo. More utility slots. More crew. The question is never whether those things are worth having — they are. The question is what you give up to get them.</p>
+
+  <p>The Light Surveyor's emergency reserve tank, fold efficiency bonus, and +25% scanner resolution are class-exclusive. They do not transfer. They do not carry over. When you buy a new hull, those three advantages disappear permanently. The emergency tank especially — no other hull in the registry has one. Every contractor who has ever been stranded in Collapsed space with an empty cell magazine has, at some point, thought about the tank they gave up.</p>
+
+  <div class="warning">
+    <strong>UPGRADE DECISION NOTE</strong>
+    The shipyard terminal requires confirmation before executing any hull purchase. Read the confirmation screen carefully. It shows exactly what you are gaining and what the transfer will carry over. Weapons and tools move to cargo on the new hull. The emergency tank does not go anywhere. It ceases to exist. This action cannot be undone. The Guild does not offer trade-in credit.
+  </div>
+
+  <div class="section-divider"></div>
+
+  <h3>Shipyard Access by Faction</h3>
+
+  <p>Shipyards operate at Established and Contested installations only. The hull selection varies by faction. Quadrant state applies a price modifier — hulls in Declining space cost more, hulls in Collapsed space are rarely available at all. Your standing with the selling faction affects both price and access: TRUSTED standing applies a 10% discount, HOSTILE standing results in refusal regardless of what the hull costs.</p>
+
+  <div class="stat-block">
+    <div class="stat-title">Faction Hull Availability</div>
+    <div class="stat-row"><span>Assayer's Guild</span><span>Survey line, Courier, Research Vessel</span></div>
+    <div class="stat-row"><span>Pelk Logistics</span><span>Freight line, Industrial line, Light Salvager</span></div>
+    <div class="stat-row"><span>Colonial Colonies Command</span><span>Military line (KNOWN required for Corvette, TRUSTED for Frigate)</span></div>
+    <div class="stat-row"><span>Independent</span><span>Light Freighter, Light Salvager, Data Runner</span></div>
+    <div class="stat-row"><span>Feral</span><span>No registered shipyard. Data Runner may be available via other means.</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ S14: VESSEL INTERIOR -->
+
+<div class="section" id="s14">
+  <div class="section-header">
+    <div class="section-num">SECTION 14</div>
+    <div class="section-title">VESSEL INTERIOR NAVIGATION</div>
+  </div>
+
+  <p>Guild terminals issued prior to Revision 10 treated the vessel as an abstraction — a set of stats and slots accessible from any command. Revision 10 introduces the vessel interior system. Every ship has named compartments. You move between them. The compartment you occupy determines which systems are accessible and which commands the terminal will accept.</p>
+
+  <p>This is not an artificial limitation. It reflects operational reality. You cannot recalibrate sensors from the cargo bay. You cannot initiate a fold sequence from the airlock. The terminal enforces this. Attempting a command from the wrong compartment returns a location notice and the command to move there.</p>
+
+  <div class="lore">The Guild's position on interior navigation is that it was always implicit in how ships work — contractors simply never had a terminal that modeled it explicitly. Whether this represents an improvement depends entirely on whether you have ever tried to fire weapons while standing in the galley. The Guild suspects most contractors have not. The Guild is aware that this assumption may be optimistic.</div>
+
+  <div class="section-divider"></div>
+
+  <h3>Moving Between Compartments — <code>move &lt;compartment&gt;</code></h3>
+
+  <p>Type <code>move</code> with no arguments to see all compartments available on your current hull, your present location marked with a ►, and the exact command to reach each one. Type <code>move &lt;compartment name&gt;</code> to move there. Common aliases are accepted — <code>move eng</code>, <code>move tank</code>, <code>move deck</code> — the terminal resolves them.</p>
+
+  <table class="cmd-table">
+    <tr><td class="cmd">move</td><td class="desc">List all compartments on current hull with current position marked.</td></tr>
+    <tr><td class="cmd">move bridge</td><td class="desc">Navigation, sensors, communications.</td></tr>
+    <tr><td class="cmd">move engineering</td><td class="desc">Power core, drive, fold drive systems.</td></tr>
+    <tr><td class="cmd">move cargo</td><td class="desc">Cargo hold, ore pods, salvage storage.</td></tr>
+    <tr><td class="cmd">move quarters</td><td class="desc">Life support, crew management.</td></tr>
+    <tr><td class="cmd">move airlock</td><td class="desc">EVA access, external hardpoint management, pod swapping.</td></tr>
+  </table>
+
+  <div class="section-divider"></div>
+
+  <h3>Universal Compartments</h3>
+
+  <p>Every vessel in the registry carries five compartments regardless of hull class. These are present on the Light Surveyor and the Escort Carrier alike. What changes between hull classes is the depth and capacity of each compartment — a Frigate's weapons bay is not the same as a Light Surveyor's — but the compartment exists on every registered hull.</p>
+
+  <div class="stat-block">
+    <div class="stat-title">Universal Compartments — All Hull Classes</div>
+    <div class="stat-row"><span>Bridge</span><span>nav, fold, map, galaxy, where, ping, resolve, scan, deepscan, status, systems</span></div>
+    <div class="stat-row"><span>Engineering</span><span>power, recharge, repair drive, emergency refine, fold cell status, power management</span></div>
+    <div class="stat-row"><span>Cargo Bay</span><span>inventory, jettison, transfer, manifest</span></div>
+    <div class="stat-row"><span>Crew Quarters</span><span>rest, crew status</span></div>
+    <div class="stat-row"><span>Airlock</span><span>deploy tool, retrieve tool, swap pod</span></div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <h3>Class-Specific Compartments</h3>
+
+  <p>Beyond the five universal compartments, hull class determines which additional compartments are present. These are not upgrades — they are structural features of the hull. A Light Surveyor has a Reserve Tank Bay because the hull was built with one. A Light Mining Vessel has an Extraction Bay because its hull frame accommodates an auger array. You cannot add these compartments to a hull that was not built with them.</p>
+
+  <table class="cmd-table">
+    <tr>
+      <td class="cmd">Reserve Tank Bay</td>
+      <td class="desc"><em>Light Surveyor only.</em> Emergency veydrite management. <code>emergency refine</code>, <code>check reserve</code>, <code>fill reserve</code>.</td>
+    </tr>
+    <tr>
+      <td class="cmd">Extraction Bay</td>
+      <td class="desc"><em>Mining vessels.</em> Ore pod management, Auger control. <code>mine</code>, <code>survey</code>, <code>pod status</code>, <code>ore manifest</code>.</td>
+    </tr>
+    <tr>
+      <td class="cmd">Salvage Bay</td>
+      <td class="desc"><em>Salvage vessels.</em> Harrow management. <code>salvage</code>, <code>scan log</code>, <code>salvage manifest</code>.</td>
+    </tr>
+    <tr>
+      <td class="cmd">Refinery</td>
+      <td class="desc"><em>Medium and Heavy Industrial.</em> Onboard ore processing. <code>refine</code>, <code>refine all</code>, <code>yield check</code>.</td>
+    </tr>
+    <tr>
+      <td class="cmd">Weapons Bay</td>
+      <td class="desc"><em>Military vessels and Escort Carrier.</em> Weapon storage and ammo management. <code>load</code>, <code>unload</code>, <code>weapon status</code>, <code>ammo count</code>.</td>
+    </tr>
+    <tr>
+      <td class="cmd">Flight Deck</td>
+      <td class="desc"><em>Escort Carrier only.</em> Fighter bay management. <code>launch</code>, <code>recall</code>, <code>flight status</code>.</td>
+    </tr>
+  </table>
+
+  <div class="section-divider"></div>
+
+  <h3>The Wrong Compartment</h3>
+
+  <p>If you attempt a command that requires a different compartment, the terminal will tell you where you are, what you need, and how to get there. It will not execute the command. It will not guess. The terminal's position is that a contractor who does not know which part of their ship contains the fold drive is a contractor who needs to consult the manual before doing anything involving the fold drive.</p>
+
+  <div class="lore">The Guild considered whether this behavior was excessively restrictive for experienced operators. The Guild concluded that experienced operators know where the bridge is. The behavior remained.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════ S15 -->
+
+<div class="section" id="s15">
+  <div class="section-header">
+    <div class="section-num">SECTION 15</div>
     <div class="section-title">SHIP SYSTEMS REFERENCE</div>
   </div>
 
@@ -1289,14 +1639,19 @@
     <div class="stat-row"><span>Hull</span><span>100/100</span></div>
     <div class="stat-row"><span>Armor base</span><span>10</span></div>
     <div class="stat-row"><span>Power Core max</span><span>500 units</span></div>
+    <div class="stat-row"><span>Power recharge</span><span>8 units/tick (passive: 3)</span></div>
     <div class="stat-row"><span>Fuel capacity</span><span>100 units</span></div>
     <div class="stat-row"><span>Fold cell magazine</span><span>20 cells max</span></div>
+    <div class="stat-row"><span>Fold efficiency</span><span>Above average — saves 1 cell per fold</span></div>
     <div class="stat-row"><span>Starting fold cells</span><span>3 cells</span></div>
-    <div class="stat-row"><span>Emergency reserve tank</span><span>15 kg raw veydrite max</span></div>
+    <div class="stat-row"><span>Emergency reserve tank</span><span>15 kg raw veydrite max  [CLASS EXCLUSIVE]</span></div>
     <div class="stat-row"><span>Starting reserve</span><span>7–11 kg (randomized)</span></div>
-    <div class="stat-row"><span>Ammo bay capacity</span><span>200 kg</span></div>
+    <div class="stat-row"><span>Scanner bonus</span><span>+25% survey resolution  [CLASS EXCLUSIVE]</span></div>
     <div class="stat-row"><span>Weapon slots</span><span>2</span></div>
-    <div class="stat-row"><span>Utility slots</span><span>1 (Harrow-7 Salvage Head installed)</span></div>
+    <div class="stat-row"><span>Utility slots</span><span>1</span></div>
+    <div class="stat-row"><span>Pod hardpoints</span><span>2</span></div>
+    <div class="stat-row"><span>Crew capacity</span><span>1–4</span></div>
+    <div class="stat-row"><span>Compartments</span><span>Bridge, Engineering, Cargo Bay, Crew Quarters, Airlock, Reserve Tank Bay</span></div>
   </div>
 
   <div class="lore">The emergency reserve tank is a feature of the Light Surveyor class specifically. Larger vessels do not have it — their drive systems are too large to safely accept raw veydrite feed without dedicated refinement hardware. This is one of the few genuine advantages of the Light Surveyor over larger platforms: it can, in extremis, drink from its own cargo. Pilots of larger vessels who find themselves out of fold cells in Collapsed space do not have this option. They have other problems.</div>
@@ -1315,10 +1670,26 @@
     <div class="stat-row"><span>Deepscan (single system)</span><span>40 units</span></div>
     <div class="stat-row"><span>Cluster deepscan (per system)</span><span>25 units</span></div>
     <div class="stat-row"><span>Salvage operation (Harrow-7)</span><span>30 units</span></div>
+    <div class="stat-row"><span>EMP-1 Pulse Emitter</span><span>40 units</span></div>
+    <div class="stat-row"><span>TB-4 Tow Beam</span><span>20 units</span></div>
+    <div class="stat-row"><span>NET-1 Debris Net</span><span>10 units</span></div>
     <div class="stat-row"><span>PDT-4 burst</span><span>5 units</span></div>
     <div class="stat-row"><span>Javelin-4 launch</span><span>15 units</span></div>
     <div class="stat-row"><span>Mk.9 torpedo launch</span><span>20 units</span></div>
+    <div class="stat-row"><span>TC-12 torpedo launch</span><span>25 units</span></div>
   </div>
+
+  <div class="section-divider"></div>
+
+  <h3>Power States</h3>
+
+  <table class="cmd-table">
+    <tr><td class="cmd">FULL</td><td class="desc">80–100% capacity. All systems nominal.</td></tr>
+    <tr><td class="cmd">NOMINAL</td><td class="desc">50–79%. Standard operations available.</td></tr>
+    <tr><td class="cmd">LOW</td><td class="desc">25–49%. Warning issued. Plan for recharge.</td></tr>
+    <tr><td class="cmd">CRITICAL</td><td class="desc">10–24%. Some systems may be restricted.</td></tr>
+    <tr><td class="cmd">EMERGENCY</td><td class="desc">0–9%. Life support only. Cannot fold.</td></tr>
+  </table>
 
   <div class="section-divider"></div>
 
@@ -1326,25 +1697,26 @@
 
   <table class="cmd-table">
     <tr><td class="cmd">Hull Core</td><td class="desc">Primary structural integrity. HP reaching zero = death.</td></tr>
-    <tr><td class="cmd">Power Core</td><td class="desc">Energy generation and storage.</td></tr>
+    <tr><td class="cmd">Power Core</td><td class="desc">Energy generation and storage. Damage reduces max capacity and recharge rate.</td></tr>
     <tr><td class="cmd">Drive</td><td class="desc">Propulsion, nav, and fold. Destruction = all transit offline.</td></tr>
     <tr><td class="cmd">Weapons Array</td><td class="desc">Fire control. Destruction = cannot fire.</td></tr>
-    <tr><td class="cmd">Sensor Suite</td><td class="desc">Auspex and targeting. Destruction = Auspex offline.</td></tr>
+    <tr><td class="cmd">Sensor Suite</td><td class="desc">Auspex and targeting. Destruction = Auspex offline, ping range reduced.</td></tr>
     <tr><td class="cmd">Cargo Hold</td><td class="desc">Storage integrity. Destruction = cargo at risk.</td></tr>
     <tr><td class="cmd">Life Support</td><td class="desc">Crew atmosphere. Destruction = crew at risk.</td></tr>
     <tr><td class="cmd">Crew Quarters</td><td class="desc">Crew habitation.</td></tr>
     <tr><td class="cmd">Galley</td><td class="desc">Crew sustenance.</td></tr>
   </table>
 
-  <p>The Drive subsystem governs all transit functions — nav, jump, fold, and blindfold. A Drive at CRITICAL condition may refuse fold operations. A DESTROYED Drive locks out all transit until repaired. In the context of blind fold incidents, Drive damage is not cosmetic. It is an emergency.</p>
+  <p>Each subsystem has HP and Stability ratings. HP is what combat and incidents reduce. Stability degrades faster than HP and, at zero, causes the subsystem to degrade even without taking direct hits. Field repairs restore subsystems to 60% maximum. Full repair requires a station.</p>
 
+  <p>The Drive subsystem governs all transit functions — nav, jump, fold, and blindfold. A Drive at CRITICAL condition may refuse fold operations. A DESTROYED Drive locks out all transit until repaired.</p>
 </div>
 
-<!-- ═══════════════════════════════════════════ S14: ASTROGRAPHICS -->
+<!-- ═══════════════════════════════════════════ S16 -->
 
-<div class="section" id="s14">
+<div class="section" id="s16">
   <div class="section-header">
-    <div class="section-num">SECTION 14</div>
+    <div class="section-num">SECTION 16</div>
     <div class="section-title">ASTROGRAPHICS — CHART MANAGEMENT</div>
   </div>
 
@@ -1372,14 +1744,13 @@
     <strong>MEMORY MATRIX — PERMANENT DELETION ON SALE</strong>
     Sold astrographic data is permanently deleted from your vessel's memory matrix. The ◆ charted marker disappears from scan displays. If you need to survey that system again, you will need to deepscan it again. Price accordingly.
   </div>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S15: RECORD ARCHIVE -->
+<!-- ═══════════════════════════════════════════ S17 -->
 
-<div class="section" id="s15">
+<div class="section" id="s17">
   <div class="section-header">
-    <div class="section-num">SECTION 15</div>
+    <div class="section-num">SECTION 17</div>
     <div class="section-title">THE GUILD RECORD ARCHIVE</div>
   </div>
 
@@ -1394,14 +1765,13 @@
   <h3>The Graveyard</h3>
 
   <p>When a contractor dies, their record is finalized and transferred to the permanent archive. Their vessel's last known position, cause of death, day count, and complete achievement log are preserved. Dead pilots are not forgotten. They are filed. There is a distinction, and the Guild considers it important.</p>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S16: SURVIVAL -->
+<!-- ═══════════════════════════════════════════ S18 -->
 
-<div class="section" id="s16">
+<div class="section" id="s18">
   <div class="section-header">
-    <div class="section-num">SECTION 16</div>
+    <div class="section-num">SECTION 18</div>
     <div class="section-title">SURVIVAL NOTES</div>
   </div>
 
@@ -1414,6 +1784,15 @@
 
   <h4>Emergency Reserve Management</h4>
   <p>The emergency reserve fills automatically during salvage, before veydrite goes to the cargo hold. Keep it full. A full 15 kg reserve is one emergency fold available regardless of station access. In Collapsed space, that one fold may be the difference between finding a Feral settlement and drifting. Do not sell reserve veydrite. The cargo veydrite is for selling. The reserve is for leaving.</p>
+
+  <h4>Scrip Before You Need It</h4>
+  <p>Docking fees are not optional. Running your scrip balance to zero is not a neutral state — it is a state where the next station you reach charges you in reputation instead of credits. A -5 reputation hit per hardship dock adds up quickly. From KNOWN to WATCHED is twenty points. Four broke dockings and you have lost access to contract boards and fold cell discounts at that faction. Sell veydrite before you need fuel, not after.</p>
+
+  <h4>Think Before Upgrading Your Hull</h4>
+  <p>The shipyard terminal is available at Established and Contested stations. It will show you hulls you cannot currently afford alongside hulls you can. The larger hulls are genuinely better in almost every measurable category except the ones that keep you alive when nothing else goes right. The emergency reserve tank, the fold efficiency bonus, the scanner array — those disappear when you leave the Light Surveyor. Upgrade when you have the scrip reserves to absorb the loss of that safety margin, not before.</p>
+
+  <h4>Know Your Compartments</h4>
+  <p>The vessel interior system is not an obstacle. It is a navigation aid. Type <code>move</code> at any time to see where you are and what is accessible. If a command fails with a compartment notice, the terminal tells you exactly where to go. The fold drive is in Engineering. The sensors are on the Bridge. The emergency tank is in the Reserve Tank Bay. This is not complicated. It becomes complicated only if you try to navigate under pressure without having learned the layout when there was no pressure.</p>
 
   <h4>The Highway</h4>
   <p>Every galaxy has 3–4 highway corridors — pre-calculated fold geometry, 2 cells instead of 3. Find them early. Build routes through them. A contractor who has identified the highway network and routes through it will always outlast one who burns primary corridors everywhere. Check the fold map for <code>═══</code> markings from every quadrant you visit.</p>
@@ -1434,14 +1813,13 @@
   <p>Some systems will present readings that do not resolve. Some contacts will not identify. Some logs will describe things that should not be there. The Guild's advice is consistent: log it, file it, leave. The Guild is specifically interested in this data and pays accordingly. Your curiosity, however understandable, is not worth your pilot.</p>
 
   <div class="lore">The Guild has reviewed 847 contractor incident reports involving anomalous sensor returns over the past forty years. Of these, 312 involved the contractor attempting extended engagement with the anomaly. The outcome data for this subset is not published. The Guild considers the aggregate survival rate sufficient guidance.</div>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ S17: COMMAND REF -->
+<!-- ═══════════════════════════════════════════ S19 -->
 
-<div class="section" id="s17">
+<div class="section" id="s19">
   <div class="section-header">
-    <div class="section-num">SECTION 17</div>
+    <div class="section-num">SECTION 19</div>
     <div class="section-title">QUICK COMMAND REFERENCE</div>
   </div>
 
@@ -1451,11 +1829,28 @@
     <tr><td class="cmd">map</td><td class="desc">Fold corridor map — corridors from current position, known quadrant list.</td></tr>
     <tr><td class="cmd">scan &lt;1-42&gt;</td><td class="desc">Survey a quadrant. System names, star classes, beacons, chart markers.</td></tr>
     <tr><td class="cmd">scan log</td><td class="desc">Search ruin sites in current system for data logs.</td></tr>
-    <tr><td class="cmd">where</td><td class="desc">Full survey of current system — stations, ruins, veydrite, hazard, traffic.</td></tr>
+    <tr><td class="cmd">where</td><td class="desc">Local position readout — current body, nearby assets, field notes.</td></tr>
+    <tr><td class="cmd">system</td><td class="desc">Full system survey — all bodies, stations, veydrite, ruins, hazard, traffic.</td></tr>
     <tr><td class="cmd">fold &lt;quadrant name&gt;</td><td class="desc">Fold to a connected quadrant. Shows cost and destination before confirming.</td></tr>
     <tr><td class="cmd">blindfold &lt;quadrant name&gt;</td><td class="desc">Overdrive fold to unconnected quadrant. 12 cells. Risk table applies.</td></tr>
     <tr><td class="cmd">nav &lt;system name&gt;</td><td class="desc">Calculated transit within quadrant. Costs fuel and power.</td></tr>
     <tr><td class="cmd">jump &lt;system name&gt;</td><td class="desc">Blind cluster jump within quadrant. Faster, cheaper, riskier.</td></tr>
+  </table>
+
+  <h3>Vessel Interior</h3>
+  <table class="cmd-table">
+    <tr><td class="cmd">move</td><td class="desc">List all compartments on current hull. Shows current location.</td></tr>
+    <tr><td class="cmd">move bridge</td><td class="desc">Move to Bridge — navigation, sensors, communications.</td></tr>
+    <tr><td class="cmd">move engineering</td><td class="desc">Move to Engineering — power core, drive, fold drive.</td></tr>
+    <tr><td class="cmd">move cargo</td><td class="desc">Move to Cargo Bay — hold management, ore pods, manifest.</td></tr>
+    <tr><td class="cmd">move quarters</td><td class="desc">Move to Crew Quarters — life support, crew status.</td></tr>
+    <tr><td class="cmd">move airlock</td><td class="desc">Move to Airlock — EVA, hardpoint and pod management.</td></tr>
+    <tr><td class="cmd">move reserve tank</td><td class="desc">Move to Reserve Tank Bay — emergency veydrite. Light Surveyor only.</td></tr>
+    <tr><td class="cmd">move extraction</td><td class="desc">Move to Extraction Bay — mining operations. Mining vessels only.</td></tr>
+    <tr><td class="cmd">move salvage bay</td><td class="desc">Move to Salvage Bay — Harrow management. Salvage vessels only.</td></tr>
+    <tr><td class="cmd">move refinery</td><td class="desc">Move to Refinery — onboard ore processing. Medium/Heavy Industrial only.</td></tr>
+    <tr><td class="cmd">move weapons bay</td><td class="desc">Move to Weapons Bay — weapon and ammo management. Military hulls only.</td></tr>
+    <tr><td class="cmd">move flight deck</td><td class="desc">Move to Flight Deck — fighter bay management. Escort Carrier only.</td></tr>
   </table>
 
   <h3>Sensors</h3>
@@ -1475,6 +1870,9 @@
     <tr><td class="cmd">undock</td><td class="desc">Return to space.</td></tr>
     <tr><td class="cmd">trade</td><td class="desc">Open trade terminal. Exit with <code>exit</code>.</td></tr>
     <tr><td class="cmd">armory</td><td class="desc">Open armory terminal. Exit with <code>exit</code>.</td></tr>
+    <tr><td class="cmd">shipyard</td><td class="desc">Browse available hulls for purchase. Established/Contested only.</td></tr>
+    <tr><td class="cmd">shipyard info &lt;#&gt;</td><td class="desc">Full spec sheet for a hull by index number.</td></tr>
+    <tr><td class="cmd">shipyard buy &lt;#&gt;</td><td class="desc">Purchase a new hull. Confirmation required. Irreversible.</td></tr>
     <tr><td class="cmd">bulletin</td><td class="desc">View available contracts at current station.</td></tr>
     <tr><td class="cmd">accept &lt;n&gt;</td><td class="desc">Accept contract by index number.</td></tr>
   </table>
@@ -1492,6 +1890,7 @@
   <h3>Field Operations</h3>
   <table class="cmd-table">
     <tr><td class="cmd">salvage</td><td class="desc">Field salvage. Fills emergency reserve first, then cargo hold.</td></tr>
+    <tr><td class="cmd">emergency refine &lt;n&gt;</td><td class="desc">Convert reserve veydrite to fold cells. 10 kg per cell. 15% drive wear risk.</td></tr>
     <tr><td class="cmd">contract</td><td class="desc">View active contract status, target, and deadline.</td></tr>
     <tr><td class="cmd">complete</td><td class="desc">Complete active contract. Must be in target system.</td></tr>
     <tr><td class="cmd">abandon</td><td class="desc">Abandon active contract. Applies reputation penalty.</td></tr>
@@ -1535,8 +1934,8 @@
 
 <div class="manual-footer">
   <p>VEYDRITE ASSAYER'S GUILD — CONTRACTOR PUBLICATIONS DIVISION</p>
-  <p>Deep Survey Operator's Field Manual — Revision 9</p>
-  <p>Guild Standard Year 2301 — Solace Reach Office of Contractor Relations</p>
+  <p>Deep Survey Operator's Field Manual — Revision 10</p>
+  <p>Guild Standard Year 2302 — Solace Reach Office of Contractor Relations</p>
   <p>&nbsp;</p>
   <p>This document is issued to registered independent contractors upon confirmation of terminal registration. It is not for distribution to non-registered parties. The Guild does not consider this restriction enforceable in Collapsed or Feral space and notes the observation without further comment.</p>
   <p>&nbsp;</p>
