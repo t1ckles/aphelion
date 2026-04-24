@@ -187,6 +187,9 @@ function saveGame(playerState, reputationData, contractData) {
         clusterName:   playerState.location.clusterName,
         systemName:    playerState.location.systemName,
       },
+ 
+      currentCompartment: playerState.currentCompartment || 'bridge',
+      },
 
       economy: {
         credits:         playerState.credits,
@@ -314,6 +317,9 @@ function applySave(save, playerState, reputationObj, activeContractsArr) {
 
   // Time
   playerState.currentDay = save.currentDay || 0;
+ 
+  // Compartment
+  playerState.currentCompartment = save.currentCompartment || 'bridge';
 
   // Logs and flags
   playerState.logs  = save.logs  || [];
