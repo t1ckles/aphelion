@@ -3040,8 +3040,13 @@ function openSchematic(src, name, desig) {
   so.classList.add('active');
 }
 
-document.getElementById('schematicOverlay').addEventListener('click', function() {
-  this.classList.remove('active');
+document.addEventListener('DOMContentLoaded', function() {
+  const so = document.getElementById('schematicOverlay');
+  if (so) {
+    so.addEventListener('click', function() {
+      this.classList.remove('active');
+    });
+  }
 });
   
 </script>
