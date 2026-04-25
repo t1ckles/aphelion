@@ -422,8 +422,35 @@ function initCommands(seed) {
       });
     });
   }
-}
 
+  if (!playerState.ship) {
+    playerState.ship = createStartingShip(playerState.shipName || 'The Unspoken');
+  }
+
+  if (!playerState.location) {
+    const q0 = galaxy && galaxy.quadrants ? galaxy.quadrants[0] : null;
+    const cluster = q0 && q0.clusters ? q0.clusters[0] : null;
+    const system = cluster && cluster.systems
+      ? (cluster.systems.find(s => s.isAnchor) || cluster.systems[0])
+      : null;
+
+    if (!system) {
+      console.error('initCommands: could not determine starting system', { q0, cluster });
+      return;
+    }
+
+    playerState.location = {
+      quadrantIndex: 0,
+      quadrantName: q0.name,
+      clusterName: cluster.name,
+      systemName: system.name,
+      bodyId: null,
+      bodyName: null,
+      bodyKind: null,
+      locationType: 'system',
+    };
+  }
+  
 // ── Helpers ───────────────────────────────────
 
 function getShip() { return playerState.ship; }
