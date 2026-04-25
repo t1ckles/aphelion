@@ -517,6 +517,242 @@
     }
 
     [id] { scroll-margin-top: 40px; }
+
+  <!-- ── Ship link style ────────────────────────────────────────────────────────── -->
+    
+    .ship-link {
+      cursor: pointer;
+      border-bottom: 1px dashed var(--green-dim);
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .ship-link:hover {
+      color: var(--green);
+      border-color: var(--green);
+      text-shadow: 0 0 6px rgba(0,255,65,0.5);
+    }
+
+  <!--── Modal overlay ───────────────────────────────────────────────────────────── -->
+.ship-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  animation: overlayFadeIn 0.2s ease;
+}
+.ship-modal-overlay.active {
+  display: flex;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+  <!-- ── Modal box ───────────────────────────────────────────────────────────────── -->
+.ship-modal {
+  background: var(--bg);
+  border: 1px solid var(--green-dark);
+  max-width: 680px;
+  width: 90%;
+  max-height: 88vh;
+  overflow-y: auto;
+  position: relative;
+  animation: modalSlideIn 0.2s ease;
+  <!-- CRT outer glow -->
+  box-shadow:
+    0 0 0 1px var(--green-deep),
+    0 0 30px rgba(0,255,65,0.08),
+    0 0 60px rgba(0,0,0,0.8);
+}
+
+@keyframes modalSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+<!-- scanline overlay on the modal itself -->
+.ship-modal::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px, transparent 2px,
+    rgba(0, 0, 0, 0.18) 2px, rgba(0, 0, 0, 0.18) 3px
+  );
+  z-index: 1;
+}
+  <!-- ── Modal close button ──────────────────────────────────────────────────────── -->
+.ship-modal-close {
+  position: absolute;
+  top: 16px; right: 20px;
+  background: none;
+  border: 1px solid var(--green-dark);
+  color: var(--green-dim);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  padding: 4px 10px;
+  cursor: pointer;
+  z-index: 2;
+  transition: color 0.15s, border-color 0.15s;
+}
+.ship-modal-close:hover {
+  color: var(--green);
+  border-color: var(--green-mid);
+}
+  <!-- ── Modal image area ────────────────────────────────────────────────────────── -->
+.ship-modal-image {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  background: var(--green-deep);
+  border-bottom: 1px solid var(--green-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 0;
+}
+.ship-modal-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  <!-- CRT/scanline/faded treatment -->
+  filter:
+    grayscale(60%)
+    brightness(0.55)
+    contrast(1.1)
+    sepia(20%);
+  mix-blend-mode: screen;
+  opacity: 0.75;
+}
+<!-- green tint overlay on image -->
+.ship-modal-image::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 30, 10, 0.55);
+  z-index: 1;
+  pointer-events: none;
+}
+<!-- vignette -->
+.ship-modal-image::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(0,0,0,0.7) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+<!-- placeholder shown when no image -->
+.ship-modal-image-placeholder {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  color: var(--green-dark);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 2;
+}
+.ship-modal-image-placeholder .placeholder-desig {
+  font-size: 28px;
+  letter-spacing: 0.4em;
+  color: var(--green-deep);
+  display: block;
+  margin-bottom: 8px;
+  text-shadow: 0 0 12px rgba(0,255,65,0.15);
+}
+  <!-- ── Modal content ───────────────────────────────────────────────────────────── -->
+.ship-modal-content {
+  padding: 32px 36px 40px;
+  position: relative;
+  z-index: 2;
+}
+.ship-modal-header {
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--green-dark);
+  padding-bottom: 16px;
+}
+.ship-modal-designation {
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  color: var(--green-dim);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.ship-modal-name {
+  font-size: 22px;
+  letter-spacing: 5px;
+  color: var(--green);
+  text-shadow: 0 0 6px rgba(0,255,65,0.4);
+  text-transform: uppercase;
+}
+.ship-modal-role {
+  font-size: 11px;
+  color: var(--green-dim);
+  letter-spacing: 0.1em;
+  margin-top: 6px;
+}
+
+.ship-modal-lore {
+  color: var(--green-dim);
+  font-style: italic;
+  font-size: 12px;
+  line-height: 1.9;
+  border-left: 2px solid var(--green-dark);
+  padding-left: 16px;
+  margin-bottom: 28px;
+}
+
+.ship-modal-stats-title {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--green-dim);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.ship-modal-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 24px;
+  font-size: 11px;
+  margin-bottom: 20px;
+}
+.ship-modal-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--green-deep);
+  color: var(--green-dim);
+}
+.ship-modal-stat span:last-child { color: var(--green-mid); }
+
+.ship-modal-features {
+  margin-top: 16px;
+  font-size: 11px;
+  color: var(--green-dim);
+  line-height: 1.8;
+}
+.ship-modal-features .feature-tag {
+  color: var(--orange);
+  letter-spacing: 0.1em;
+}
+
+
+    
   </style>
 </head>
 <body>
@@ -1389,18 +1625,18 @@
 
   <p>Survey hulls are built around sensor arrays, fold efficiency, and long-range operational endurance. They trade raw capacity for survivability tools. The Light Surveyor is the only hull in the registry with a class-exclusive emergency reserve tank and above-average fold efficiency. These are not incidental features. They are the reason the Light Surveyor remains the baseline contractor hull after forty years of galaxy-wide infrastructure decline.</p>
 
-  <table class="ship-table">
+<table class="ship-table">
     <tr>
       <th>Hull</th><th>Desig.</th><th>Hull HP</th><th>Power</th><th>Wpn</th><th>Util</th><th>Pods</th><th>Notes</th>
     </tr>
     <tr>
-      <td>Light Surveyor</td><td>LSV</td><td>100</td><td>500</td><td>2</td><td>1</td><td>2</td><td>Emergency tank. +25% scanner. Above-average fold. Starting hull.</td>
+      <td class="ship-link" data-ship="light_surveyor">Light Surveyor</td><td>LSV</td><td>100</td><td>500</td><td>2</td><td>1</td><td>2</td><td>Emergency tank. +25% scanner. Above-average fold. Starting hull.</td>
     </tr>
     <tr>
-      <td>Medium Surveyor</td><td>MSV</td><td>180</td><td>800</td><td>3</td><td>2</td><td>3</td><td>+10% scanner. First hull with dual-tool operation.</td>
+      <td class="ship-link" data-ship="medium_surveyor">Medium Surveyor</td><td>MSV</td><td>180</td><td>800</td><td>3</td><td>2</td><td>3</td><td>+10% scanner. First hull with dual-tool operation.</td>
     </tr>
     <tr>
-      <td>Deep Survey Vessel</td><td>DSV</td><td>300</td><td>1200</td><td>4</td><td>3</td><td>4</td><td>+15% scanner. Below-standard fold. Guild typically operates these.</td>
+      <td class="ship-link" data-ship="deep_survey_vessel">Deep Survey Vessel</td><td>DSV</td><td>300</td><td>1200</td><td>4</td><td>3</td><td>4</td><td>+15% scanner. Below-standard fold. Guild typically operates these.</td>
     </tr>
   </table>
 
@@ -1415,13 +1651,13 @@
       <th>Hull</th><th>Desig.</th><th>Hull HP</th><th>Power</th><th>Wpn</th><th>Util</th><th>Pods</th><th>Notes</th>
     </tr>
     <tr>
-      <td>Light Freighter</td><td>LFT</td><td>150</td><td>600</td><td>2</td><td>1</td><td>4</td><td>Medium cargo. Pelk workhorse. Good volume, mediocre everything else.</td>
+      <td class="ship-link" data-ship="light_freighter">Light Freighter</td><td>LFT</td><td>150</td><td>600</td><td>2</td><td>1</td><td>4</td><td>Medium cargo. Pelk workhorse. Good volume, mediocre everything else.</td>
     </tr>
     <tr>
-      <td>Medium Freighter</td><td>MFT</td><td>280</td><td>900</td><td>3</td><td>1</td><td>6</td><td>Large cargo. Below-standard fold. Needs escort in contested space.</td>
+      <td class="ship-link" data-ship="medium_freighter">Medium Freighter</td><td>MFT</td><td>280</td><td>900</td><td>3</td><td>1</td><td>6</td><td>Large cargo. Below-standard fold. Needs escort in contested space.</td>
     </tr>
     <tr>
-      <td>Heavy Freighter</td><td>HFT</td><td>500</td><td>1500</td><td>4</td><td>2</td><td>12</td><td>Industrial cargo. Poor fold. A target in Collapsed space.</td>
+      <td class="ship-link" data-ship="heavy_freighter">Heavy Freighter</td><td>HFT</td><td>500</td><td>1500</td><td>4</td><td>2</td><td>12</td><td>Industrial cargo. Poor fold. A target in Collapsed space.</td>
     </tr>
   </table>
 
@@ -1436,13 +1672,13 @@
       <th>Hull</th><th>Desig.</th><th>Hull HP</th><th>Power</th><th>Wpn</th><th>Util</th><th>Pods</th><th>Notes</th>
     </tr>
     <tr>
-      <td>Light Mining Vessel</td><td>LMV</td><td>160</td><td>700</td><td>2</td><td>2</td><td>6</td><td>Small cargo. Auger + secondary. More pods than LSV.</td>
+      <td class="ship-link" data-ship="light_mining_vessel">Light Mining Vessel</td><td>LMV</td><td>160</td><td>700</td><td>2</td><td>2</td><td>6</td><td>Small cargo. Auger + secondary. More pods than LSV.</td>
     </tr>
     <tr>
-      <td>Medium Industrial</td><td>MIV</td><td>350</td><td>1100</td><td>3</td><td>3</td><td>10</td><td>Basic onboard refinery. First hull that processes without docking.</td>
+      <td class="ship-link" data-ship="medium_industrial">Medium Industrial</td><td>MIV</td><td>350</td><td>1100</td><td>3</td><td>3</td><td>10</td><td>Basic onboard refinery. First hull that processes without docking.</td>
     </tr>
     <tr>
-      <td>Heavy Industrial</td><td>HIV</td><td>600</td><td>2000</td><td>4</td><td>4</td><td>20</td><td>Standard onboard refinery. Mobile mining platform. Needs escort.</td>
+      <td class="ship-link" data-ship="heavy_industrial">Heavy Industrial</td><td>HIV</td><td>600</td><td>2000</td><td>4</td><td>4</td><td>20</td><td>Standard onboard refinery. Mobile mining platform. Needs escort.</td>
     </tr>
   </table>
 
@@ -1457,10 +1693,10 @@
       <th>Hull</th><th>Desig.</th><th>Hull HP</th><th>Power</th><th>Wpn</th><th>Util</th><th>Pods</th><th>Notes</th>
     </tr>
     <tr>
-      <td>Light Salvager</td><td>LSG</td><td>140</td><td>600</td><td>2</td><td>2</td><td>4</td><td>Medium cargo. Harrow + secondary. No emergency tank.</td>
+      <td class="ship-link" data-ship="light_salvager">Light Salvager</td><td>LSG</td><td>140</td><td>600</td><td>2</td><td>2</td><td>4</td><td>Medium cargo. Harrow + secondary. No emergency tank.</td>
     </tr>
     <tr>
-      <td>Medium Salvager</td><td>MSG</td><td>320</td><td>1000</td><td>3</td><td>3</td><td>8</td><td>Large cargo. Multiple Harrow units. Pelk and Independent favor this hull.</td>
+      <td class="ship-link" data-ship="medium_salvager">Medium Salvager</td><td>MSG</td><td>320</td><td>1000</td><td>3</td><td>3</td><td>8</td><td>Large cargo. Multiple Harrow units. Pelk and Independent favor this hull.</td>
     </tr>
   </table>
 
@@ -1475,13 +1711,13 @@
       <th>Hull</th><th>Desig.</th><th>Hull HP</th><th>Power</th><th>Wpn</th><th>Util</th><th>Pods</th><th>Notes</th>
     </tr>
     <tr>
-      <td>Interceptor</td><td>INT</td><td>120</td><td>600</td><td>4</td><td>0</td><td>0</td><td>Excellent fold. No utility. No pods. Pure combat. CCC only.</td>
+      <td class="ship-link" data-ship="interceptor">Interceptor</td><td>INT</td><td>120</td><td>600</td><td>4</td><td>0</td><td>0</td><td>Excellent fold. No utility. No pods. Pure combat. CCC only.</td>
     </tr>
     <tr>
-      <td>Corvette</td><td>CVT</td><td>350</td><td>1200</td><td>6</td><td>1</td><td>2</td><td>CCC patrol backbone. KNOWN standing required.</td>
+      <td class="ship-link" data-ship="corvette">Corvette</td><td>CVT</td><td>350</td><td>1200</td><td>6</td><td>1</td><td>2</td><td>CCC patrol backbone. KNOWN standing required.</td>
     </tr>
     <tr>
-      <td>Frigate</td><td>FRG</td><td>600</td><td>1800</td><td>8</td><td>2</td><td>3</td><td>Below-standard fold. Needs crew. TRUSTED standing required.</td>
+      <td class="ship-link" data-ship="frigate">Frigate</td><td>FRG</td><td>600</td><td>1800</td><td>8</td><td>2</td><td>3</td><td>Below-standard fold. Needs crew. TRUSTED standing required.</td>
     </tr>
   </table>
 
@@ -1496,19 +1732,19 @@
       <th>Hull</th><th>Desig.</th><th>Hull HP</th><th>Power</th><th>Wpn</th><th>Util</th><th>Pods</th><th>Notes</th>
     </tr>
     <tr>
-      <td>Courier</td><td>CRR</td><td>90</td><td>500</td><td>1</td><td>1</td><td>1</td><td>Excellent fold. Enhanced data storage ×2. Guild only.</td>
+      <td class="ship-link" data-ship="courier">Courier</td><td>CRR</td><td>90</td><td>500</td><td>1</td><td>1</td><td>1</td><td>Excellent fold. Enhanced data storage ×2. Guild only.</td>
     </tr>
     <tr>
-      <td>Data Runner</td><td>DRN</td><td>95</td><td>520</td><td>2</td><td>1</td><td>1</td><td>Excellent fold. Shielded cargo hold. Feral/Independent. Guild does not officially recognize this class.</td>
+      <td class="ship-link" data-ship="data_runner">Data Runner</td><td>DRN</td><td>95</td><td>520</td><td>2</td><td>1</td><td>1</td><td>Excellent fold. Shielded cargo hold. Feral/Independent. Guild does not officially recognize this class.</td>
     </tr>
     <tr>
-      <td>Research Vessel</td><td>RSV</td><td>220</td><td>900</td><td>2</td><td>4</td><td>4</td><td>+20% scanner. Four utility slots. Guild anomaly investigator hull.</td>
+      <td class="ship-link" data-ship="research_vessel">Research Vessel</td><td>RSV</td><td>220</td><td>900</td><td>2</td><td>4</td><td>4</td><td>+20% scanner. Four utility slots. Guild anomaly investigator hull.</td>
     </tr>
     <tr>
-      <td>Escort Carrier</td><td>ECV</td><td>1200</td><td>4000</td><td>12</td><td>4</td><td>8</td><td>Commission only. TRUSTED required. 40 crew minimum. 4 fighter bays. Changes the nature of play entirely.</td>
+      <td class="ship-link" data-ship="escort_carrier">Escort Carrier</td><td>ECV</td><td>1200</td><td>4000</td><td>12</td><td>4</td><td>8</td><td>Commission only. TRUSTED required. 40 crew minimum. 4 fighter bays. Changes the nature of play entirely.</td>
     </tr>
   </table>
-
+  
   <div class="section-divider"></div>
 
   <h3>Leaving the Light Surveyor</h3>
@@ -1945,5 +2181,766 @@
   <p>— THE ASSAYER'S GUILD</p>
 </div>
 
+  <!-- Ship Registry Modal -->
+<div class="ship-modal-overlay" id="shipModalOverlay">
+  <div class="ship-modal" id="shipModal">
+    <button class="ship-modal-close" id="shipModalClose">[ CLOSE ]</button>
+    <div class="ship-modal-image" id="shipModalImage">
+      <div class="ship-modal-image-placeholder" id="shipModalPlaceholder">
+        <span class="placeholder-desig" id="shipModalPlaceholderDesig">LSV</span>
+        <span>HULL IMAGE — PENDING GUILD ARCHIVE UPLOAD</span>
+        <span>Assessment Bureau, Solace Reach</span>
+      </div>
+      <img id="shipModalImg" src="" alt="" style="display:none;" />
+    </div>
+    <div class="ship-modal-content">
+      <div class="ship-modal-header">
+        <div class="ship-modal-designation" id="shipModalDesig"></div>
+        <div class="ship-modal-name" id="shipModalName"></div>
+        <div class="ship-modal-role" id="shipModalRole"></div>
+      </div>
+      <div class="ship-modal-lore" id="shipModalLore"></div>
+      <div class="ship-modal-stats-title">HULL SPECIFICATIONS</div>
+      <div class="ship-modal-stats" id="shipModalStats"></div>
+      <div class="ship-modal-features" id="shipModalFeatures"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// =============================================================================
+// SHIP REGISTRY DATA
+// Image paths assume: images/shipyard/<ship_id>.png
+// Set to null if no image yet — placeholder will display instead.
+// =============================================================================
+
+const SHIP_REGISTRY_DATA = {
+  light_surveyor: {
+    name:        'Light Surveyor',
+    desig:       'LSV',
+    role:        'Deep survey — solo contractor operations',
+    image:       'ships/Aphelion - Light Surveyor.png', // 'images/shipyard/light_surveyor.png'
+    lore: `The Light Surveyor is the oldest hull in continuous production in the
+registered registry. It has been the baseline contractor vessel for forty years
+because nothing that has replaced it has also replaced what makes it work: the
+emergency reserve tank, the above-average fold efficiency, the scanner array
+bonus. These are not features that were added. They were designed in. The
+engineers who built the first Light Surveyor understood that a solo contractor
+in Collapsed space cannot wait for rescue. The hull reflects that understanding
+in every system.
+
+Pilots who fly it long enough stop thinking of it as a ship and start thinking
+of it as a decision they made about what kind of operator they are. Leaving it
+costs something real. Most contractors know this before they do it. Some know
+it after.`,
+    stats: [
+      ['Hull HP',        '100'],
+      ['Armor',          '10'],
+      ['Power Core',     '500 max  |  8/tick'],
+      ['Fuel',           '100 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Weapon Slots',   '2'],
+      ['Utility Slots',  '1'],
+      ['Pod Hardpoints', '2'],
+      ['Crew',           '1–4'],
+      ['Fold Efficiency','Above average'],
+    ],
+    features: [
+      '★ Emergency reserve tank — 15 kg raw veydrite  [CLASS EXCLUSIVE]',
+      '★ Scanner bonus — +25% survey resolution  [CLASS EXCLUSIVE]',
+      '★ Fold efficiency bonus — saves 1 cell per fold  [CLASS EXCLUSIVE]',
+      '◆ Starting hull — not available for purchase',
+    ],
+  },
+
+  medium_surveyor: {
+    name:        'Medium Surveyor',
+    desig:       'MSV',
+    role:        'Extended survey operations — small team',
+    image:       'ships/Aphelion - Medium Surveyor.png',
+    lore: `The Medium Surveyor is what contractors buy when they decide the Light
+Surveyor's limits are costing them more than its advantages are saving them. It
+is a reasonable decision. The MSV carries more crew, more weapons, more utility
+slots — the second slot means running two survey tools simultaneously for the
+first time in the registry. The scanner bonus drops from +25% to +10%, and the
+emergency reserve tank does not transfer.
+
+Guild survey teams that operate in clusters favor this hull. Independent
+contractors who have graduated from solo work and started taking on crew find
+it the logical next step. It is not a ship that inspires stories. It is a ship
+that gets the job done at scale. The galaxy has more use for those than it does
+for legends.`,
+    stats: [
+      ['Hull HP',        '180'],
+      ['Armor',          '15'],
+      ['Power Core',     '800 max  |  10/tick'],
+      ['Fuel',           '180 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Weapon Slots',   '3'],
+      ['Utility Slots',  '2'],
+      ['Pod Hardpoints', '3'],
+      ['Crew',           '2–8'],
+      ['Fold Efficiency','Standard'],
+    ],
+    features: [
+      '◆ +10% scanner resolution',
+      '◆ Dual-tool operation — first hull to run two tools simultaneously',
+    ],
+  },
+
+  deep_survey_vessel: {
+    name:        'Deep Survey Vessel',
+    desig:       'DSV',
+    role:        'Long-range survey — institutional operations',
+    image:       'ships/Aphelion - Deep Survey Vessel'.png,
+    lore: `The Deep Survey Vessel is not a contractor's ship. It is an institution's
+ship — operated by the Guild in Forbidden space, by Pelk in the outer clusters,
+by CCC survey divisions that still function. Independent ownership exists but
+it is rare, and the pilots who manage it tend to have either significant capital
+or significant reasons for needing a hull this capable.
+
+The fold inefficiency is the tax on scale. Every fold costs one extra cell. Over
+a long campaign in deep space, this adds up to a meaningful operational
+constraint. The Guild considers this a feature, not a flaw — it keeps the DSV
+close to supply lines, which keeps it close to Guild stations, which keeps its
+data flowing into Guild archives. The engineers who designed the inefficiency
+may or may not have been aware they were doing the Guild's logistics planning.`,
+    stats: [
+      ['Hull HP',        '300'],
+      ['Armor',          '20'],
+      ['Power Core',     '1200 max  |  15/tick'],
+      ['Fuel',           '300 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Weapon Slots',   '4'],
+      ['Utility Slots',  '3'],
+      ['Pod Hardpoints', '4'],
+      ['Crew',           '4–16'],
+      ['Fold Efficiency','Below standard (+1 cell/fold)'],
+    ],
+    features: [
+      '◆ +15% scanner resolution',
+      '◆ Guild KNOWN standing required for purchase',
+    ],
+  },
+
+  light_freighter: {
+    name:        'Light Freighter',
+    desig:       'LFT',
+    role:        'Short-haul cargo — system-level trade',
+    image:       'ships/Aphelion - Light Freighter'.png,
+    lore: `Pelk built the Light Freighter to move cargo in the spaces between
+established trade routes — the system-level gaps where larger hulls are
+overkill and courier classes cannot carry enough. It succeeds at this in the
+way that workhorses succeed: reliably, without distinction, and in large
+numbers.
+
+The hull is not fast. It is not well-armed. It is not particularly survivable
+in contested space. What it is, is common — which means parts are available,
+mechanics know how to service it, and Pelk stations will always have a berth
+for one. Pilots who fly LFTs long enough stop comparing it to other ships and
+start comparing it to the routes it runs. The routes, mostly, are fine.`,
+    stats: [
+      ['Hull HP',        '150'],
+      ['Armor',          '12'],
+      ['Power Core',     '600 max  |  8/tick'],
+      ['Fuel',           '200 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Medium'],
+      ['Weapon Slots',   '2'],
+      ['Utility Slots',  '1'],
+      ['Pod Hardpoints', '4'],
+      ['Crew',           '1–6'],
+    ],
+    features: [],
+  },
+
+  medium_freighter: {
+    name:        'Medium Freighter',
+    desig:       'MFT',
+    role:        'Inter-quadrant bulk cargo',
+    image:       'ships/Aphelion - Medium Freighter.png',
+    lore: `When most people in the known galaxy picture a freighter, they picture the
+Medium Freighter. It is the hull that moves the majority of inter-quadrant
+commercial cargo — fuel, food, manufactured components, the unspecified sealed
+containers that Pelk manifests describe as "general goods." It is the ship that
+keeps supply lines functional in Established space and keeps them limping along
+in Declining space.
+
+In Contested space, it needs an escort. This is not a design flaw. It is a
+market condition. Pelk has a division that provides the escorts. Independent
+operators who fly MFTs in contested space without one tend to become the kind
+of incident report that other pilots read and file away as a lesson learned.`,
+    stats: [
+      ['Hull HP',        '280'],
+      ['Armor',          '18'],
+      ['Power Core',     '900 max  |  12/tick'],
+      ['Fuel',           '350 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Large'],
+      ['Weapon Slots',   '3'],
+      ['Utility Slots',  '1'],
+      ['Pod Hardpoints', '6'],
+      ['Crew',           '4–12'],
+    ],
+    features: [
+      '◆ Below-standard fold efficiency (+1 cell/fold)',
+    ],
+  },
+
+  heavy_freighter: {
+    name:        'Heavy Freighter',
+    desig:       'HFT',
+    role:        'Bulk industrial cargo — ore transport',
+    image:       'ships/Aphelion - Heavy Freighter.png',
+    lore: `The Heavy Freighter is a target. This is not metaphorical — it broadcasts
+its value in every sensor return, in its silhouette, in the power signature of
+its drives. Pirates in Collapsed space plan around HFT transit routes the way
+merchants plan around market days. The hull carries industrial-scale cargo and
+industrial-scale risk.
+
+Pelk and CCC operate these under escort as a matter of policy. Independent
+ownership requires significant capital, a tolerance for operational complexity,
+and either the firepower to defend the cargo or the negotiating skills to
+convince people not to take it. A Heavy Freighter captain who has survived
+a decade in the outer clusters has either been very lucky or very careful.
+Usually both.`,
+    stats: [
+      ['Hull HP',        '500'],
+      ['Armor',          '25'],
+      ['Power Core',     '1500 max  |  18/tick'],
+      ['Fuel',           '500 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Industrial'],
+      ['Weapon Slots',   '4'],
+      ['Utility Slots',  '2'],
+      ['Pod Hardpoints', '12'],
+      ['Crew',           '8–24'],
+    ],
+    features: [
+      '◆ Poor fold efficiency (+2 cells/fold)',
+      '◆ CCC or Pelk KNOWN standing required for purchase',
+    ],
+  },
+
+  light_mining_vessel: {
+    name:        'Light Mining Vessel',
+    desig:       'LMV',
+    role:        'Solo extraction operations',
+    image:       'ships/Aphelion - Light Industrial.png',
+    lore: `The Light Mining Vessel is the dedicated miner's answer to the Light
+Surveyor — a hull built around extraction rather than survey, with two utility
+slots where the LSV has one and more pod hardpoints than any comparable-class
+vessel in the registry. The Auger-1 fills the primary slot. The secondary slot
+is what makes the LMV interesting: a second tool, a secondary scanner, a
+salvage head for mixed operations.
+
+Pilots who transition from the Light Surveyor to the LMV gain extraction
+capacity and lose survey resolution, fold efficiency, and the emergency reserve
+tank. Whether that trade is worth making depends entirely on what they are
+doing in deep space. For dedicated extraction contractors, it usually is.`,
+    stats: [
+      ['Hull HP',        '160'],
+      ['Armor',          '15'],
+      ['Power Core',     '700 max  |  10/tick'],
+      ['Fuel',           '150 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Small'],
+      ['Weapon Slots',   '2'],
+      ['Utility Slots',  '2'],
+      ['Pod Hardpoints', '6'],
+      ['Crew',           '1–6'],
+    ],
+    features: [
+      '◆ Dual-tool operation — Auger-1 + secondary',
+      '◆ Extraction Bay compartment',
+    ],
+  },
+
+  medium_industrial: {
+    name:        'Medium Industrial',
+    desig:       'MIV',
+    role:        'Mid-scale extraction and processing',
+    image:       'ships/Aphelion - Medium Industrial.png',
+    lore: `The Medium Industrial is the first hull in the registry with onboard
+refinery capability. It does not need to dock to process ore. This changes the
+operational calculus for extraction contractors in ways that compound over time
+— the ability to refine in the field means not carrying raw ore to a station,
+which means more time at extraction sites, which means more yield per campaign.
+
+The basic-grade refinery handles common ores. Exotic and rare grades require a
+station. Most contractors who fly the MIV learn to plan their extraction
+campaigns around this constraint, targeting common ore nodes for field
+processing and hauling the high-value material to a Pelk or CCC refinery for
+the premium yield.`,
+    stats: [
+      ['Hull HP',        '350'],
+      ['Armor',          '22'],
+      ['Power Core',     '1100 max  |  14/tick'],
+      ['Fuel',           '280 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Medium'],
+      ['Weapon Slots',   '3'],
+      ['Utility Slots',  '3'],
+      ['Pod Hardpoints', '10'],
+      ['Crew',           '6–18'],
+    ],
+    features: [
+      '★ Onboard refinery — basic grade  [CLASS FEATURE]',
+      '◆ Below-standard fold efficiency (+1 cell/fold)',
+      '◆ Extraction Bay + Refinery compartments',
+    ],
+  },
+
+  heavy_industrial: {
+    name:        'Heavy Industrial',
+    desig:       'HIV',
+    role:        'Large-scale extraction — semi-permanent deployment',
+    image:       'ships/Aphelion - Heavy Industrial.png',
+    lore: `The Heavy Industrial is not a ship that goes places. It is a ship that stays
+places. Its operational profile is semi-permanent deployment at extraction
+sites — fold in, establish a mining operation, process the yield onboard with
+the standard-grade refinery, fold out when the hold is full. It is slow. It is
+valuable. It is, in Contested and Collapsed space, a statement of either
+significant confidence or significant naivety.
+
+Pelk operates fleets of these in their core cluster territories with dedicated
+escort. Independent ownership exists, but the capital requirements are
+substantial and the operational overhead is higher than any other hull in the
+registry short of the Escort Carrier. Pilots who successfully operate Heavy
+Industrials independently tend not to be independent for long — they become
+small corporations.`,
+    stats: [
+      ['Hull HP',        '600'],
+      ['Armor',          '30'],
+      ['Power Core',     '2000 max  |  22/tick'],
+      ['Fuel',           '600 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Industrial'],
+      ['Weapon Slots',   '4'],
+      ['Utility Slots',  '4'],
+      ['Pod Hardpoints', '20'],
+      ['Crew',           '12–40'],
+    ],
+    features: [
+      '★ Onboard refinery — standard grade  [CLASS FEATURE]',
+      '◆ Poor fold efficiency (+2 cells/fold)',
+      '◆ Extraction Bay + Refinery compartments',
+      '◆ CCC or Pelk TRUSTED standing required for purchase',
+    ],
+  },
+
+  light_salvager: {
+    name:        'Light Salvager',
+    desig:       'LSG',
+    role:        'Solo salvage operations',
+    image:       'ships/Aphelion - Light Salvage.png',
+    lore: `The Light Salvager is built around the Harrow-7 the way the Light Surveyor
+is built around its scanner array — the tool is not an accessory, it is the
+reason the hull exists. Two utility slots means the Harrow runs alongside a
+secondary tool: a secondary scanner, a tow beam, a second Harrow for
+simultaneous operation on larger debris fields.
+
+The cargo hold is better than the Light Surveyor's. The scanner is not. There
+is no emergency reserve tank. Pilots who move from the LSV to the LSG are
+making a trade: survey capability for salvage depth. This is a reasonable trade
+if salvage is what they are doing. It is a poor trade if they are not sure what
+they are doing and are hoping the new hull will clarify things.`,
+    stats: [
+      ['Hull HP',        '140'],
+      ['Armor',          '12'],
+      ['Power Core',     '600 max  |  9/tick'],
+      ['Fuel',           '150 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Medium'],
+      ['Weapon Slots',   '2'],
+      ['Utility Slots',  '2'],
+      ['Pod Hardpoints', '4'],
+      ['Crew',           '1–5'],
+    ],
+    features: [
+      '◆ Salvage Bay compartment',
+      '◆ Standard Harrow-7 fit',
+    ],
+  },
+
+  medium_salvager: {
+    name:        'Medium Salvager',
+    desig:       'MSG',
+    role:        'Large wreck operations — debris field clearing',
+    image:       'ships/Aphelion - Medium Salvage.png',
+    lore: `The Medium Salvager is where salvage operations become serious. Three utility
+slots means multiple Harrow units running simultaneously — a capability that
+matters when the debris field is large enough that a single Harrow would take
+weeks to clear it alone. Pelk and independent operators favor this hull for
+large wreck contracts because it can work a site at a pace that makes the
+economics viable.
+
+The large cargo hold is the other half of the argument. Salvage operations
+generate material faster than survey operations and in forms that take up more
+space. The MSG can carry what the LSG cannot, which means fewer trips to the
+refinery and more time on site. In Collapsed space, where refinery access is
+uncertain, this matters more than the weapons loadout.`,
+    stats: [
+      ['Hull HP',        '320'],
+      ['Armor',          '20'],
+      ['Power Core',     '1000 max  |  13/tick'],
+      ['Fuel',           '250 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Large'],
+      ['Weapon Slots',   '3'],
+      ['Utility Slots',  '3'],
+      ['Pod Hardpoints', '8'],
+      ['Crew',           '4–14'],
+    ],
+    features: [
+      '◆ Multi-Harrow operation',
+      '◆ Below-standard fold efficiency (+1 cell/fold)',
+      '◆ Salvage Bay compartment',
+    ],
+  },
+
+  interceptor: {
+    name:        'Interceptor',
+    desig:       'INT',
+    role:        'Fast response — anti-courier, patrol',
+    image:       'ships/Aphelion - Interceptor.png',
+    lore: `The Interceptor carries four weapon slots on a hull smaller than the Light
+Surveyor. It does this by removing everything else. No utility slots. No pod
+hardpoints. Minimal cargo. The fold efficiency rivals the LSV — which means it
+can reach a target system faster than almost anything else in the registry and
+arrive ready to engage.
+
+CCC uses these for anti-courier interdiction, fast response to distress signals
+in patrol territories, and the enforcement actions that the official record
+describes as "authorized removal of unregistered vessels." Independent
+ownership is technically possible but practically uncommon — a ship with no
+utility slots and no cargo capacity is a ship with no income stream. CCC pilots
+are paid. Independent pilots need a reason to fly a hull that cannot do anything
+except fight.`,
+    stats: [
+      ['Hull HP',        '120'],
+      ['Armor',          '20'],
+      ['Power Core',     '600 max  |  12/tick'],
+      ['Fuel',           '120 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Minimal'],
+      ['Weapon Slots',   '4'],
+      ['Utility Slots',  '0'],
+      ['Pod Hardpoints', '0'],
+      ['Crew',           '1–2'],
+    ],
+    features: [
+      '★ Excellent fold efficiency — rivals Light Surveyor  [CLASS FEATURE]',
+      '◆ Weapons Bay compartment',
+      '◆ CCC KNOWN standing required for purchase',
+    ],
+  },
+
+  corvette: {
+    name:        'Corvette',
+    desig:       'CVT',
+    role:        'Patrol — escort, anti-piracy',
+    image:       'ships/Aphelion - Corvette.png',
+    lore: `The Corvette is the backbone of CCC patrol operations across established
+space. Six weapon slots, significant armor, and the range to escort freighters
+across quadrant boundaries without refueling — these are not combat metrics,
+they are logistics metrics. The CCC designed the Corvette to be everywhere it
+needs to be, not to win the largest possible engagement.
+
+Independent contractors who acquire Corvettes tend to move into escort work,
+because the hull is overbuilt for anything else. A Corvette doing survey work
+is paying for six weapon slots that are mostly idle. A Corvette running escort
+contracts for Pelk is doing what the hull was made for, and the economics
+reflect it.`,
+    stats: [
+      ['Hull HP',        '350'],
+      ['Armor',          '35'],
+      ['Power Core',     '1200 max  |  16/tick'],
+      ['Fuel',           '300 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Small'],
+      ['Weapon Slots',   '6'],
+      ['Utility Slots',  '1'],
+      ['Pod Hardpoints', '2'],
+      ['Crew',           '8–20'],
+    ],
+    features: [
+      '◆ Weapons Bay compartment',
+      '◆ CCC KNOWN standing required for purchase',
+    ],
+  },
+
+  frigate: {
+    name:        'Frigate',
+    desig:       'FRG',
+    role:        'Multi-role combat — light capital operations',
+    image:       'ships/Aphelion - Frigate.png',
+    lore: `The Frigate is the largest hull an independent contractor can realistically
+acquire and operate. It is rarely worth doing. Eight weapon slots requires
+a weapons officer. Sixteen minimum crew requires a ship that functions as an
+organization, not an individual. The below-standard fold efficiency means it
+costs more to move than lighter hulls and generates fewer fold decisions per
+cell.
+
+What the Frigate offers is firepower that nothing short of a capital ship can
+match in conventional engagement, and armor that makes lighter weapons largely
+academic. CCC and Pelk security divisions operate these where they need a hull
+that can end a threat rather than just respond to it. The independent pilots
+who fly Frigates are, without exception, running something that requires them.`,
+    stats: [
+      ['Hull HP',        '600'],
+      ['Armor',          '45'],
+      ['Power Core',     '1800 max  |  20/tick'],
+      ['Fuel',           '400 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Small'],
+      ['Weapon Slots',   '8'],
+      ['Utility Slots',  '2'],
+      ['Pod Hardpoints', '3'],
+      ['Crew',           '16–40'],
+    ],
+    features: [
+      '◆ Below-standard fold efficiency (+1 cell/fold)',
+      '◆ Weapons Bay compartment',
+      '◆ CCC or Pelk TRUSTED standing required for purchase',
+    ],
+  },
+
+  courier: {
+    name:        'Courier',
+    desig:       'CRR',
+    role:        'Fast data and priority cargo transit',
+    image:       'ships/Aphelion - Courier.png',
+    lore: `The Courier exists to move information. Astrographic data, sealed diplomatic
+correspondence, priority cargo that someone needs at a specific station before
+a specific deadline — the Courier gets it there. The enhanced data storage
+system doubles the memory matrix capacity for astrographic records, which means
+a Guild courier can carry twice the chart data of any other hull in the registry
+before needing to offload.
+
+The hull is fragile. One weapon slot, minimal armor, a cargo hold rated for
+priority goods rather than bulk. Speed is survival — excellent fold efficiency
+means the Courier is always a fold ahead of anyone who wants to intercept it.
+Guild couriers who are caught are either unlucky or slow. The Guild attempts to
+employ the former category and train out the latter.`,
+    stats: [
+      ['Hull HP',        '90'],
+      ['Armor',          '8'],
+      ['Power Core',     '500 max  |  10/tick'],
+      ['Fuel',           '100 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Minimal (encrypted)'],
+      ['Weapon Slots',   '1'],
+      ['Utility Slots',  '1'],
+      ['Pod Hardpoints', '1'],
+      ['Crew',           '1–2'],
+    ],
+    features: [
+      '★ Excellent fold efficiency  [CLASS FEATURE]',
+      '★ Enhanced data storage — astrographic capacity ×2  [CLASS FEATURE]',
+      '◆ Guild KNOWN standing required for purchase',
+    ],
+  },
+
+  data_runner: {
+    name:        'Data Runner',
+    desig:       'DRN',
+    role:        'Black market data — unregistered cargo',
+    image:       'ships/Aphelion - Data Runner.png',
+    lore: `The Data Runner is mechanically a Courier variant. The Guild knows this.
+The Guild does not officially acknowledge it. The shielded cargo hold — harder
+to scan, harder to inspect, designed from the ground up to make manifest
+verification inconvenient — is the tell. No legitimate courier operation
+requires a hold that fights inspection.
+
+Feral operators and independent pilots who operate in the grey market between
+registered and unregistered space favor the DRN because it moves fast, carries
+what needs carrying, and makes the contents of that cargo difficult to confirm
+without a warrant that nobody in Collapsed space is going to issue. The extra
+weapon slot over the Courier is not incidental. Data runners have enemies that
+Guild couriers, by policy, do not.`,
+    stats: [
+      ['Hull HP',        '95'],
+      ['Armor',          '8'],
+      ['Power Core',     '520 max  |  10/tick'],
+      ['Fuel',           '110 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Minimal (shielded)'],
+      ['Weapon Slots',   '2'],
+      ['Utility Slots',  '1'],
+      ['Pod Hardpoints', '1'],
+      ['Crew',           '1–2'],
+    ],
+    features: [
+      '★ Excellent fold efficiency  [CLASS FEATURE]',
+      '★ Shielded cargo hold — harder to inspect  [CLASS FEATURE]',
+      '◆ Guild does not officially recognize this hull class',
+      '◆ Feral/Independent availability only',
+    ],
+  },
+
+  research_vessel: {
+    name:        'Research Vessel',
+    desig:       'RSV',
+    role:        'Extended scientific survey — anomaly investigation',
+    image:       'ships/Aphelion - Research Vessel.png',
+    lore: `The Research Vessel is the ship the Guild sends into Forbidden space. Four
+utility slots — more than any non-industrial hull in the registry — means
+running multiple survey tools, mining equipment, and specialized sensor arrays
+simultaneously. The +20% scanner bonus means those arrays see more than any
+other survey hull can. The Guild does not discuss what they find. The premium
+on Forbidden space astrographic data implies they find things worth not
+discussing.
+
+Independent ownership exists but is rare. The RSV costs more than most
+contractors earn in a career and requires Guild standing that takes years to
+build. The pilots who fly them independently are either former Guild assessors
+who kept their credentials, or contractors whose survey data attracted enough
+Guild attention that the relationship became something else.`,
+    stats: [
+      ['Hull HP',        '220'],
+      ['Armor',          '14'],
+      ['Power Core',     '900 max  |  12/tick'],
+      ['Fuel',           '250 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Medium'],
+      ['Weapon Slots',   '2'],
+      ['Utility Slots',  '4'],
+      ['Pod Hardpoints', '4'],
+      ['Crew',           '4–16'],
+    ],
+    features: [
+      '★ +20% scanner resolution  [CLASS FEATURE]',
+      '★ Four utility slots — most of any non-industrial hull  [CLASS FEATURE]',
+      '◆ Guild KNOWN standing required for purchase',
+    ],
+  },
+
+  escort_carrier: {
+    name:        'Escort Carrier',
+    desig:       'ECV',
+    role:        'Fleet command — fighter deployment, logistics hub',
+    image:       'ships/Aphelion - Escort Carrier.png',
+    lore: `The Escort Carrier cannot be purchased. It must be commissioned — a process
+that requires TRUSTED standing with at least one major faction, a minimum crew
+of forty, a deposit that most contractors will never accumulate, and a decision
+about what kind of operator you intend to be.
+
+Flying an Escort Carrier means you are no longer a contractor. The ship is too
+large to be a contractor's ship. It has four fighter bays, twelve weapon slots,
+industrial cargo capacity, and a command structure that requires you to manage
+people who manage other people. The Guild will record your name in a different
+register when you commission one. The register is shorter. The entries in it
+are not, on average, longer-lived than the contractors they left behind — but
+they are more significant, in the way that large things that burn bright and
+fast are significant.`,
+    stats: [
+      ['Hull HP',        '1200'],
+      ['Armor',          '60'],
+      ['Power Core',     '4000 max  |  40/tick'],
+      ['Fuel',           '1000 max'],
+      ['Fold Cells',     '20 max magazine'],
+      ['Cargo Hold',     'Industrial'],
+      ['Weapon Slots',   '12'],
+      ['Utility Slots',  '4'],
+      ['Pod Hardpoints', '8'],
+      ['Crew',           '40–120'],
+    ],
+    features: [
+      '★ Four fighter bays — deploys NPC fighters  [CLASS FEATURE]',
+      '◆ Very poor fold efficiency (+4 cells/fold)',
+      '◆ Commission only — cannot be purchased directly',
+      '◆ TRUSTED standing with major faction required',
+      '◆ Minimum 40 crew required',
+      '◆ Weapons Bay + Flight Deck compartments',
+    ],
+  },
+};
+
+// =============================================================================
+// MODAL LOGIC
+// =============================================================================
+
+const overlay  = document.getElementById('shipModalOverlay');
+const modal    = document.getElementById('shipModal');
+const closeBtn = document.getElementById('shipModalClose');
+
+function openShipModal(shipId) {
+  const data = SHIP_REGISTRY_DATA[shipId];
+  if (!data) return;
+
+  // Header
+  document.getElementById('shipModalDesig').textContent = data.desig + '  —  ' + data.role.split('—')[0].trim().toUpperCase();
+  document.getElementById('shipModalName').textContent  = data.name.toUpperCase();
+  document.getElementById('shipModalRole').textContent  = data.role;
+
+  // Image or placeholder
+  const img         = document.getElementById('shipModalImg');
+  const placeholder = document.getElementById('shipModalPlaceholder');
+  document.getElementById('shipModalPlaceholderDesig').textContent = data.desig;
+
+  if (data.image) {
+    img.src = data.image;
+    img.alt = data.name;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    placeholder.style.display = 'block';
+  }
+
+  // Lore — preserve paragraph breaks
+  const loreEl = document.getElementById('shipModalLore');
+  loreEl.innerHTML = data.lore
+    .trim()
+    .split(/\n\n+/)
+    .map(p => '<p style="margin-bottom:12px;font-style:italic;font-size:12px;color:var(--green-dim);line-height:1.9;max-width:none;">' + p.trim().replace(/\n/g, ' ') + '</p>')
+    .join('');
+
+  // Stats
+  const statsEl = document.getElementById('shipModalStats');
+  statsEl.innerHTML = data.stats.map(([label, value]) =>
+    `<div class="ship-modal-stat"><span>${label}</span><span>${value}</span></div>`
+  ).join('');
+
+  // Features
+  const featEl = document.getElementById('shipModalFeatures');
+  if (data.features && data.features.length > 0) {
+    featEl.innerHTML = data.features.map(f => {
+      const isExclusive = f.includes('[CLASS');
+      return `<div style="padding:3px 0;border-bottom:1px solid var(--green-deep);">
+        <span class="${isExclusive ? 'feature-tag' : ''}">${f}</span>
+      </div>`;
+    }).join('');
+  } else {
+    featEl.innerHTML = '<div style="color:var(--green-dark);font-size:11px;">No class-exclusive features.</div>';
+  }
+
+  // Show
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeShipModal() {
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Close on button click
+closeBtn.addEventListener('click', closeShipModal);
+
+// Close on overlay click (outside modal box)
+overlay.addEventListener('click', function(e) {
+  if (e.target === overlay) closeShipModal();
+});
+
+// Wire up all ship-link elements
+document.querySelectorAll('.ship-link').forEach(el => {
+  el.addEventListener('click', function() {
+    openShipModal(this.dataset.ship);
+  });
+});
+</script>
+  
 </body>
 </html>
