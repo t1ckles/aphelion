@@ -2300,7 +2300,7 @@ const SHIP_REGISTRY_DATA = {
     name:        'Light Surveyor',
     desig:       'LSV',
     role:        'Deep survey — solo contractor operations',
-    image:       'ships/Aphelion - Light Surveyor.png', // 'images/shipyard/light_surveyor.png'
+    images:       ['ships/Aphelion - Light Surveyor.png,ships/Aphelion - Light Surveyor (alt).png'], // 'images/shipyard/light_surveyor.png'
     lore: `The Light Surveyor is the oldest hull in continuous production in the
 registered registry. It has been the baseline contractor vessel for forty years
 because nothing that has replaced it has also replaced what makes it work: the
@@ -2338,7 +2338,7 @@ it after.`,
     name:        'Medium Surveyor',
     desig:       'MSV',
     role:        'Extended survey operations — small team',
-    image:       'ships/Aphelion - Medium Surveyor.png',
+    images:       ['ships/Aphelion - Medium Surveyor.png','ships/Aphelion - Medium Surveyor (alt).png'],
     lore: `The Medium Surveyor is what contractors buy when they decide the Light
 Surveyor's limits are costing them more than its advantages are saving them. It
 is a reasonable decision. The MSV carries more crew, more weapons, more utility
@@ -2373,7 +2373,7 @@ for legends.`,
     name:        'Deep Survey Vessel',
     desig:       'DSV',
     role:        'Long-range survey — institutional operations',
-    image:       'ships/Aphelion - Deep Survey Vessel.png',
+    images:       ['ships/Aphelion - Deep Survey Vessel.png','ships/Aphelion - Deep Survey Vessel (alt).png'],
     lore: `The Deep Survey Vessel is not a contractor's ship. It is an institution's
 ship — operated by the Guild in Forbidden space, by Pelk in the outer clusters,
 by CCC survey divisions that still function. Independent ownership exists but
@@ -2408,7 +2408,7 @@ may or may not have been aware they were doing the Guild's logistics planning.`,
     name:        'Light Freighter',
     desig:       'LFT',
     role:        'Short-haul cargo — system-level trade',
-    image:       'ships/Aphelion - Light Freighter.png',
+    images:       ['ships/Aphelion - Light Freighter.png','ships/Aphelion - Light Freighter (alt).png'],
     lore: `Pelk built the Light Freighter to move cargo in the spaces between
 established trade routes — the system-level gaps where larger hulls are
 overkill and courier classes cannot carry enough. It succeeds at this in the
@@ -2439,7 +2439,7 @@ start comparing it to the routes it runs. The routes, mostly, are fine.`,
     name:        'Medium Freighter',
     desig:       'MFT',
     role:        'Inter-quadrant bulk cargo',
-    image:       'ships/Aphelion - Medium Freighter.png',
+    images:       ['ships/Aphelion - Medium Freighter.png','ships/Aphelion - Medium Freighter (alt).png'],
     lore: `When most people in the known galaxy picture a freighter, they picture the
 Medium Freighter. It is the hull that moves the majority of inter-quadrant
 commercial cargo — fuel, food, manufactured components, the unspecified sealed
@@ -2472,7 +2472,7 @@ of incident report that other pilots read and file away as a lesson learned.`,
     name:        'Heavy Freighter',
     desig:       'HFT',
     role:        'Bulk industrial cargo — ore transport',
-    image:       'ships/Aphelion - Heavy Freighter.png',
+    images:       ['ships/Aphelion - Heavy Freighter.png','ships/Aphelion - Heavy Freighter (alt).png'],
     lore: `The Heavy Freighter is a target. This is not metaphorical — it broadcasts
 its value in every sensor return, in its silhouette, in the power signature of
 its drives. Pirates in Collapsed space plan around HFT transit routes the way
@@ -2507,7 +2507,7 @@ Usually both.`,
     name:        'Light Mining Vessel',
     desig:       'LMV',
     role:        'Solo extraction operations',
-    image:       'ships/Aphelion - Light Industrial.png',
+    images:       ['ships/Aphelion - Light Industrial.png','ships/Aphelion - Light Industrial (alt).png'],
     lore: `The Light Mining Vessel is the dedicated miner's answer to the Light
 Surveyor — a hull built around extraction rather than survey, with two utility
 slots where the LSV has one and more pod hardpoints than any comparable-class
@@ -2541,7 +2541,7 @@ doing in deep space. For dedicated extraction contractors, it usually is.`,
     name:        'Medium Industrial',
     desig:       'MIV',
     role:        'Mid-scale extraction and processing',
-    image:       'ships/Aphelion - Medium Industrial.png',
+    images:       ['ships/Aphelion - Medium Industrial.png','ships/Aphelion - Medium Industrial (alt).png'],
     lore: `The Medium Industrial is the first hull in the registry with onboard
 refinery capability. It does not need to dock to process ore. This changes the
 operational calculus for extraction contractors in ways that compound over time
@@ -2576,7 +2576,7 @@ the premium yield.`,
     name:        'Heavy Industrial',
     desig:       'HIV',
     role:        'Large-scale extraction — semi-permanent deployment',
-    image:       'ships/Aphelion - Heavy Industrial.png',
+    images:       ['ships/Aphelion - Heavy Industrial.png','ships/Aphelion - Heavy Industrial (alt).png'],
     lore: `The Heavy Industrial is not a ship that goes places. It is a ship that stays
 places. Its operational profile is semi-permanent deployment at extraction
 sites — fold in, establish a mining operation, process the yield onboard with
@@ -2614,7 +2614,7 @@ small corporations.`,
     name:        'Light Salvager',
     desig:       'LSG',
     role:        'Solo salvage operations',
-    image:       'ships/Aphelion - Light Salvage.png',
+    images:       ['ships/Aphelion - Light Salvage.png','ships/Aphelion - Light Salvage (alt).png'],
     lore: `The Light Salvager is built around the Harrow-7 the way the Light Surveyor
 is built around its scanner array — the tool is not an accessory, it is the
 reason the hull exists. Two utility slots means the Harrow runs alongside a
@@ -2648,7 +2648,7 @@ they are doing and are hoping the new hull will clarify things.`,
     name:        'Medium Salvager',
     desig:       'MSG',
     role:        'Large wreck operations — debris field clearing',
-    image:       'ships/Aphelion - Medium Salvage.png',
+    images:       ['ships/Aphelion - Medium Salvage.png','ships/Aphelion - Medium Salvage (alt).png'],
     lore: `The Medium Salvager is where salvage operations become serious. Three utility
 slots means multiple Harrow units running simultaneously — a capability that
 matters when the debris field is large enough that a single Harrow would take
@@ -2684,7 +2684,7 @@ uncertain, this matters more than the weapons loadout.`,
     name:        'Interceptor',
     desig:       'INT',
     role:        'Fast response — anti-courier, patrol',
-    image:       'ships/Aphelion - Interceptor.png',
+    images:       ['ships/Aphelion - Interceptor.png','ships/Aphelion - Interceptor (alt).png'],
     lore: `The Interceptor carries four weapon slots on a hull smaller than the Light
 Surveyor. It does this by removing everything else. No utility slots. No pod
 hardpoints. Minimal cargo. The fold efficiency rivals the LSV — which means it
@@ -2721,7 +2721,7 @@ except fight.`,
     name:        'Corvette',
     desig:       'CVT',
     role:        'Patrol — escort, anti-piracy',
-    image:       'ships/Aphelion - Corvette.png',
+    images:       ['ships/Aphelion - Corvette.png','ships/Aphelion - Corvette (alt).png'],
     lore: `The Corvette is the backbone of CCC patrol operations across established
 space. Six weapon slots, significant armor, and the range to escort freighters
 across quadrant boundaries without refueling — these are not combat metrics,
@@ -2755,7 +2755,7 @@ reflect it.`,
     name:        'Frigate',
     desig:       'FRG',
     role:        'Multi-role combat — light capital operations',
-    image:       'ships/Aphelion - Frigate.png',
+    images:       ['ships/Aphelion - Frigate.png','ships/Aphelion - Frigate (alt).png'],
     lore: `The Frigate is the largest hull an independent contractor can realistically
 acquire and operate. It is rarely worth doing. Eight weapon slots requires
 a weapons officer. Sixteen minimum crew requires a ship that functions as an
@@ -2791,7 +2791,7 @@ who fly Frigates are, without exception, running something that requires them.`,
     name:        'Courier',
     desig:       'CRR',
     role:        'Fast data and priority cargo transit',
-    image:       'ships/Aphelion - Courier.png',
+    images:       ['ships/Aphelion - Courier.png','ships/Aphelion - Courier (alt).png'],
     lore: `The Courier exists to move information. Astrographic data, sealed diplomatic
 correspondence, priority cargo that someone needs at a specific station before
 a specific deadline — the Courier gets it there. The enhanced data storage
@@ -2827,7 +2827,7 @@ employ the former category and train out the latter.`,
     name:        'Data Runner',
     desig:       'DRN',
     role:        'Black market data — unregistered cargo',
-    image:       'ships/Aphelion - Data Runner.png',
+    images:       ['ships/Aphelion - Data Runner.png','ships/Aphelion - Data Runner (alt).png'],
     lore: `The Data Runner is mechanically a Courier variant. The Guild knows this.
 The Guild does not officially acknowledge it. The shielded cargo hold — harder
 to scan, harder to inspect, designed from the ground up to make manifest
@@ -2864,7 +2864,7 @@ Guild couriers, by policy, do not.`,
     name:        'Research Vessel',
     desig:       'RSV',
     role:        'Extended scientific survey — anomaly investigation',
-    image:       'ships/Aphelion - Research Vessel.png',
+    images:       ['ships/Aphelion - Research Vessel.png','ships/Aphelion - Research Vessel (alt).png'],
     lore: `The Research Vessel is the ship the Guild sends into Forbidden space. Four
 utility slots — more than any non-industrial hull in the registry — means
 running multiple survey tools, mining equipment, and specialized sensor arrays
@@ -2901,7 +2901,7 @@ Guild attention that the relationship became something else.`,
     name:        'Escort Carrier',
     desig:       'ECV',
     role:        'Fleet command — fighter deployment, logistics hub',
-    image:       'ships/Aphelion - Escort Carrier.png',
+    images:       ['ships/Aphelion - Escort Carrier.png','ships/Aphelion - Escort Carrier (alt).png'],
     lore: `The Escort Carrier cannot be purchased. It must be commissioned — a process
 that requires TRUSTED standing with at least one major faction, a minimum crew
 of forty, a deposit that most contractors will never accumulate, and a decision
