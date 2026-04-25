@@ -778,6 +778,56 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--green-dim);
 }
+
+    /* Hull schematic lightbox */
+.schematic-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.95);
+  z-index: 20000;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.schematic-overlay.active {
+  display: flex;
+}
+.schematic-overlay img {
+  max-width: 90%;
+  max-height: 90vh;
+  filter:
+    grayscale(40%)
+    brightness(0.65)
+    contrast(1.1)
+    sepia(15%);
+  mix-blend-mode: screen;
+}
+.schematic-overlay::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px, transparent 2px,
+    rgba(0,0,0,0.2) 2px, rgba(0,0,0,0.2) 3px
+  );
+  z-index: 1;
+}
+.schematic-label {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--green-dim);
+  text-transform: uppercase;
+  z-index: 2;
+}
     
   </style>
 </head>
@@ -2219,6 +2269,11 @@
       </div>
       <img id="shipModalImg" src="" alt="" style="display:none;" />
     </div>
+    <div id="shipModalSchematic" style="display:none; padding:8px 36px 0; position:relative; z-index:2;">
+      <span style="font-size:10px; letter-spacing:0.25em; color:var(--green-dim); cursor:pointer; border-bottom:1px dashed var(--green-dark); text-transform:uppercase;">
+        [ View Hull Schematic ]
+      </span>
+    </div>
     <div class="ship-modal-content">
       <div class="ship-modal-header">
         <div class="ship-modal-designation" id="shipModalDesig"></div>
@@ -2942,6 +2997,15 @@ function openShipModal(shipId) {
     featEl.innerHTML = '<div style="color:var(--green-dark);font-size:11px;">No class-exclusive features.</div>';
   }
 
+// Schematic link
+  const schemEl = document.getElementById('shipModalSchematic');
+  if (data.image) {
+    schemEl.style.display = 'block';
+    schemEl.onclick = () => openSchematic(data.image, data.name, data.desig);
+  } else {
+    schemEl.style.display = 'none';
+  }
+
   // Show
   overlay.classList.add('active');
   document.body.style.overflow = 'hidden';
@@ -2968,7 +3032,22 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
-</script>
+
+function openSchematic(src, name, desig) {
+  const so = document.getElementById('schematicOverlay');
+  document.getElementById('schematicImg').src = src;
+  document.getElementById('schematicLabel').textContent = desig + '  —  ' + name.toUpperCase() + '  —  CLICK TO CLOSE';
+  so.classList.add('active');
+}
+
+document.getElementById('schematicOverlay').addEventListener('click', function() {
+  this.classList.remove('active');
+});
   
+</script>
+  <div class="schematic-overlay" id="schematicOverlay">
+  <img id="schematicImg" src="" alt="" />
+  <div class="schematic-label" id="schematicLabel"></div>
+</div>
 </body>
 </html>
