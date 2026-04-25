@@ -179,15 +179,6 @@ function generateStationName(systemName, factionKey, index, rng) {
 
   const result = [prefix, tag, suffix].filter(Boolean).join(" ");  // ← Build result first
   
-  console.log('generateStationName DEBUG:', {  // ← Then log it
-    systemName,
-    factionKey,
-    index,
-    prefix,
-    tag,
-    suffix,
-    result,
-    resultType: typeof result
   });
   
   return result;
