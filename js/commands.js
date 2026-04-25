@@ -3869,14 +3869,21 @@ function cmdClusterDeepscan(args) {
 
   const ship = getShip();
   const loc  = playerState.location;
-  const q    = galaxy.quadrants[loc.quadrantIndex];
+
+  console.log('cmdClusterDeepscan debug', {
+    location: playerState.location,
+    galaxyReady: !!galaxy,
+    quadrantCount: galaxy && galaxy.quadrants ? galaxy.quadrants.length : 0
+  });
+
+  if (!loc) return '  [STATUS] No location fix.';
+
+  const q = galaxy.quadrants[loc.quadrantIndex];
   if (!q) return '  [ERROR] Location data unavailable.';
-  if (!playerState.location) return '  [STATUS] No location fix.';
-  
+
   const query = args.join(' ').toLowerCase().trim();
   if (!query) return '  [CLUSTERDEEPSCAN] Usage: clusterdeepscan <cluster name>';
 
-  // Find cluster in current quadrant
   let targetCluster = null;
   q.clusters.forEach(cluster => {
     if (cluster.name.toLowerCase().includes(query)) {
@@ -3890,41 +3897,38 @@ function cmdClusterDeepscan(args) {
       '  [CLUSTERDEEPSCAN] No cluster matching "' + query + '" in this quadrant.',
       '  Use scan <#> to list clusters in your quadrant.',
       '',
-    ].join('\n');
+    ].join('\\n');
   }
 
   const systems    = targetCluster.systems;
   const costPerSys = 25;
 
-  // Check we have enough power for at least one system
   if (ship.powerCore.current < costPerSys + 1) {
     return [
       '',
       '  [CLUSTERDEEPSCAN] Insufficient power to begin sweep.',
       '  Required: ' + (costPerSys + 1) + ' minimum  |  Available: ' + ship.powerCore.current,
       '',
-    ].join('\n');
+    ].join('\\n');
   }
 
-  // Calculate how many systems we can scan
   const maxScannable = Math.floor((ship.powerCore.current - 1) / costPerSys);
   const toScan       = systems.slice(0, maxScannable);
   const skipped      = systems.length - toScan.length;
 
-  // Return special prefix for main.js to handle sequentially
   const payload = {
     clusterName: targetCluster.name,
-    systems:     toScan.map(sys => {
-      const hasStation  = sys.bodies.some(b => b.hasStation);
-      const hasRuin     = sys.bodies.some(b => b.hasRuin);
-      const hasVeyd     = sys.bodies.some(b => b.veydrite);
-      const bodyCount   = sys.bodies.length;
+    systems: toScan.map(sys => {
+      const bodies      = normalizeSystemBodies(sys);
+      const hasStation  = bodies.some(b => b.hasStation);
+      const hasRuin     = bodies.some(b => b.hasRuin);
+      const hasVeyd     = bodies.some(b => b.veydrite);
+      const bodyCount   = bodies.length;
       const units       = astrographicYield(sys, 'deep', q.state);
 
-      // Find station name
       let stationName = 'none detected';
       if (hasStation) {
-        const stationBody = sys.bodies.find(b => b.hasStation);
+        const stationBody = bodies.find(b => b.hasStation);
         stationName = stationBody && stationBody.stationName
           ? stationBody.stationName
           : 'station present';
@@ -3956,7 +3960,6 @@ function cmdClusterDeepscan(args) {
     quadrantIndex: loc.quadrantIndex,
   };
 
-// Data and power are applied per-system during display in main.js
   triggerAchievements({ type: 'cluster_sweep', clusterName: targetCluster.name });
   return '__CLUSTERDEEPSCAN__' + JSON.stringify(payload);
 }
