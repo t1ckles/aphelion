@@ -40,37 +40,35 @@ function generateBodyProperName(rng, naming) {
   return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
-function buildNamedBody(rng, quadrantState, starClass, naming, type, ordinal) {
+function buildNamedBody(rng, quadrantState, starClass, naming, type, ordinal, systemName) {
   const properName = generateBodyProperName(rng, naming);
   const hasStation = rng.next() < stationChance(quadrantState);
-  
-  // Generate station data ONCE during galaxy generation
+ 
   let stationName = null;
-  let faction = null;
-  let factionKey = null;
-  
+  let faction     = null;
+  let factionKey  = null;
+ 
   if (hasStation) {
-    // Pick faction based on quadrant state
-    factionKey = pickStationFaction(rng, quadrantState);
-    faction = FACTIONS[factionKey] || FACTIONS.independent;
-    
-    // Generate station name
-      stationName = generateStationName(systemName, factionKey, 0, rng);
+    factionKey  = pickStationFaction(rng, quadrantState);
+    faction     = (typeof FACTIONS !== 'undefined' && FACTIONS[factionKey])
+                  ? FACTIONS[factionKey]
+                  : { name: factionKey, short: factionKey.toUpperCase(), attitude: 'neutral' };
+    stationName = generateStationName(systemName || 'Unknown', factionKey, ordinal, rng);
   }
-  
+ 
   return {
     type,
-    baseType: type,
+    baseType:    type,
     properName,
     displayName: type + ' (' + properName + ')',
-    shortName: properName,
+    shortName:   properName,
     ordinal,
     hasStation,
-    stationName,    // ← NEW: Persistent station name
-    faction,        // ← NEW: Persistent faction object
-    factionKey,     // ← NEW: Persistent faction key
-    hasRuin: rng.next() < ruinChance(quadrantState),
-    veydrite: rng.next() < veydriteChance(starClass),
+    stationName,
+    faction,
+    factionKey,
+    hasRuin:     rng.next() < ruinChance(quadrantState),
+    veydrite:    rng.next() < veydriteChance(starClass),
   };
 }
 
@@ -102,50 +100,42 @@ function trafficLevel(state, rng) {
   return Math.min(5, Math.max(0, base + Math.floor((rng.next() - 0.5) * 2)));
 }
 
-function generateSystem(rng, quadrantState) {
+function generateSystem(rng, quadrantState, naming, systemName) {
   const starClass = weightedPick(rng, STAR_CLASSES, STAR_CLASS_WEIGHT);
   const bodyCount = 1 + Math.floor(rng.next() * 5);
-  const bodies = [];
-
+  const bodies    = [];
+ 
   for (let i = 0; i < bodyCount; i++) {
-    bodies.push({
-      type: BODY_TYPES[Math.floor(rng.next() * BODY_TYPES.length)],
-      hasStation: rng.next() < stationChance(quadrantState),
-      hasRuin: rng.next() < ruinChance(quadrantState),
-      veydrite: rng.next() < veydriteChance(starClass),
-    });
+    const type = BODY_TYPES[Math.floor(rng.next() * BODY_TYPES.length)];
+    bodies.push(buildNamedBody(rng, quadrantState, starClass, naming, type, i, systemName));
   }
-
+ 
   const xenoChance = {
-    Collapsed: 0.14,
-    Forbidden: 0.12,
-    Isolated: 0.09,
-    Declining: 0.07,
-    Contested: 0.05,
-    Established: 0.02
+    Collapsed:   0.14,
+    Forbidden:   0.12,
+    Isolated:    0.09,
+    Declining:   0.07,
+    Contested:   0.05,
+    Established: 0.02,
   }[quadrantState] ?? 0.06;
-
-  const xenoTainted = rng.next() < xenoChance;
-
+ 
   const beaconChance = {
     Established: 0.04,
-    Contested: 0.10,
-    Declining: 0.18,
-    Collapsed: 0.25,
-    Isolated: 0.15,
-    Forbidden: 0.08
+    Contested:   0.10,
+    Declining:   0.18,
+    Collapsed:   0.25,
+    Isolated:    0.15,
+    Forbidden:   0.08,
   }[quadrantState] ?? 0.08;
-
-  const hasBeacon = rng.next() < beaconChance;
-
+ 
   return {
     starClass,
     bodies,
-    jumpPoints: 1 + Math.floor(rng.next() * 3),
-    hazard: hazardLevel(quadrantState, rng),
-    traffic: trafficLevel(quadrantState, rng),
-    xenoTainted,
-    hasBeacon,
+    jumpPoints:  1 + Math.floor(rng.next() * 3),
+    hazard:      hazardLevel(quadrantState, rng),
+    traffic:     trafficLevel(quadrantState, rng),
+    xenoTainted: rng.next() < xenoChance,
+    hasBeacon:   rng.next() < beaconChance,
   };
 }
 
@@ -156,7 +146,7 @@ function generateCluster(rng, quadrantState, naming) {
     const sysName = naming.starSystem
       ? naming.starSystem(rng, 'ancient')
       : ('System-' + Math.floor(rng.next() * 9999));
-    systems.push({ name: sysName, ...generateSystem(rng, quadrantState, naming) });
+    systems.push({ name: sysName, ...generateSystem(rng, quadrantState, naming, sysName) });
   }
   const anchorIndex = systems.reduce((best, s, i) =>
     s.bodies.filter(b => b.hasStation).length >
@@ -291,7 +281,7 @@ function generateStationName(systemName, factionKey, index, rng) {
 
   const suffixes = ["Alpha", "Beta", "Prime", "Secondary", "Auxiliary", "I", "II", "III", "IV", "V"];
   const pool = prefixes[factionKey] || prefixes.independent;
-  const rand = rng && typeof rng.next === "number" ? rng.next : Math.random();
+  const rand = (rng && typeof rng.next === 'function') ? () => rng.next() : Math.random;
 
   const prefix = pool[Math.floor(rand * pool.length)];
   const tag = String(systemName).split(" ")[0];
