@@ -2607,7 +2607,7 @@ function getArmoryContext() {
     : q.clusters[loc.clusterIndex || 0];
   const sys   = cluster && cluster.systems.find(s => s.name === loc.systemName);
   if (!sys) return null;
-  const body  = sys.bodies.find(b => b.hasStation);
+  const body  = normalizeSystemBodies(sys).find(b => b.hasStation);
   if (!body)  return null;
   const rep   = getRep(body.factionKey);
   const tier  = rep !== null ? repTier(rep) : 'UNKNOWN';
