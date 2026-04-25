@@ -54,6 +54,53 @@ const ACHIEVEMENT_DEFS = {
     detail:   'Cumulative contract record: 25 completed. Noted by the Guild.',
   },
 
+  // ── Additional Milestones ──────────────────────────────
+  first_refuel: {
+    category: 'Operations',
+    title:    'Fuel Transfer Logged',
+    detail:   'First refueling operation completed. Fuel management protocols initialized.',
+  },
+  first_repair: {
+    category: 'Operations',
+    title:    'Repair Bay Entry',
+    detail:   'First vessel repair conducted at a registered station facility.',
+  },
+  first_trade: {
+    category: 'Operations',
+    title:    'Cargo Exchange Initiated',
+    detail:   'First cargo trade transaction processed. Merchant registry access confirmed.',
+  },
+  contracts_completed_50: {
+    category: 'Operations',
+    title:    'Fifty Contracts Fulfilled',
+    detail:   'Cumulative contract record: 50 completed. Veteran operator status recognized.',
+  },
+  contracts_completed_100: {
+    category: 'Operations',
+    title:    'One Hundred Contracts Fulfilled',
+    detail:   'Cumulative contract record: 100 completed. Elite contractor designation awarded.',
+  },
+  contract_perfect_streak_5: {
+    category: 'Operations',
+    title:    'Five Contracts — No Failures',
+    detail:   'Five consecutive contracts completed without abandonment. Reliability noted.',
+  },
+  contract_perfect_streak_10: {
+    category: 'Operations',
+    title:    'Ten Contracts — No Failures',
+    detail:   'Ten consecutive contracts completed without abandonment. Exemplary record.',
+  },
+  multi_contract_active: {
+    category: 'Operations',
+    title:    'Parallel Operations',
+    detail:   'Multiple contracts accepted simultaneously. Resource management protocols active.',
+  },
+  first_undock: {
+    category: 'Operations',
+    title:    'Departure Clearance Granted',
+    detail:   'First undocking maneuver completed. Navigation systems operational.',
+  },
+
   // ── Exploration ─────────────────────────────
   first_deepscan: {
     category: 'Survey',
@@ -94,6 +141,53 @@ const ACHIEVEMENT_DEFS = {
     category: 'Survey',
     title:    'Anomalous Reading Logged',
     detail:   'Vessel entered a system flagged for anomalous sensor returns. No further notation.',
+  },
+  
+  // ── Additional Exploration ─────────────────────────
+  systems_charted_75: {
+    category: 'Survey',
+    title:    'Seventy-Five Systems Charted',
+    detail:   'Astrographic record: 75 systems. Extensive survey operations confirmed.',
+  },
+  systems_charted_100: {
+    category: 'Survey',
+    title:    'One Hundred Systems Charted',
+    detail:   'Astrographic record: 100 systems. Master cartographer designation.',
+  },
+  first_moon_surveyed: {
+    category: 'Survey',
+    title:    'Lunar Body Scanned',
+    detail:   'First planetary moon surveyed. Satellite formation data recorded.',
+  },
+  first_asteroid_scanned: {
+    category: 'Survey',
+    title:    'Asteroid Field Entry',
+    detail:   'First asteroid belt body scanned. Dense field navigation logged.',
+  },
+  cluster_complete_survey: {
+    category: 'Survey',
+    title:    'Complete Cluster Mapping',
+    detail:   'All systems within a cluster surveyed to deep scan standard. Comprehensive archive.',
+  },
+  rare_body_discovered: {
+    category: 'Survey',
+    title:    'Unusual Composition Detected',
+    detail:   'Survey detected body with anomalous spectral signature. Data flagged for review.',
+  },
+  deep_space_survey: {
+    category: 'Survey',
+    title:    'Void Crossing Survey',
+    detail:   'Astrographic data collected during extended inter-cluster transit.',
+  },
+  astro_sales_5: {
+    category: 'Survey',
+    title:    'Five Data Transfers',
+    detail:   'Five astrographic data packages sold to Guild archives.',
+  },
+  astro_sales_25: {
+    category: 'Survey',
+    title:    'Twenty-Five Data Transfers',
+    detail:   'Twenty-five astrographic data packages sold. Significant archive contributor.',
   },
 
   // ── Reputation ──────────────────────────────
@@ -142,6 +236,53 @@ const ACHIEVEMENT_DEFS = {
     title:    'Feral Network: Hostile',
     detail:   'Standing with Feral settlements degraded to HOSTILE.',
   },
+  
+  // ── Additional Reputation ──────────────────────────
+  faction_allied_guild: {
+    category: 'Standing',
+    title:    'Guild: Allied',
+    detail:   'Standing with the Assayer\\'s Guild elevated to ALLIED. Priority access granted.',
+  },
+  faction_allied_pelk: {
+    category: 'Standing',
+    title:    'Pelk Logistics: Allied',
+    detail:   'Standing with Pelk Logistics elevated to ALLIED. Enhanced contract availability.',
+  },
+  faction_allied_colonial: {
+    category: 'Standing',
+    title:    'CCC: Allied',
+    detail:   'Standing with Colonial Colonies Command elevated to ALLIED. Military cooperation authorized.',
+  },
+  faction_allied_feral: {
+    category: 'Standing',
+    title:    'Feral Network: Allied',
+    detail:   'Standing with Feral settlements elevated to ALLIED. Deep network access confirmed.',
+  },
+  faction_allied_independent: {
+    category: 'Standing',
+    title:    'Independent Operators: Allied',
+    detail:   'Standing with Independent operators elevated to ALLIED. Mutual aid protocols active.',
+  },
+  faction_neutral_restored: {
+    category: 'Standing',
+    title:    'Standing Restored',
+    detail:   'Previously degraded faction standing returned to NEUTRAL status.',
+  },
+  reputation_balanced: {
+    category: 'Standing',
+    title:    'Diplomatic Balance',
+    detail:   'Neutral or better standing maintained with all major factions simultaneously.',
+  },
+  reputation_pariah: {
+    category: 'Standing',
+    title:    'Marked Vessel',
+    detail:   'Hostile standing with multiple factions. Safe harbor options severely limited.',
+  },
+  faction_rep_maxed: {
+    category: 'Standing',
+    title:    'Maximum Standing Achieved',
+    detail:   'Reputation with a faction elevated to maximum possible level.',
+  },
 
   // ── Combat ──────────────────────────────────
   first_kill: {
@@ -180,6 +321,53 @@ const ACHIEVEMENT_DEFS = {
     detail:   'Unclassified contact confirmed destroyed. No registry match on record.',
   },
 
+// ── Additional Combat ──────────────────────────────
+  kills_5: {
+    category: 'Combat',
+    title:    'Five Confirmed Kills',
+    detail:   'Five enemy vessels confirmed destroyed. Combat effectiveness noted.',
+  },
+  kills_10: {
+    category: 'Combat',
+    title:    'Ten Confirmed Kills',
+    detail:   'Ten enemy vessels confirmed destroyed. Veteran combatant status.',
+  },
+  kills_25: {
+    category: 'Combat',
+    title:    'Twenty-Five Confirmed Kills',
+    detail:   'Twenty-five enemy vessels confirmed destroyed. Ace designation considered.',
+  },
+  first_weapon_upgrade: {
+    category: 'Combat',
+    title:    'Arsenal Enhanced',
+    detail:   'First weapons system upgrade installed. Offensive capability increased.',
+  },
+  survived_outnumbered: {
+    category: 'Combat',
+    title:    'Multiple Hostiles — Survived',
+    detail:   'Vessel survived engagement against numerically superior enemy force.',
+  },
+  combat_no_damage: {
+    category: 'Combat',
+    title:    'Flawless Engagement',
+    detail:   'Enemy vessel destroyed with zero hull damage sustained.',
+  },
+  combat_retreat: {
+    category: 'Combat',
+    title:    'Tactical Withdrawal',
+    detail:   'Successfully escaped from hostile engagement. Discretion protocols engaged.',
+  },
+  ambush_survived: {
+    category: 'Combat',
+    title:    'Ambush — Survived',
+    detail:   'Vessel survived surprise attack. Sensor protocols updated.',
+  },
+  weapon_system_destroyed: {
+    category: 'Combat',
+    title:    'Weapon System Critical Failure',
+    detail:   'Primary weapons system destroyed in combat. Backup protocols engaged.',
+  },
+
   // ── Economic ────────────────────────────────
   first_veydrite_sale: {
     category: 'Economic',
@@ -212,6 +400,53 @@ const ACHIEVEMENT_DEFS = {
     detail:   'Cumulative veydrite sold: 500 kg. Significant extraction record.',
   },
 
+// ── Additional Economic ────────────────────────────
+  scrip_25000: {
+    category: 'Economic',
+    title:    'Scrip Reserve: 25,000 CR',
+    detail:   'Liquid scrip holdings reached 25,000 CR. Substantial capital reserves.',
+  },
+  scrip_50000: {
+    category: 'Economic',
+    title:    'Scrip Reserve: 50,000 CR',
+    detail:   'Liquid scrip holdings reached 50,000 CR. Fleet expansion capital available.',
+  },
+  veydrite_sold_1000: {
+    category: 'Economic',
+    title:    'Veydrite Volume: 1,000 kg',
+    detail:   'Cumulative veydrite sold: 1,000 kg. Major extraction operation confirmed.',
+  },
+  first_cargo_full: {
+    category: 'Economic',
+    title:    'Hold Capacity Reached',
+    detail:   'Cargo hold filled to maximum capacity for first time.',
+  },
+  trade_profit_high: {
+    category: 'Economic',
+    title:    'Profitable Exchange',
+    detail:   'Trade transaction completed with exceptional profit margin.',
+  },
+  equipment_purchased: {
+    category: 'Economic',
+    title:    'Equipment Acquisition',
+    detail:   'First major equipment purchase made. Operational capability enhanced.',
+  },
+  hull_upgraded: {
+    category: 'Economic',
+    title:    'Hull Upgrade Installed',
+    detail:   'Vessel hull class upgraded. Increased capacity and durability.',
+  },
+  went_bankrupt: {
+    category: 'Economic',
+    title:    'Financial Insolvency',
+    detail:   'Scrip reserves depleted to zero. Emergency credit protocols initiated.',
+  },
+  resource_stockpile: {
+    category: 'Economic',
+    title:    'Resource Reserves Established',
+    detail:   'Significant quantities of fuel and supplies stockpiled for extended operations.',
+  },
+
   // ── Survival ────────────────────────────────
   days_survived_10: {
     category: 'Survival',
@@ -234,6 +469,53 @@ const ACHIEVEMENT_DEFS = {
     detail:   'Vessel operational for 100 standard days. Long-haul record.',
   },
 };
+
+// ── Additional Survival ────────────────────────────
+  days_survived_150: {
+    category: 'Survival',
+    title:    'One Hundred Fifty Days in the Field',
+    detail:   'Vessel operational for 150 standard days. Extended deployment record.',
+  },
+  days_survived_200: {
+    category: 'Survival',
+    title:    'Two Hundred Days in the Field',
+    detail:   'Vessel operational for 200 standard days. Endurance operations specialist.',
+  },
+  days_survived_365: {
+    category: 'Survival',
+    title:    'One Full Year Operational',
+    detail:   'Vessel operational for 365 standard days. Annual operations milestone.',
+  },
+  hull_zero_survived: {
+    category: 'Survival',
+    title:    'Structural Failure — Survived',
+    detail:   'Vessel hull integrity reached critical failure threshold but maintained cohesion.',
+  },
+  fuel_emergency: {
+    category: 'Survival',
+    title:    'Fuel Reserves Critical',
+    detail:   'Fuel reserves depleted to emergency levels. Priority refueling conducted.',
+  },
+  long_drift: {
+    category: 'Survival',
+    title:    'Extended Drift Period',
+    detail:   'Vessel remained in deep space without docking for extended period.',
+  },
+  death_avoided: {
+    category: 'Survival',
+    title:    'Near-Death Experience',
+    detail:   'Pilot survived circumstances that would typically result in casualty.',
+  },
+  system_failure_survived: {
+    category: 'Survival',
+    title:    'Critical System Failure — Survived',
+    detail:   'Major ship system failed but emergency protocols maintained vessel integrity.',
+  },
+  quarantine_survived: {
+    category: 'Survival',
+    title:    'Quarantine Period Completed',
+    detail:   'Vessel completed mandatory quarantine period at frontier installation.',
+  },
 
 // ── Award function ────────────────────────────
 
