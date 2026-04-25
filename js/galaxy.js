@@ -42,6 +42,22 @@ function generateBodyProperName(rng, naming) {
 
 function buildNamedBody(rng, quadrantState, starClass, naming, type, ordinal) {
   const properName = generateBodyProperName(rng, naming);
+  const hasStation = rng.next() < stationChance(quadrantState);
+  
+  // Generate station data ONCE during galaxy generation
+  let stationName = null;
+  let faction = null;
+  let factionKey = null;
+  
+  if (hasStation) {
+    // Pick faction based on quadrant state
+    factionKey = pickStationFaction(rng, quadrantState);
+    faction = FACTIONS[factionKey] || FACTIONS.independent;
+    
+    // Generate station name
+    stationName = generateStationName(rng, factionKey, properName);
+  }
+  
   return {
     type,
     baseType: type,
@@ -49,7 +65,10 @@ function buildNamedBody(rng, quadrantState, starClass, naming, type, ordinal) {
     displayName: type + ' (' + properName + ')',
     shortName: properName,
     ordinal,
-    hasStation: rng.next() < stationChance(quadrantState),
+    hasStation,
+    stationName,    // ← NEW: Persistent station name
+    faction,        // ← NEW: Persistent faction object
+    factionKey,     // ← NEW: Persistent faction key
     hasRuin: rng.next() < ruinChance(quadrantState),
     veydrite: rng.next() < veydriteChance(starClass),
   };
@@ -214,6 +233,47 @@ function generateConnectivity(quadrantCount, rng) {
     primaries[i][2] = 'highway';
   }
   return connections;
+}
+
+// ── Station faction picker ────────────────────
+
+function pickStationFaction(rng, quadrantState) {
+  const weights = {
+    Established: { guild: 35, pelk: 25, ccc: 20, independent: 15, feral: 5 },
+    Contested:   { guild: 20, pelk: 30, ccc: 25, independent: 15, feral: 10 },
+    Declining:   { guild: 10, pelk: 25, ccc: 15, independent: 30, feral: 20 },
+    Collapsed:   { guild: 0,  pelk: 5,  ccc: 0,  independent: 20, feral: 75 },
+    Isolated:    { guild: 5,  pelk: 10, ccc: 5,  independent: 60, feral: 20 },
+    Forbidden:   { guild: 0,  pelk: 0,  ccc: 0,  independent: 10, feral: 90 },
+  };
+  
+  const table = weights[quadrantState] || weights.Declining;
+  const keys = Object.keys(table);
+  const vals = Object.values(table);
+  
+  return weightedPick(rng, keys, vals);
+}
+
+// ── Station name generator ────────────────────
+
+function generateStationName(rng, factionKey, bodyName) {
+  const prefixes = {
+    guild: ['Assessment Post', 'Guild Relay', 'Assayer Station', 'Archive Terminal'],
+    pelk: ['Pelk Waystation', 'Pelk Depot', 'Transit Hub', 'Logistics Post'],
+    ccc: ['CCC Relay', 'Patrol Station', 'Command Post', 'Military Outpost'],
+    independent: ['Independent Hub', 'Free Station', 'Drift Post', 'Neutral Relay'],
+    feral: ['Drift Post', 'Feral Settlement', 'Outpost', 'Haven'],
+  };
+  
+  const pool = prefixes[factionKey] || prefixes.independent;
+  const prefix = pool[Math.floor(rng.next() * pool.length)];
+  
+  // Sometimes add Beta/Prime/Alpha suffix
+  const suffix = rng.next() < 0.3 
+    ? [' Prime', ' Beta', ' Alpha', ''][Math.floor(rng.next() * 4)]
+    : '';
+  
+  return prefix + ' ' + bodyName + suffix;
 }
 
 // ── Player corridor knowledge ─────────────────
