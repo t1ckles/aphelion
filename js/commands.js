@@ -179,6 +179,18 @@ function generateStationName(systemName, factionKey, index, rng) {
   const tag = String(systemName || "Station").split(" ")[0];
   const suffix = index > 0 ? suffixes[Math.min(index, suffixes.length - 1)] : "";
 
+  // ← ADD THESE DEBUG LINES
+  console.log('generateStationName DEBUG:', {
+    systemName,
+    factionKey,
+    index,
+    prefix,
+    tag,
+    suffix,
+    result,
+    resultType: typeof result
+  });
+  
   return [prefix, tag, suffix].filter(Boolean).join(" ");
 }
 
