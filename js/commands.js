@@ -4,6 +4,8 @@
 //  System B: Ship object, weapons, power
 // ============================================
 
+let galaxy = null;
+
 // ── Faction definitions ───────────────────────
 
 const FACTIONS = {
