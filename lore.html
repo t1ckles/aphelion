@@ -1167,7 +1167,8 @@ function showChapter(id) {
 
   // Activate nav item
   document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(id)) {
+    const onclick = n.getAttribute('onclick');
+    if (onclick && onclick.includes("'" + id + "'")) {
       n.classList.add('active');
     }
   });
