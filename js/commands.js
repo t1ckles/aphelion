@@ -2507,41 +2507,30 @@ function handleShipyardCommand(cmd, args) {
   if (cmd === "trade") return cmdTrade(args);
   if (cmd === "armory") return cmdArmory(args);
 
-  return [
-    "SHIPYARD Unknown command.",
-    "Use shipyard, shipyard info n, shipyard buy n, exit."
-  ].join("\n");
-}
-
 function cmdShipyard(args) {
-  if (!playerState.docked) {
-    return [
-      '',
-      '  [SHIPYARD] You must be docked to access the shipyard.',
-      '',
-    ].join('\n');
-  }
- 
-  // Refresh session on every bare 'shipyard' call so prices stay current.
-    if (!args || args.length === 0) shipyardSession = buildShipyardSession();
-    if (!shipyardSession || shipyardSession.market.length === 0) return [
-        '',
-        '  [SHIPYARD] No hull market at this station.',
-        '  Ship markets operate at Established and Contested installations.',
-        '  Feral and Forbidden space do not maintain registered shipyards.',
-        '',
-      ].join('\n');
-    }
+  if (!playerState.docked) return [
+    "SHIPYARD You must be docked to access the shipyard.",
+    ""
+  ].join("\n");
+  
+// Refresh session on every bare shipyard call so prices stay current.
+  if (!args || args.length === 0) shipyardSession = buildShipyardSession();
 
-    playerState.inShipyard = true;
-    
-    return renderShipMarket(
-      shipyardSession.factionKey,
-      shipyardSession.quadrantState,
-      shipyardSession.tier,
-      playerState.credits,
-      playerState.ship
-    );
+  if (!shipyardSession || shipyardSession.market.length === 0) return [
+    "SHIPYARD No hull market at this station.",
+    "Ship markets operate at Established and Contested installations.",
+    "Feral and Forbidden space do not maintain registered shipyards.",
+    ""
+  ].join("\n");
+
+  return renderShipMarket(
+    shipyardSession.market,
+    shipyardSession.factionKey,
+    shipyardSession.quadrantState,
+    shipyardSession.tier,
+    playerState.credits,
+    playerState.ship
+  );
   }
  
   const sub = args[0].toLowerCase();
