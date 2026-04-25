@@ -1877,6 +1877,12 @@ function cmdDock() {
     playerState.bulletinContracts = [];
   }
 
+  const shipyardCtx = buildShipyardSession();
+  const hasShipyard =
+    shipyardCtx &&
+    shipyardCtx.market &&
+    shipyardCtx.market.length > 0;
+  
   const feeNote = hardshipDock
     ? 'Hardship dock — fee of ' + fee + ' CR waived. Reputation penalty applied.'
     : fee > 0
@@ -1897,7 +1903,7 @@ function cmdDock() {
     '',
     '  ── STATION SERVICES ──────────────────────────────────────────',
     '',
-    '  ' + stationServices(faction.attitude),
+    '  ' + stationServices(faction.attitude) + (hasShipyard ? '  |  Shipyard' : ''),
     '',
   ];
 
@@ -1907,8 +1913,10 @@ function cmdDock() {
 lines.push('  Type "trade" to open the trade terminal.');
   lines.push('  Type "armory" to browse weapons and ammo.');
   lines.push('  Type "repair" for hull and weapon repair.');
+  if (shipyardCtx && shipyardCtx.market && shipyardCtx.market.length > 0) {
+  lines.push('Type shipyard to browse available hulls.');
+}
   lines.push('  Type "undock" to return to space.');
-  lines.push('  Type "shipyard" to browse available hulls.');
   lines.push('');
   lines.push(renderRepChange(repResult));
   lines.push('');
@@ -4605,11 +4613,11 @@ function cmdMenu() {
 
 function stationServices(attitude) {
   const services = {
-    neutral:    'Fuel exchange  |  Cargo hold  |  Assay terminal  |  Armory  |  Shipyard  |  Bulletin board',
-    commercial: 'Fuel exchange  |  Cargo trading  |  Armory  |  Shipyard  |  Pelk contract board  |  Repair bay',
-    military:   'Fuel exchange  |  Restricted cargo only  |  Military armory  |  Shipyard  |  CCC contract board',
-    hostile:    'Fuel (price negotiable)  |  No formal services  |  Watch your cargo',
-    unknown:    'Services unknown  |  Proceed with caution',
+    neutral: 'Fuel exchange  |  Cargo hold  |  Assay terminal  |  Armory  |  Bulletin board',
+    commercial: 'Fuel exchange  |  Cargo trading  |  Armory  |  Pelk contract board  |  Repair bay',
+    military: 'Fuel exchange  |  Restricted cargo only  |  Military armory  |  CCC contract board',
+    hostile: 'Fuel price negotiable  |  No formal services  |  Watch your cargo',
+    unknown: 'Services unknown  |  Proceed with caution',
   };
   return services[attitude] || services.neutral;
 }
