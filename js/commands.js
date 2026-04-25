@@ -2461,9 +2461,10 @@ function buildShipyardSession() {
   const rep = getRep(factionKey);
   const tier = rep != null ? repTier(rep) : "UNKNOWN";
 
-  const noMarket =
-    ["feral", "forbidden"].includes(factionKey) ||
-    ["Collapsed", "Forbidden"].includes(q.state);
+  // Shipyards only operate at Established and Contested installations
+    const noMarket = 
+      ["feral", "forbidden"].includes(factionKey) ||
+      !["Established", "Contested"].includes(q.state);
 
   if (noMarket) return null;
 
