@@ -256,24 +256,25 @@ function pickStationFaction(rng, quadrantState) {
 
 // ── Station name generator ────────────────────
 
-function generateStationName(rng, factionKey, bodyName) {
+function generateStationName(systemName, factionKey, index, rng) {
   const prefixes = {
-    guild: ['Assessment Post', 'Guild Relay', 'Assayer Station', 'Archive Terminal'],
-    pelk: ['Pelk Waystation', 'Pelk Depot', 'Transit Hub', 'Logistics Post'],
-    ccc: ['CCC Relay', 'Patrol Station', 'Command Post', 'Military Outpost'],
-    independent: ['Independent Hub', 'Free Station', 'Drift Post', 'Neutral Relay'],
-    feral: ['Drift Post', 'Feral Settlement', 'Outpost', 'Haven'],
+    guild: ["Assay Point", "Survey Station", "Guild Relay", "Assessment Post"],
+    pelk: ["Pelk Depot", "Transit Hub", "Pelk Waystation", "Logistics Post"],
+    colonial: ["CCC Outpost", "Colonial Station", "Forward Base", "CCC Relay"],
+    feral: ["The Hulk", "Scratch Station", "The Nail", "Drift Post"],
+    independent: ["Free Berth", "Open Dock", "The Anchorage", "Waypoint"],
+    forbidden: ["Installation", "Unknown Station", "Sealed Platform"]
   };
-  
+
+  const suffixes = ["Alpha", "Beta", "Prime", "Secondary", "Auxiliary", "I", "II", "III", "IV", "V"];
   const pool = prefixes[factionKey] || prefixes.independent;
-  const prefix = pool[Math.floor(rng.next() * pool.length)];
-  
-  // Sometimes add Beta/Prime/Alpha suffix
-  const suffix = rng.next() < 0.3 
-    ? [' Prime', ' Beta', ' Alpha', ''][Math.floor(rng.next() * 4)]
-    : '';
-  
-  return prefix + ' ' + bodyName + suffix;
+  const rand = rng && typeof rng.next === "number" ? rng.next : Math.random();
+
+  const prefix = pool[Math.floor(rand * pool.length)];
+  const tag = String(systemName).split(" ")[0];
+  const suffix = index > 0 ? suffixes[Math.min(index, suffixes.length - 1)] : "";
+
+  return [prefix, tag, suffix].filter(Boolean).join(" ");
 }
 
 // ── Player corridor knowledge ─────────────────
