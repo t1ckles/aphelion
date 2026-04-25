@@ -55,7 +55,7 @@ function buildNamedBody(rng, quadrantState, starClass, naming, type, ordinal) {
     faction = FACTIONS[factionKey] || FACTIONS.independent;
     
     // Generate station name
-    stationName = generateStationName(sys.name, factionKey, 0, rng);
+      stationName = generateStationName(systemName, factionKey, 0, rng);
   }
   
   return {
@@ -108,7 +108,7 @@ function generateSystem(rng, quadrantState, naming) {
   const bodies = [];
   for (let i = 0; i < bodyCount; i++) {
     const type = BODY_TYPES[Math.floor(rng.next() * BODY_TYPES.length)];
-    bodies.push(buildNamedBody(rng, quadrantState, starClass, naming, type, i + 1));
+    bodies.push(buildNamedBody(rng, quadrantState, starClass, naming, type, i + 1, sys.name));
   }
   const xenoChance = { Collapsed: 0.14, Forbidden: 0.12,
                        Isolated: 0.09, Declining: 0.07,
