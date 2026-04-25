@@ -174,7 +174,7 @@ function generateStationName(systemName, factionKey, index, rng) {
 
   const suffixes = ["Alpha", "Beta", "Prime", "Secondary", "Auxiliary", "I", "II", "III", "IV", "V"];
   const pool = prefixes[factionKey] || prefixes.independent;
-  const roll = rng && typeof rng.next === "number" ? rng.next : Math.random();
+  const roll = rng && typeof rng.next === "function" ? rng.next() : Math.random();
   const prefix = pool[Math.floor(roll * pool.length)];
   const tag = String(systemName || "Station").split(" ")[0];
   const suffix = index > 0 ? suffixes[Math.min(index, suffixes.length - 1)] : "";
