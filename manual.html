@@ -750,7 +750,34 @@
   letter-spacing: 0.1em;
 }
 
+/* Modal scrollbar */
+.ship-modal::-webkit-scrollbar {
+  width: 6px;
+}
+.ship-modal::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+.ship-modal::-webkit-scrollbar-thumb {
+  background: var(--green-dark);
+  border-radius: 0;
+}
+.ship-modal::-webkit-scrollbar-thumb:hover {
+  background: var(--green-dim);
+}
 
+/* Page scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--green-dark);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--green-dim);
+}
     
   </style>
 </head>
