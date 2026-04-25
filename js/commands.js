@@ -1818,38 +1818,58 @@ function cmdDock(args) {
   if (!sys) return '  [ERROR] Location data corrupted.';
 
   const bodies = normalizeSystemBodies(sys);
-  const stationBodies = bodies.filter(b => b.hasStation);
+  const currentBody = getCurrentBody(sys);
+
+  const allStationBodies = bodies.filter(b => b.hasStation);
+
+  const localStationBodies = currentBody
+    ? allStationBodies.filter(b =>
+        b.id === currentBody.id ||
+        b.parentId === currentBody.id ||
+        b.id === currentBody.parentId ||
+        (b.parentId && currentBody.parentId && b.parentId === currentBody.parentId)
+      )
+    : allStationBodies;
+
+  const stationBodies = localStationBodies;
+
   if (stationBodies.length === 0) {
-    return ['', '  [DOCK] No station in ' + sys.name + '.', ''].join('\\n');
+    return [
+      '',
+      '  [DOCK] No station in immediate local approach.',
+      '  Use "system" to view the full body index and travel to a station-bearing body first.',
+      ''
+    ].join('\n');
   }
 
-  // NEW: Parse station name from arguments
   let body;
   if (args && args.length > 0) {
     const targetName = args.join(' ').toLowerCase();
-    body = stationBodies.find(b => b.stationName.toLowerCase().includes(targetName));
-    
+    body = stationBodies.find(b =>
+      b.stationName && b.stationName.toLowerCase().includes(targetName)
+    );
+
     if (!body) {
       const available = stationBodies.map(b => b.stationName).join(', ');
-      return ['', 
-        '  [DOCK] Station not found: "' + args.join(' ') + '"',
-        '  Available stations: ' + available,
+      return [
+        '',
+        '  [DOCK] Station not found in local approach: "' + args.join(' ') + '"',
+        '  Nearby stations: ' + available,
         ''
-      ].join('\\n');
+      ].join('\n');
     }
   } else {
-    // No arguments: dock at first station
     body = stationBodies[0];
-    
-    // If multiple stations, warn the player
+
     if (stationBodies.length > 1) {
       const available = stationBodies.map(b => b.stationName).join(', ');
-      return ['',
-        '  [DOCK] Multiple stations detected.',
+      return [
+        '',
+        '  [DOCK] Multiple nearby stations detected.',
         '  ' + available,
         '  Specify station name: dock <station name>',
         ''
-      ].join('\\n');
+      ].join('\n');
     }
   }
 
@@ -1859,31 +1879,24 @@ function cmdDock(args) {
 
   const rep = getRep(body.factionKey);
   if (rep !== null && repTier(rep) === 'HOSTILE') {
-    return ['', '  [DOCK] Docking refused.', '  ' + faction.name + ' has flagged your vessel.', ''].join('\\n');
+    return ['', '  [DOCK] Docking refused.', '  ' + faction.name + ' has flagged your vessel.', ''].join('\n');
   }
 
-  // ... rest of function continues unchanged
-// ─────────────────────────────────────────────────────────────────────────────
- 
   let hardshipDock = false;
- 
+
   if (fee > 0 && playerState.credits < fee) {
-    // Hardship docking — allowed but penalised.
-    // Feral stations don't care. Hostile factions still refuse.
     if (body.factionKey === 'feral' || fee === 0) {
-      // No fee anyway — fall through normally.
     } else {
       hardshipDock = true;
     }
   }
- 
+
   if (!hardshipDock && fee > 0) {
     playerState.credits -= fee;
   }
 
   meetFaction(body.factionKey);
-  
-  // Only gain rep once per day per station
+
   const repKey = 'docked_' + body.stationName + '_' + playerState.currentDay;
   const repResult = playerState.flags[repKey]
     ? null
@@ -1891,8 +1904,7 @@ function cmdDock(args) {
       ? adjustRep(body.factionKey, -5, 'Docked without paying fees')
       : adjustRep(body.factionKey, 1, 'Docked and paid fees');
   if (repResult) playerState.flags[repKey] = true;
-  
-  // Shore power — recharge core fully
+
   ship.powerCore.current = ship.powerCore.max;
 
   playerState.docked           = true;
@@ -1911,7 +1923,7 @@ function cmdDock(args) {
     shipyardCtx &&
     shipyardCtx.market &&
     shipyardCtx.market.length > 0;
-  
+
   const feeNote = hardshipDock
     ? 'Hardship dock — fee of ' + fee + ' CR waived. Reputation penalty applied.'
     : fee > 0
@@ -1939,19 +1951,18 @@ function cmdDock(args) {
   if (faction_info && faction_info.contracts) {
     lines.push('  Contracts available — type "bulletin" to view.');
   }
-lines.push('  Type "trade" to open the trade terminal.');
+  lines.push('  Type "trade" to open the trade terminal.');
   lines.push('  Type "armory" to browse weapons and ammo.');
   lines.push('  Type "repair" for hull and weapon repair.');
   if (shipyardCtx && shipyardCtx.market && shipyardCtx.market.length > 0) {
-  lines.push('Type shipyard to browse available hulls.');
-}
+    lines.push('Type shipyard to browse available hulls.');
+  }
   lines.push('  Type "undock" to return to space.');
   lines.push('');
   lines.push(renderRepChange(repResult));
   lines.push('');
-if (typeof updateAuspex === 'function') updateAuspex();
+  if (typeof updateAuspex === 'function') updateAuspex();
 
-  // Xeno achievement
   const sys2 = cluster && cluster.systems.find(s => s.name === loc.systemName);
   if (sys2 && sys2.xenoTainted) triggerAchievements({ type: 'xeno_system' });
 
