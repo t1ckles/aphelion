@@ -450,6 +450,7 @@ function initCommands(seed) {
       locationType: 'system',
     };
   }
+}
   
 // ── Helpers ───────────────────────────────────
 
