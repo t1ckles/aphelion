@@ -468,7 +468,6 @@ const ACHIEVEMENT_DEFS = {
     title:    'One Hundred Days in the Field',
     detail:   'Vessel operational for 100 standard days. Long-haul record.',
   },
-};
 
 // ── Additional Survival ────────────────────────────
   days_survived_150: {
